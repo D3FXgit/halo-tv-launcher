@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Einrichtungsassistent, einzeln geöffnete Schritte, lokale Schlüssel-Webseite und Bedienungshilfe-Dienst. -->
+<resources>
+    <!-- Bedienungshilfe-Dienst (in den Bedienungshilfen des Fernsehers angezeigt) -->
+    <string name="setup_a11y_service_label">Halo</string>
+    <string name="setup_a11y_service_description">Hält Halo als Startbildschirm (holt Halo zurück, wenn der Fernseher seinen eigenen Startbildschirm öffnet), öffnet den Halo-Assistenten mit der Taste, die du in Halo gewählt hast (die Sterntaste), und öffnet – falls du in Halo eine App gewählt hast – diese App, wenn du die YouTube-Taste drückst. Sonst tut der Dienst nichts und liest keine Bildschirminhalte.</string>
+
+    <!-- Rahmen -->
+    <string name="setup_brand">HALO EINRICHTEN</string>
+    <string name="setup_brand_settings">HALO EINSTELLUNGEN</string>
+    <string name="setup_step_of">Schritt %1$d von %2$d</string>
+    <string name="setup_back">Zurück</string>
+    <string name="setup_close">Schließen</string>
+    <string name="setup_continue">Weiter</string>
+    <string name="setup_skip">Überspringen</string>
+    <string name="setup_skip_all">Später einrichten</string>
+    <string name="setup_done">Fertig</string>
+    <string name="setup_start">Halo starten</string>
+
+    <!-- 1 · Willkommen + Sprache -->
+    <string name="setup_welcome_title">Willkommen bei Halo</string>
+    <string name="setup_welcome_subtitle">In ein paar kurzen Schritten wird dieser Fernseher zu deinem. Alles lässt sich später in den Halo-Einstellungen ändern.</string>
+    <string name="setup_welcome_hint">Mit ▲ zu den Optionen, mit OK auswählen. „Weiter“ ist immer der Knopf unten rechts.</string>
+    <string name="setup_language_label">Sprache</string>
+    <string name="setup_language_system">Wie der Fernseher</string>
+
+    <!-- 2 · Design -->
+    <string name="setup_theme_title">Hell oder dunkel?</string>
+    <string name="setup_theme_subtitle">Halo kann sich nach der Sonne an deinem Ort richten oder immer gleich aussehen.</string>
+    <string name="setup_theme_auto">Automatisch</string>
+    <string name="setup_theme_auto_hint">Tagsüber hell, nach Sonnenuntergang dunkel</string>
+    <string name="setup_theme_dark">Dunkel</string>
+    <string name="setup_theme_dark_hint">Immer dunkel – angenehm für die Augen</string>
+    <string name="setup_theme_light">Hell</string>
+    <string name="setup_theme_light_hint">Immer hell und luftig</string>
+    <string name="setup_motion">Bewegungseffekte</string>
+    <string name="setup_motion_hint">Fokus-Animationen und Parallaxe. Ausschalten für eine ruhigere, schnellere Oberfläche.</string>
+
+    <!-- 3 · Profil -->
+    <string name="setup_profile_title">Wer schaut?</string>
+    <string name="setup_profile_subtitle">Dein Name und Bild. Andere können später eigene Profile anlegen – jedes mit eigenen Favoriten.</string>
+    <string name="setup_profile_name_hint">Dein Name</string>
+    <string name="setup_profile_name_tip">OK öffnet die Tastatur</string>
+    <string name="setup_profile_picture">Bild</string>
+    <string name="setup_profile_credit">Avatare: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- 4 · Wetter -->
+    <string name="setup_weather_title">Wetter</string>
+    <string name="setup_weather_subtitle">Halo zeigt das Wetter auf dem Startbildschirm und wechselt das Design bei Sonnenauf- und -untergang.</string>
+    <string name="setup_weather_device">Standort des Fernsehers</string>
+    <string name="setup_weather_device_hint">Fragt nach der Berechtigung – sonst der Standort deiner Internetverbindung</string>
+    <string name="setup_weather_device_on">Standort erlaubt</string>
+    <string name="setup_weather_city">Eine Stadt</string>
+    <string name="setup_weather_city_hint">Immer das Wetter für einen Ort zeigen</string>
+    <string name="setup_weather_city_placeholder">Stadt, z. B. München</string>
+    <string name="setup_weather_denied">Standort nicht erlaubt – Halo nutzt stattdessen den Standort deiner Internetverbindung.</string>
+    <string name="setup_weather_hidden">Das Wetter ist auf dem Startbildschirm ausgeblendet.</string>
+    <string name="setup_weather_now">%1$s · %2$d°</string>
+    <string name="setup_weather_loading">Wetter wird abgerufen …</string>
+    <string name="setup_weather_show">Wetter auf dem Startbildschirm zeigen</string>
+
+    <!-- 5 · Hintergrund -->
+    <string name="setup_background_title">Hintergrund</string>
+    <string name="setup_background_subtitle">Die animierte Halo-Szene oder Fotos, die von selbst wechseln. Bilder werden gespeichert und funktionieren auch offline.</string>
+    <string name="setup_background_interval">Bild wechseln</string>
+    <string name="setup_background_scene_hint">Die Halo-Szene wird live gezeichnet. Wähle eine Fotosammlung, damit die Bilder wechseln.</string>
+    <string name="setup_background_more">Weitere Optionen – ein einzelnes Lieblingsbild, Album-Cover während Musik läuft – findest du unter Einstellungen → Hintergrund.</string>
+    <string name="setup_interval_keep">Eins behalten</string>
+    <string name="setup_interval_minutes">%1$d Min.</string>
+    <string name="setup_interval_hour">1 Std.</string>
+    <string name="setup_interval_daily">Täglich</string>
+
+    <!-- 6 · Favoriten -->
+    <string name="setup_favourites_title">Deine Favoriten</string>
+    <string name="setup_favourites_subtitle">Wähle bis zu %1$d Apps für die obere Reihe. OK fügt eine App hinzu oder entfernt sie; die Zahlen zeigen die Reihenfolge.</string>
+    <string name="setup_favourites_count">%1$d von %2$d gewählt</string>
+    <string name="setup_favourites_full">Die obere Reihe ist voll (%1$d). Entferne zuerst eine App.</string>
+    <string name="setup_favourites_loading">Deine Apps werden geladen …</string>
+
+    <!-- 7 · Assistent -->
+    <string name="setup_assistant_title">Frag Halo</string>
+    <string name="setup_assistant_subtitle">Optional: Sprich mit deinem Fernseher. Halo nutzt Google Gemini mit deinem eigenen kostenlosen API-Schlüssel.</string>
+    <string name="setup_assistant_key_saved">Ein Schlüssel ist gespeichert – der Assistent ist bereit.</string>
+    <string name="setup_assistant_key_missing">Noch kein Schlüssel – der Assistent bleibt aus, bis du einen hinzufügst.</string>
+    <string name="setup_assistant_phone_label">Mit dem Handy</string>
+    <string name="setup_assistant_phone_text">Scanne den Code mit der Handykamera (gleiches WLAN wie der Fernseher) und füge deinen Schlüssel ein.</string>
+    <string name="setup_assistant_starting">Wird gestartet …</string>
+    <string name="setup_assistant_waiting">Warte auf dein Handy …</string>
+    <string name="setup_assistant_checking">Schlüssel angekommen – wird bei Google geprüft …</string>
+    <string name="setup_assistant_rejected">Dieser Schlüssel hat nicht funktioniert. Versuch es auf dem Handy erneut.</string>
+    <string name="setup_assistant_offline">Google war zum Prüfen nicht erreichbar. Ist der Fernseher online?</string>
+    <string name="setup_assistant_received">Schlüssel erhalten ✓</string>
+    <string name="setup_assistant_expired">Dieser Code ist abgelaufen.</string>
+    <string name="setup_assistant_no_network">Der Fernseher ist mit keinem Heimnetz verbunden. Gib den Schlüssel stattdessen hier ein.</string>
+    <string name="setup_assistant_new_code">Neuer Code</string>
+    <string name="setup_assistant_tv_label">Am Fernseher</string>
+    <string name="setup_assistant_tv_hint">API-Schlüssel eingeben oder einfügen</string>
+    <string name="setup_assistant_tv_text">OK öffnet die Tastatur. Halo prüft den Schlüssel bei Google, bevor er gespeichert wird.</string>
+    <string name="setup_assistant_tv_checking">Schlüssel wird bei Google geprüft …</string>
+    <string name="setup_assistant_tv_saved">Schlüssel gespeichert ✓</string>
+    <string name="setup_assistant_tv_invalid">Google hat diesen Schlüssel nicht akzeptiert. Prüfe ihn und versuch es erneut.</string>
+    <string name="setup_assistant_tv_offline">Google war zum Prüfen nicht erreichbar.</string>
+    <string name="setup_assistant_save_anyway">Ohne Prüfung speichern</string>
+    <string name="setup_assistant_get_key">Noch keinen Schlüssel? Kostenlos erstellen (Google-Konto nötig):</string>
+    <string name="setup_assistant_remove">Schlüssel entfernen</string>
+    <string name="setup_voice_label">Stimme</string>
+    <string name="setup_voice_hint">So antwortet Halo. OK spielt eine Probe ab (natürliche Stimmen brauchen den Schlüssel).</string>
+    <string name="setup_voice_system">Stimme des Fernsehers</string>
+
+    <!-- 8 · Startbildschirm -->
+    <string name="setup_home_title">Halo als Startbildschirm</string>
+    <string name="setup_home_subtitle">Optional: Halo öffnet sich jedes Mal, wenn du auf der Fernbedienung Home drückst.</string>
+    <string name="setup_home_is_default">Halo ist dein Startbildschirm ✓</string>
+    <string name="setup_home_a_label">Standard-Start-App</string>
+    <string name="setup_home_a_text">Auf diesem Fernseher kannst du die Start-App wählen. Wähle im nächsten Dialog Halo.</string>
+    <string name="setup_home_a_button">Halo wählen</string>
+    <string name="setup_home_a_refused">Halo wurde nicht gewählt. Nutze stattdessen „Halo als Start behalten“.</string>
+    <string name="setup_home_b_label">Halo als Start behalten</string>
+    <string name="setup_home_b_text">Bei Google TV lässt sich die Start-App nicht ändern. Halo kann sich aber jedes Mal zurückholen, wenn der Fernseher seinen eigenen Startbildschirm öffnet. Dafür muss der Halo-Dienst in den Bedienungshilfen des Fernsehers eingeschaltet sein.</string>
+    <string name="setup_home_b_toggle">Halo bei Home zurückholen</string>
+    <string name="setup_home_test">Probier es aus: Drück Home auf der Fernbedienung.</string>
+    <string name="setup_home_test_ok">Home gedrückt – Halo ist zurück ✓</string>
+    <string name="setup_home_c_show">Für Fortgeschrittene: adb-Befehle</string>
+    <string name="setup_home_c_hide">adb-Befehle ausblenden</string>
+    <string name="setup_home_c_service">Halo-Dienst ohne die Einstellungsseiten einschalten:</string>
+    <string name="setup_home_c_disable">Oder den Startbildschirm von Google TV ganz deaktivieren (fortgeschritten; Halo ist dann die einzige Start-App):</string>
+    <string name="setup_home_c_undo">Rückgängig:</string>
+
+    <!-- Status des Bedienungshilfe-Dienstes (Schritte 8 und 9) -->
+    <string name="setup_service_on">Halo-Dienst ist an ✓</string>
+    <string name="setup_service_off">Halo-Dienst ist aus</string>
+    <string name="setup_service_needed">Schalte den Halo-Dienst ein, damit das funktioniert</string>
+    <string name="setup_service_open">Bedienungshilfen öffnen</string>
+    <string name="setup_service_steps">Wähle in der Liste „Halo“, schalte es ein und bestätige. Mit Zurück kommst du wieder hierher.</string>
+
+    <!-- 9 · Fernbedienung -->
+    <string name="setup_remote_title">Tasten der Fernbedienung</string>
+    <string name="setup_remote_subtitle">Optional: Wähl die Taste, die Halo über jeder App fragt (die Sterntaste), und öffne mit der YouTube-Taste eine andere App (z. B. eine andere YouTube-App). Beides nutzt den Halo-Dienst.</string>
+    <string name="setup_remote_keep">YouTube behalten</string>
+
+    <!-- 10 · Fertig -->
+    <string name="setup_done_title">Alles bereit, %1$s</string>
+    <string name="setup_done_subtitle">Das ist dein Halo. Alles lässt sich später in den Einstellungen ändern (oben rechts auf dem Startbildschirm).</string>
+    <string name="setup_summary_language">Sprache</string>
+    <string name="setup_summary_theme">Design</string>
+    <string name="setup_summary_profile">Profil</string>
+    <string name="setup_summary_weather">Wetter</string>
+    <string name="setup_summary_background">Hintergrund</string>
+    <string name="setup_summary_favourites">Favoriten</string>
+    <string name="setup_summary_favourites_value">%1$d Apps</string>
+    <string name="setup_summary_assistant">Assistent</string>
+    <string name="setup_summary_home">Home-Taste</string>
+    <string name="setup_summary_remote">YouTube-Taste</string>
+    <string name="setup_summary_key_saved">Schlüssel gespeichert ✓</string>
+    <string name="setup_summary_not_set">Nicht eingerichtet</string>
+    <string name="setup_summary_off">Aus</string>
+    <string name="setup_summary_home_default">Öffnet Halo ✓</string>
+    <string name="setup_summary_home_override">Holt Halo zurück ✓</string>
+    <string name="setup_summary_needs_service">Braucht den Halo-Dienst</string>
+    <string name="setup_summary_remote_unchanged">Öffnet YouTube (unverändert)</string>
+    <string name="setup_summary_remote_needs_service">%1$s (braucht den Halo-Dienst)</string>
+
+    <!-- Lokale Webseite auf dem Handy (KeyServer) -->
+    <string name="setup_web_title">Halo · Assistent-Schlüssel</string>
+    <string name="setup_web_heading">Gemini-API-Schlüssel an den Fernseher senden</string>
+    <string name="setup_web_intro">Füge unten deinen Schlüssel ein. Er geht direkt über dein Heimnetz an den Fernseher und wird nur dort gespeichert.</string>
+    <string name="setup_web_label">Gemini-API-Schlüssel</string>
+    <string name="setup_web_send">An den Fernseher senden</string>
+    <string name="setup_web_get_key">Noch keinen Schlüssel? Kostenlos erstellen:</string>
+    <string name="setup_web_footer">Diese Seite funktioniert nur, solange der Assistent-Schritt am Fernseher geöffnet ist.</string>
+    <string name="setup_web_ok_heading">Schlüssel erhalten ✓</string>
+    <string name="setup_web_ok_text">Halo hat deinen Schlüssel bei Google geprüft und auf dem Fernseher gespeichert. Du kannst diese Seite schließen.</string>
+    <string name="setup_web_bad_heading">Das hat nicht geklappt</string>
+    <string name="setup_web_bad_text">Google hat diesen Schlüssel nicht akzeptiert. Prüfe, ob du ihn vollständig kopiert hast, und versuch es erneut.</string>
+    <string name="setup_web_format_text">Das sieht nicht nach einem API-Schlüssel aus. Kopiere den ganzen Schlüssel und versuch es erneut.</string>
+    <string name="setup_web_busy_text">Der Fernseher prüft noch den vorherigen Schlüssel. Warte kurz und versuch es erneut.</string>
+    <string name="setup_web_too_large">Das war zu viel Text. Füge nur den Schlüssel ein.</string>
+    <string name="setup_web_offline_heading">Schlüssel konnte nicht geprüft werden</string>
+    <string name="setup_web_offline_text">Der Fernseher hat Google nicht erreicht. Prüfe seine Internetverbindung und versuch es erneut.</string>
+    <string name="setup_web_expired_heading">Dieser Link ist abgelaufen</string>
+    <string name="setup_web_expired_text">Öffne am Fernseher den Assistent-Schritt und scanne den neuen Code.</string>
+    <string name="setup_web_too_many">Zu viele Versuche. Scanne den neuen Code am Fernseher.</string>
+    <string name="setup_web_used_heading">Schlüssel bereits erhalten</string>
+    <string name="setup_web_used_text">Der Fernseher hat über diesen Code schon einen Schlüssel bekommen. Zum Ändern öffne am Fernseher Einstellungen → Assistent-Schlüssel.</string>
+    <string name="setup_web_try_again">Erneut versuchen</string>
+    <string name="setup_assistant_phone_off">Nicht aktiv. Zeig einen Code an, um vom Handy einen neuen Schlüssel zu senden.</string>
+</resources>

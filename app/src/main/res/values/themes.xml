@@ -1,0 +1,22 @@
+<resources>
+    <style name="Theme.Halo" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/halo_night</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowShowWallpaper">false</item>
+        <item name="android:colorAccent">#5B6CF0</item>
+    </style>
+    <!-- Assistant overlay: drawn over the app that is on screen. -->
+    <style name="Theme.Halo.Overlay" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:colorAccent">#5B6CF0</item>
+    </style>
+    <color name="halo_night">#070A18</color>
+</resources>

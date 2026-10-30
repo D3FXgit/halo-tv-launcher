@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Halos Oberfläche auf Deutsch (du-Form, im Ton der Google-TV-Oberfläche). Englisch: values/strings.xml. -->
+<resources>
+    <string name="app_name">Halo</string>
+    <string name="dream_name">Halo Ambient</string>
+    <string name="lang_code">de</string>
+
+    <!-- Gemeinsam -->
+    <string name="done">Fertig</string>
+    <string name="back">Zurück</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="apps">Apps</string>
+    <string name="favourites">Favoriten</string>
+    <string name="off">Aus</string>
+    <string name="on">An</string>
+    <string name="needs_setup">Einrichtung nötig</string>
+    <string name="halo_settings">Halo-Einstellungen</string>
+    <string name="now_playing">Läuft gerade</string>
+    <string name="now_playing_app">Läuft gerade · %1$s</string>
+    <string name="nothing_playing">Es läuft nichts</string>
+    <string name="toast_cant_open">%1$s lässt sich nicht öffnen</string>
+    <string name="date_long_pattern">EEEE, d. MMMM</string>
+
+    <!-- Profile: Standardnamen -->
+    <string name="profile_default_name">Ich</string>
+    <string name="profile_new_name">Profil %1$d</string>
+
+    <!-- Erste Reihe auf dem Startbildschirm -->
+    <string name="toprow_favourites">Favoriten</string>
+    <string name="toprow_recent">Zuletzt verwendet</string>
+    <string name="toprow_popular">Meistgenutzt</string>
+
+    <!-- Design -->
+    <string name="theme_auto">Automatisch</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="theme_light">Hell</string>
+
+    <!-- Startbildschirm -->
+    <string name="home_play_store">Play Store</string>
+    <string name="home_background">Hintergrund</string>
+    <string name="home_arrange">Anordnen</string>
+    <string name="home_theme">Design: %1$s</string>
+    <string name="home_launcher_settings">Halo-Einstellungen</string>
+    <string name="home_tv_settings">TV-Einstellungen</string>
+    <string name="home_ok_to_switch">OK zum Wechseln</string>
+    <string name="home_search">Suchen oder Halo fragen</string>
+    <string name="greeting_morning">Guten Morgen, %1$s</string>
+    <string name="greeting_afternoon">Guten Tag, %1$s</string>
+    <string name="greeting_evening">Guten Abend, %1$s</string>
+    <string name="media_access_off">Medienzugriff aus</string>
+
+    <!-- Wetter -->
+    <string name="weather_title">Wetter</string>
+    <string name="weather_here">Hier</string>
+    <string name="weather_finding">Standort wird ermittelt…</string>
+    <string name="weather_loading">Vorhersage wird geladen…</string>
+    <string name="weather_summary">%1$s · %2$d° / %3$d°</string>
+    <plurals name="weather_warnings">
+        <item quantity="one">%d Warnung</item>
+        <item quantity="other">%d Warnungen</item>
+    </plurals>
+    <string name="weather_clear">Klar</string>
+    <string name="weather_mostly_clear">Überwiegend klar</string>
+    <string name="weather_partly_cloudy">Teilweise bewölkt</string>
+    <string name="weather_overcast">Bedeckt</string>
+    <string name="weather_fog">Nebel</string>
+    <string name="weather_drizzle">Nieselregen</string>
+    <string name="weather_rain">Regen</string>
+    <string name="weather_snow">Schnee</string>
+    <string name="weather_showers">Schauer</string>
+    <string name="weather_snow_showers">Schneeschauer</string>
+    <string name="weather_thunderstorm">Gewitter</string>
+    <string name="weather_unknown">—</string>
+    <string name="weather_high_low">Max. %1$d°  ·  Min. %2$d°</string>
+    <string name="weather_feels_like">Gefühlt</string>
+    <string name="weather_humidity">Luftfeuchte</string>
+    <string name="weather_wind">Wind</string>
+    <string name="weather_wind_value">%1$d km/h</string>
+    <string name="weather_rain_today">Regen heute</string>
+    <string name="weather_change_location">Standort ändern</string>
+    <string name="weather_more_alerts">+%1$d weitere</string>
+    <string name="weather_next_hours">Nächste Stunden</string>
+    <string name="weather_7_days">7 Tage</string>
+    <string name="weather_today">Heute</string>
+    <string name="percent">%1$d %%</string>
+    <string name="weather_rain_chance">%1$d%% Regen</string>
+    <string name="weather_credit">Wetterdaten: Open-Meteo.com (CC BY 4.0, DWD ICON) · Warnungen: Deutscher Wetterdienst über Bright Sky</string>
+
+    <!-- Startbildschirm anordnen -->
+    <string name="arrange_title">Startbildschirm anordnen</string>
+    <string name="arrange_hint">Wähle eine App aus, um sie aufzunehmen, und verschiebe sie mit den Pfeiltasten.</string>
+    <string name="arrange_hint_held">◀ ▶ verschieben  ·  ▲ ▼ Reihe wechseln  ·  OK oder ZURÜCK zum Ablegen</string>
+    <string name="arrange_count">%1$d von %2$d</string>
+    <string name="arrange_empty_favourites">Verschiebe eine App mit ▲ hierher</string>
+    <string name="arrange_moving">%1$s verschieben</string>
+    <string name="arrange_to_apps">Zu Apps</string>
+    <string name="arrange_favourites_full">Favoriten voll</string>
+    <string name="arrange_to_favourites">Zu Favoriten</string>
+    <string name="arrange_change_icon">Symbol ändern</string>
+    <string name="arrange_hide">Ausblenden</string>
+    <string name="arrange_uninstall">Deinstallieren</string>
+    <string name="arrange_drop">Ablegen</string>
+    <string name="arrange_bar_hint">OK  aufnehmen, verschieben, ausblenden   ·   OK halten  Symbol ändern</string>
+    <plurals name="arrange_restore_hidden">
+        <item quantity="one">%d App einblenden</item>
+        <item quantity="other">%d Apps einblenden</item>
+    </plurals>
+
+    <!-- Symbol anpassen -->
+    <string name="customize_back_hint">ZURÜCK zum Abbrechen</string>
+    <string name="customize_title">Symbol anpassen</string>
+    <string name="customize_subtitle">Lege fest, wie diese App auf deinem Startbildschirm aussieht.</string>
+    <string name="customize_on_home">Auf deinem Startbildschirm</string>
+    <string name="customize_editing">BEARBEITEN</string>
+    <string name="customize_source">Darstellung</string>
+    <string name="customize_source_card">Karte</string>
+    <string name="customize_source_logo">Logo</string>
+    <string name="customize_source_glass">Glas</string>
+    <string name="customize_source_banner">Banner</string>
+    <string name="customize_source_icon">Symbol</string>
+    <string name="customize_source_card_hint">Das Logo der App auf einer glänzenden Karte. Wähle die Farbe und den angezeigten Namen.</string>
+    <string name="customize_source_logo_hint">Wie bei Apple TV: das Logo mittig auf einer farbigen Fläche.</string>
+    <string name="customize_source_glass_hint">Dein eigenes Glassymbol: Wähle Glyphe, Farbe und was es zeigt.</string>
+    <string name="customize_source_banner_hint">Das Banner, das die App für Android TV mitbringt, unverändert.</string>
+    <string name="customize_source_icon_hint">Das normale App-Symbol auf Glas.</string>
+    <string name="customize_artwork">Bild von</string>
+    <string name="customize_artwork_hint">Nutze die Karte, das Banner oder das Symbol einer anderen installierten App (z. B. das von YouTube für SmartTube).</string>
+    <string name="customize_artwork_own">Eigenes</string>
+    <string name="customize_card_colour">Kartenfarbe</string>
+    <string name="customize_box_colour">Flächenfarbe</string>
+    <string name="customize_first_swatch">Erstes Farbfeld = Farbe der App</string>
+    <string name="customize_logo_size">Logogröße</string>
+    <string name="customize_small">Klein</string>
+    <string name="customize_medium">Mittel</string>
+    <string name="customize_large">Groß</string>
+    <string name="customize_glyph">Glyphe</string>
+    <string name="customize_glass_tint">Glasfarbe</string>
+    <string name="customize_layout">Anordnung</string>
+    <string name="customize_layout_both">Glyphe + Name</string>
+    <string name="customize_layout_glyph">Glyphe</string>
+    <string name="customize_layout_name">Name</string>
+    <string name="customize_name_on_card">Name auf der Karte</string>
+    <string name="customize_name_on_icon">Name auf dem Symbol</string>
+    <string name="customize_reset">Zurücksetzen</string>
+    <string name="customize_save">Symbol speichern</string>
+
+    <!-- Profile -->
+    <string name="profiles_title">Wer schaut zu?</string>
+    <string name="profiles_subtitle">Jedes Profil hat eigene Favoriten, eine eigene App-Reihenfolge und eigene Symbole.</string>
+    <string name="profiles_current">Aktiv</string>
+    <string name="profiles_hint">OK wechselt das Profil  ·  OK halten zum Umbenennen, Bild ändern oder Entfernen</string>
+    <string name="profiles_add">Profil hinzufügen</string>
+    <string name="profiles_name">Name</string>
+    <string name="profiles_picture">Bild</string>
+    <string name="profiles_remove">Entfernen</string>
+    <string name="profiles_remove_confirm">Endgültig entfernen?</string>
+    <string name="profiles_colour">Farbe</string>
+    <string name="profiles_avatar_credit">Avatare: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- Hintergrund -->
+    <string name="bg_title">Hintergrund</string>
+    <string name="bg_subtitle">Jedes Profil hat seinen eigenen. Bilder werden zwischengespeichert und funktionieren auch offline.</string>
+    <string name="bg_song_artwork">Albumcover bei Wiedergabe</string>
+    <string name="bg_next">Nächstes Bild</string>
+    <string name="bg_change">Bildwechsel</string>
+    <string name="bg_scene_info">Die Halo-Szene wird live gezeichnet – wähle eine Fotosammlung, um Bilder auszusuchen.</string>
+    <string name="bg_loading">%1$s · Bilder werden geladen…</string>
+    <string name="bg_empty">%1$s · noch keine Bilder – prüfe die Internetverbindung.</string>
+    <plurals name="bg_info">
+        <item quantity="one">%1$s · %2$d Bild · %3$s</item>
+        <item quantity="other">%1$s · %2$d Bilder · %3$s</item>
+    </plurals>
+    <string name="bg_rotate">Wechseln</string>
+    <plurals name="bg_rotate_keep">
+        <item quantity="one">%1$d Bild – es bleibt bis „Nächstes Bild“</item>
+        <item quantity="other">Alle %1$d Bilder gemischt – eins bleibt bis „Nächstes Bild“</item>
+    </plurals>
+    <plurals name="bg_rotate_every">
+        <item quantity="one">%1$d Bild, Wechsel alle %2$s</item>
+        <item quantity="other">Alle %1$d Bilder gemischt, Wechsel alle %2$s</item>
+    </plurals>
+    <plurals name="bg_rotate_daily">
+        <item quantity="one">%1$d Bild, täglicher Wechsel</item>
+        <item quantity="other">Alle %1$d Bilder gemischt, täglicher Wechsel</item>
+    </plurals>
+    <string name="interval_keep">Eins behalten</string>
+    <string name="interval_minutes">%1$d Min.</string>
+    <string name="interval_hour">1 Std.</string>
+    <string name="interval_daily">Täglich</string>
+
+    <!-- Bildersammlungen -->
+    <string name="col_scene_title">Halo-Szene</string>
+    <string name="col_scene_desc">Animierte Berge, die der Tageszeit folgen</string>
+    <string name="col_daily_title">Bild des Tages</string>
+    <string name="col_daily_desc">Das Bild des Tages von Wikimedia Commons – die letzten Wochen</string>
+    <string name="col_landscapes_title">Landschaften</string>
+    <string name="col_landscapes_desc">Berge, Seen und Täler</string>
+    <string name="col_forest_title">Wald &amp; Natur</string>
+    <string name="col_forest_desc">Wälder, Flüsse und wilde Orte</string>
+    <string name="col_aero_title">Aero</string>
+    <string name="col_aero_desc">Heller Himmel, Wolken, klares Wasser und Polarlichter</string>
+    <string name="col_space_title">Weltraum</string>
+    <string name="col_space_desc">Nebel, Galaxien und die Milchstraße – NASA, Hubble, Webb</string>
+    <string name="col_ocean_title">Meer &amp; Küste</string>
+    <string name="col_ocean_desc">Küsten, Strände, Leuchttürme und offenes Meer</string>
+    <string name="col_night_title">Städte &amp; Nacht</string>
+    <string name="col_night_desc">Skylines, Altstädte und Lichter der Stadt</string>
+    <string name="col_photos_title">Fotografie</string>
+    <string name="col_photos_desc">Hunderte Fotos von Unsplash</string>
+
+    <!-- Player -->
+    <string name="player_access_off">Medienzugriff ist aus</string>
+    <string name="player_nothing_hint">Starte Musik oder ein Video in einer beliebigen App und steuere es hier.</string>
+    <string name="player_access_hint">Schalte ihn einmalig mit dem adb-Befehl aus der Einrichtungsanleitung ein.</string>
+    <string name="player_back_home">Zum Startbildschirm</string>
+    <string name="player_open_app">%1$s öffnen</string>
+    <string name="player_back_hint">ZURÜCK zum Verlassen</string>
+
+    <!-- Suche / Halo fragen -->
+    <string name="search_placeholder">Apps suchen oder Halo etwas fragen</string>
+    <string name="search_listening">Ich höre zu…</string>
+    <string name="search_ask">Halo fragen</string>
+    <string name="search_no_apps">Keine passenden Apps</string>
+    <string name="search_settings">Einstellungen</string>
+    <string name="search_no_settings">Keine passenden Einstellungen</string>
+    <string name="search_heard">„%1$s“</string>
+    <string name="search_no_speech">Spracherkennung ist auf diesem Fernseher nicht verfügbar.</string>
+    <string name="search_mic_needed">Halo braucht Zugriff auf das Mikrofon, um zuzuhören.</string>
+    <string name="shortcut_wifi">WLAN &amp; Netzwerk</string>
+    <string name="shortcut_bluetooth">Bluetooth &amp; Fernbedienungen</string>
+    <string name="shortcut_display">Bild &amp; Anzeige</string>
+    <string name="shortcut_sound">Ton</string>
+    <string name="shortcut_apps">Apps</string>
+    <string name="shortcut_date">Datum &amp; Uhrzeit</string>
+    <string name="shortcut_language">Sprache</string>
+    <string name="shortcut_accessibility">Bedienungshilfen</string>
+    <string name="shortcut_storage">Speicher</string>
+    <string name="shortcut_screensaver">Bildschirmschoner</string>
+    <string name="shortcut_about">Info</string>
+    <string name="shortcut_developer">Entwickleroptionen</string>
+    <string name="shortcut_all_settings">Alle Einstellungen</string>
+
+    <!-- Spracherkennung -->
+    <string name="voice_not_caught">Das habe ich nicht verstanden.</string>
+    <string name="voice_no_connection">Keine Verbindung zum Sprachdienst.</string>
+    <string name="voice_no_permission">Die Mikrofonberechtigung fehlt.</string>
+    <string name="voice_no_microphone">Das Mikrofon ist nicht verfügbar.</string>
+    <string name="voice_busy">Die Spracherkennung ist beschäftigt – versuch es noch einmal.</string>
+    <string name="voice_failed">Spracherkennung fehlgeschlagen (%1$d).</string>
+
+    <!-- Stimmen des Assistenten: Charakter jeder Gemini-Stimme (die Namen bleiben unverändert) -->
+    <string name="voice_char_warm">Warm</string>
+    <string name="voice_char_breezy">Locker</string>
+    <string name="voice_char_soft">Sanft</string>
+    <string name="voice_char_smooth">Weich</string>
+    <string name="voice_char_firm">Bestimmt</string>
+    <string name="voice_char_informative">Sachlich</string>
+    <string name="voice_char_upbeat">Fröhlich</string>
+    <string name="voice_char_excitable">Lebhaft</string>
+    <string name="voice_char_youthful">Jugendlich</string>
+    <string name="voice_char_system">TV-Stimme</string>
+    <string name="voice_system_name">System</string>
+    <string name="voice_option">%1$s · %2$s</string>
+    <string name="voice_preview">Hallo, ich bin Halo. So klinge ich, wenn ich dir antworte.</string>
+
+    <!-- Assistent -->
+    <string name="assistant_opening">%1$s wird geöffnet.</string>
+    <string name="assistant_no_key">Füge unter Einstellungen → Assistent-Schlüssel deinen Gemini-API-Schlüssel hinzu, um den Assistenten zu nutzen.</string>
+    <string name="assistant_done">Erledigt.</string>
+    <string name="assistant_no_answer">Darauf habe ich leider keine Antwort.</string>
+    <string name="assistant_incomplete">Ich konnte die Antwort leider nicht fertigstellen.</string>
+    <string name="assistant_error">Da ist etwas schiefgelaufen.</string>
+    <string name="assistant_error_detail">Der Assistent konnte nicht antworten: %1$s</string>
+    <string name="assistant_offline">Keine Verbindung zu Google. Ist der Fernseher online?</string>
+    <string name="assistant_bad_key">Google hat den API-Schlüssel nicht akzeptiert. Prüfe ihn unter Einstellungen → Assistent-Schlüssel.</string>
+    <string name="assistant_quota">Das kostenlose Kontingent des Assistenten ist gerade aufgebraucht. Versuch es später noch einmal.</string>
+    <!-- Was der Assistent getan hat -->
+    <string name="act_app_not_found">App nicht gefunden</string>
+    <string name="act_opened">%1$s geöffnet</string>
+    <string name="act_media_play">Wiedergabe</string>
+    <string name="act_media_pause">Pause</string>
+    <string name="act_media_toggle">Wiedergabe/Pause</string>
+    <string name="act_media_next">Nächster Titel</string>
+    <string name="act_media_previous">Vorheriger Titel</string>
+    <string name="act_theme">Design: %1$s</string>
+    <string name="act_profile_not_found">Profil nicht gefunden</string>
+    <string name="act_profile">Profil: %1$s</string>
+    <string name="act_background">Hintergrund: %1$s</string>
+    <string name="act_scene_no_pictures">Die animierte Szene hat keine Bilder</string>
+    <string name="act_next_background">Nächster Hintergrund</string>
+    <string name="act_unknown_interval">Unbekanntes Intervall</string>
+    <string name="act_weather">Wetter: %1$s</string>
+    <string name="act_pinned">%1$s angeheftet</string>
+    <string name="act_favourites_full">Favoriten sind voll</string>
+    <string name="act_unpinned">%1$s losgelöst</string>
+    <string name="act_first_row">Erste Reihe: %1$s</string>
+    <string name="act_screen_home">Startbildschirm</string>
+    <string name="act_screen_search">Suche</string>
+    <string name="act_unknown">Unbekannte Aktion</string>
+
+    <!-- Einstellungen -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_auto_hint">Wechselt bei Sonnenauf- und -untergang</string>
+    <string name="settings_motion">Bewegungseffekte</string>
+    <string name="settings_motion_hint">Fokusanimationen und Parallaxe</string>
+    <string name="settings_clock24">24-Stunden-Format</string>
+    <string name="settings_sounds">Navigationstöne</string>
+    <string name="settings_sounds_hint">Das Ticken und Klicken des Fernsehers beim Navigieren und Auswählen</string>
+    <string name="settings_home_screen">Startbildschirm</string>
+    <string name="settings_restore_hidden">Ausgeblendete Apps einblenden</string>
+    <plurals name="settings_hidden_count">
+        <item quantity="one">%d ausgeblendet</item>
+        <item quantity="other">%d ausgeblendet</item>
+    </plurals>
+    <string name="settings_show_weather">Wetter anzeigen</string>
+    <string name="settings_weather_location">Wetterstandort</string>
+    <string name="settings_weather_device">Standort des Fernsehers</string>
+    <string name="settings_weather_city">Stadt wählen</string>
+    <string name="settings_city_placeholder">Stadt, z. B. München</string>
+    <string name="settings_voice_section">Stimme des Assistenten</string>
+    <string name="settings_voice">Stimme</string>
+    <string name="settings_voice_hint">Natürliche Gemini-Stimmen · OK spielt eine Hörprobe ab</string>
+    <string name="settings_start_after">Starten nach</string>
+    <string name="settings_screensaver_hint">Zeigt bei Inaktivität die Uhr über der Halo-Szene</string>
+    <string name="settings_screensaver_now">Bildschirmschoner jetzt starten</string>
+    <string name="settings_setup">Einrichtung</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_assistant_key">Assistent-Schlüssel</string>
+    <string name="settings_key_saved">✓ Gespeichert</string>
+    <string name="settings_key_missing">Fehlt</string>
+    <string name="settings_home_button">Home-Taste</string>
+    <string name="settings_home_opens_halo">Öffnet Halo</string>
+    <string name="settings_home_brings_back">✓ Holt Halo zurück</string>
+    <string name="settings_remote_buttons">Fernbedienungstasten</string>
+    <string name="settings_run_setup">Einrichtung erneut starten</string>
+    <string name="settings_more">Mehr</string>
+    <string name="settings_profiles">Profile</string>
+    <string name="settings_media_note">Führe einmalig den adb-Befehl aus der Halo-Einrichtungsanleitung aus.</string>
+    <string name="settings_android_tv">Android TV-Einstellungen</string>
+    <string name="settings_tile_look">App-Kacheln</string>
+    <string name="settings_tile_look_hint">Ändert alle Apps auf einmal. Einzelne Apps lassen sich weiterhin unter „Symbol anpassen“ eigens gestalten.</string>
+    <string name="settings_tile_halo">Halo-Karten</string>
+    <string name="settings_tile_banner">App-Banner</string>
+    <string name="settings_tile_icon">App-Symbole</string>
+    <string name="act_tile_reset">%1$s: Standard-Aussehen</string>
+    <string name="act_tile_changed">%1$s: neues Aussehen</string>
+    <string name="act_uninstall">%1$s deinstallieren?</string>
+    <string name="act_hidden">%1$s ausgeblendet</string>
+    <string name="act_moved">%1$s verschoben</string>
+    <string name="act_volume">Lautstärke</string>
+    <string name="act_setting">Einstellung geändert: %1$s</string>
+    <string name="act_on">An</string>
+    <string name="act_off">Aus</string>
+    <string name="act_profiles_full">Keine weiteren Profile möglich</string>
+    <string name="act_profile_created">Profil erstellt: %1$s</string>
+    <string name="act_profile_changed">Profil geändert: %1$s</string>
+    <string name="act_profile_main">Das Hauptprofil bleibt</string>
+    <string name="act_profile_deleted">Profil gelöscht: %1$s</string>
+    <string name="overlay_listening">Ich höre zu …</string>
+    <string name="overlay_hint">Sprich jetzt oder drück OK, um noch etwas zu fragen</string>
+    <string name="overlay_ask">Noch mal fragen</string>
+    <string name="overlay_open_halo">Halo öffnen</string>
+    <string name="overlay_close">Schließen</string>
+    <string name="overlay_no_key">Füg in Halos Einstellungen deinen Gemini-API-Schlüssel hinzu, um den Assistenten zu nutzen.</string>
+    <string name="settings_assistant_button">Taste für den Halo-Assistenten</string>
+    <string name="settings_assistant_button_hint">Drück die Sterntaste der Fernbedienung, um Halo über jeder App zu fragen. Braucht den Halo-Dienst in den Bedienungshilfen des Fernsehers.</string>
+    <string name="settings_assistant_button_star">Sterntaste</string>
+</resources>

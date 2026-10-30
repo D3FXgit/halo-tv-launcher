@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Halo's interface (English, the default). German: values-de/strings.xml. The setup wizard is in strings_setup.xml. -->
+<resources>
+    <string name="app_name">Halo</string>
+    <string name="dream_name">Halo Ambient</string>
+    <!-- Which resource set is in use ("en" / "de"); read by Lang.effective. "de" in values-de. -->
+    <string name="lang_code">en</string>
+
+    <!-- Shared -->
+    <string name="done">Done</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="apps">Apps</string>
+    <string name="favourites">Favourites</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="needs_setup">Needs setup</string>
+    <string name="halo_settings">Halo settings</string>
+    <string name="now_playing">Now playing</string>
+    <string name="now_playing_app">Now playing · %1$s</string>
+    <string name="nothing_playing">Nothing playing</string>
+    <string name="toast_cant_open">Can\'t open %1$s</string>
+    <!-- Long date on Home and in ambient mode (java.time pattern). -->
+    <string name="date_long_pattern">EEEE d MMMM</string>
+
+    <!-- Profiles: default names -->
+    <string name="profile_default_name">Me</string>
+    <string name="profile_new_name">Profile %1$d</string>
+
+    <!-- First row of Home -->
+    <string name="toprow_favourites">Favourites</string>
+    <string name="toprow_recent">Recently used</string>
+    <string name="toprow_popular">Most used</string>
+
+    <!-- Theme -->
+    <string name="theme_auto">Auto</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+
+    <!-- Home -->
+    <string name="home_play_store">Play Store</string>
+    <string name="home_background">Background</string>
+    <string name="home_arrange">Arrange</string>
+    <string name="home_theme">Theme: %1$s</string>
+    <string name="home_launcher_settings">Launcher settings</string>
+    <string name="home_tv_settings">TV settings</string>
+    <string name="home_ok_to_switch">OK to switch</string>
+    <string name="home_search">Search or ask Halo</string>
+    <string name="greeting_morning">Good morning, %1$s</string>
+    <string name="greeting_afternoon">Good afternoon, %1$s</string>
+    <string name="greeting_evening">Good evening, %1$s</string>
+    <string name="media_access_off">Media access off</string>
+
+    <!-- Weather -->
+    <string name="weather_title">Weather</string>
+    <string name="weather_here">Here</string>
+    <string name="weather_finding">Finding location…</string>
+    <string name="weather_loading">Loading forecast…</string>
+    <string name="weather_summary">%1$s · %2$d° / %3$d°</string>
+    <plurals name="weather_warnings">
+        <item quantity="one">%d warning</item>
+        <item quantity="other">%d warnings</item>
+    </plurals>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_mostly_clear">Mostly clear</string>
+    <string name="weather_partly_cloudy">Partly cloudy</string>
+    <string name="weather_overcast">Overcast</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_showers">Showers</string>
+    <string name="weather_snow_showers">Snow showers</string>
+    <string name="weather_thunderstorm">Thunderstorm</string>
+    <string name="weather_unknown">—</string>
+    <string name="weather_high_low">High %1$d°  ·  Low %2$d°</string>
+    <string name="weather_feels_like">Feels like</string>
+    <string name="weather_humidity">Humidity</string>
+    <string name="weather_wind">Wind</string>
+    <string name="weather_wind_value">%1$d km/h</string>
+    <string name="weather_rain_today">Rain today</string>
+    <string name="weather_change_location">Change location</string>
+    <string name="weather_more_alerts">+%1$d more</string>
+    <string name="weather_next_hours">Next hours</string>
+    <string name="weather_7_days">7 days</string>
+    <string name="weather_today">Today</string>
+    <string name="percent">%1$d%%</string>
+    <string name="weather_rain_chance">%1$d%% rain</string>
+    <string name="weather_credit">Weather data: Open-Meteo.com (CC BY 4.0, DWD ICON) · Warnings: Deutscher Wetterdienst via Bright Sky</string>
+
+    <!-- Arrange Home -->
+    <string name="arrange_title">Arrange Home</string>
+    <string name="arrange_hint">Select an app to pick it up, then move it with the arrows.</string>
+    <string name="arrange_hint_held">◀ ▶ move  ·  ▲ ▼ switch row  ·  OK or BACK to drop</string>
+    <string name="arrange_count">%1$d of %2$d</string>
+    <string name="arrange_empty_favourites">Move an app up here with ▲</string>
+    <string name="arrange_moving">Moving %1$s</string>
+    <string name="arrange_to_apps">Move to Apps</string>
+    <string name="arrange_favourites_full">Favourites full</string>
+    <string name="arrange_to_favourites">Move to Favourites</string>
+    <string name="arrange_change_icon">Change icon</string>
+    <string name="arrange_hide">Hide</string>
+    <string name="arrange_uninstall">Uninstall</string>
+    <string name="arrange_drop">Drop</string>
+    <string name="arrange_bar_hint">OK  pick up, move or hide   ·   Hold OK  change icon</string>
+    <plurals name="arrange_restore_hidden">
+        <item quantity="one">Restore %d hidden</item>
+        <item quantity="other">Restore %d hidden</item>
+    </plurals>
+
+    <!-- Customize icon -->
+    <string name="customize_back_hint">BACK to cancel</string>
+    <string name="customize_title">Customize icon</string>
+    <string name="customize_subtitle">Choose how this app looks on your Home screen.</string>
+    <string name="customize_on_home">On your Home screen</string>
+    <string name="customize_editing">EDITING</string>
+    <string name="customize_source">Source</string>
+    <string name="customize_source_card">Halo card</string>
+    <string name="customize_source_logo">Logo</string>
+    <string name="customize_source_glass">Glass</string>
+    <string name="customize_source_banner">Banner</string>
+    <string name="customize_source_icon">Icon</string>
+    <string name="customize_source_card_hint">The app\'s logo on a glossy card. Pick its colour and the name it shows.</string>
+    <string name="customize_source_logo_hint">Apple TV style: the logo centred on a coloured box.</string>
+    <string name="customize_source_glass_hint">Your own glass icon: pick a glyph, a tint and what it shows.</string>
+    <string name="customize_source_banner_hint">The banner the app ships for Android TV, unchanged.</string>
+    <string name="customize_source_icon_hint">The app\'s regular icon on glass.</string>
+    <string name="customize_artwork">Artwork from</string>
+    <string name="customize_artwork_hint">Use the card, banner or icon of another installed app (e.g. YouTube\'s for SmartTube).</string>
+    <string name="customize_artwork_own">Own</string>
+    <string name="customize_card_colour">Card colour</string>
+    <string name="customize_box_colour">Box colour</string>
+    <string name="customize_first_swatch">First swatch = the app\'s own colour</string>
+    <string name="customize_logo_size">Logo size</string>
+    <string name="customize_small">Small</string>
+    <string name="customize_medium">Medium</string>
+    <string name="customize_large">Large</string>
+    <string name="customize_glyph">Glyph</string>
+    <string name="customize_glass_tint">Glass tint</string>
+    <string name="customize_layout">Layout</string>
+    <string name="customize_layout_both">Glyph + name</string>
+    <string name="customize_layout_glyph">Glyph</string>
+    <string name="customize_layout_name">Name</string>
+    <string name="customize_name_on_card">Name on card</string>
+    <string name="customize_name_on_icon">Name on icon</string>
+    <string name="customize_reset">Reset</string>
+    <string name="customize_save">Save icon</string>
+
+    <!-- Profiles -->
+    <string name="profiles_title">Who\'s watching?</string>
+    <string name="profiles_subtitle">Each profile keeps its own favourites, app order and icons.</string>
+    <string name="profiles_current">Current</string>
+    <string name="profiles_hint">OK switches profile  ·  Hold OK to rename, change picture or remove</string>
+    <string name="profiles_add">Add profile</string>
+    <string name="profiles_name">Name</string>
+    <string name="profiles_picture">Picture</string>
+    <string name="profiles_remove">Remove</string>
+    <string name="profiles_remove_confirm">Remove for good?</string>
+    <string name="profiles_colour">Colour</string>
+    <string name="profiles_avatar_credit">Avatars: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- Background picker -->
+    <string name="bg_title">Background</string>
+    <string name="bg_subtitle">Each profile has its own. Pictures are cached, so they keep working offline.</string>
+    <string name="bg_song_artwork">Song artwork while playing</string>
+    <string name="bg_next">Next picture</string>
+    <string name="bg_change">Change picture</string>
+    <string name="bg_scene_info">The Halo scene is drawn live – choose a photo collection to pick pictures.</string>
+    <string name="bg_loading">%1$s · loading pictures…</string>
+    <string name="bg_empty">%1$s · no pictures yet – check the internet connection.</string>
+    <plurals name="bg_info">
+        <item quantity="one">%1$s · %2$d picture · %3$s</item>
+        <item quantity="other">%1$s · %2$d pictures · %3$s</item>
+    </plurals>
+    <string name="bg_rotate">Rotate</string>
+    <plurals name="bg_rotate_keep">
+        <item quantity="one">%1$d picture – it stays until “Next picture”</item>
+        <item quantity="other">All %1$d pictures, shuffled – one stays until “Next picture”</item>
+    </plurals>
+    <plurals name="bg_rotate_every">
+        <item quantity="one">%1$d picture, changing every %2$s</item>
+        <item quantity="other">All %1$d pictures, shuffled, changing every %2$s</item>
+    </plurals>
+    <plurals name="bg_rotate_daily">
+        <item quantity="one">%1$d picture, changing daily</item>
+        <item quantity="other">All %1$d pictures, shuffled, changing daily</item>
+    </plurals>
+    <string name="interval_keep">Keep one</string>
+    <string name="interval_minutes">%1$d min</string>
+    <string name="interval_hour">1 h</string>
+    <string name="interval_daily">Daily</string>
+
+    <!-- Background collections (ids in wallpaper/Wallpapers.kt) -->
+    <string name="col_scene_title">Halo scene</string>
+    <string name="col_scene_desc">Animated mountains that follow the time of day</string>
+    <string name="col_daily_title">Picture of the day</string>
+    <string name="col_daily_desc">Wikimedia Commons’ picture of the day – the last few weeks</string>
+    <string name="col_landscapes_title">Landscapes</string>
+    <string name="col_landscapes_desc">Mountains, lakes and valleys</string>
+    <string name="col_forest_title">Forests &amp; Nature</string>
+    <string name="col_forest_desc">Woods, rivers and wild places</string>
+    <string name="col_aero_title">Aero</string>
+    <string name="col_aero_desc">Bright skies, clouds, clear water and auroras</string>
+    <string name="col_space_title">Space</string>
+    <string name="col_space_desc">Nebulae, galaxies and the Milky Way – NASA, Hubble, Webb</string>
+    <string name="col_ocean_title">Ocean &amp; Coast</string>
+    <string name="col_ocean_desc">Coastlines, beaches, lighthouses and open sea</string>
+    <string name="col_night_title">Cities &amp; Night</string>
+    <string name="col_night_desc">Skylines, old towns and city lights</string>
+    <string name="col_photos_title">Photography</string>
+    <string name="col_photos_desc">Hundreds of Unsplash photos</string>
+
+    <!-- Player -->
+    <string name="player_access_off">Media access is off</string>
+    <string name="player_nothing_hint">Start music or a video in any app and control it here.</string>
+    <string name="player_access_hint">Enable it once with the adb command from the setup guide.</string>
+    <string name="player_back_home">Back to Home</string>
+    <string name="player_open_app">Open %1$s</string>
+    <string name="player_back_hint">BACK to return</string>
+
+    <!-- Search / Ask Halo -->
+    <string name="search_placeholder">Search apps, or ask Halo anything</string>
+    <string name="search_listening">Listening…</string>
+    <string name="search_ask">Ask Halo</string>
+    <string name="search_no_apps">No apps match</string>
+    <string name="search_settings">Settings</string>
+    <string name="search_no_settings">No settings match</string>
+    <string name="search_heard">“%1$s”</string>
+    <string name="search_no_speech">Speech recognition isn’t available on this TV.</string>
+    <string name="search_mic_needed">Halo needs microphone access to listen.</string>
+    <string name="shortcut_wifi">Wi-Fi &amp; network</string>
+    <string name="shortcut_bluetooth">Bluetooth &amp; remotes</string>
+    <string name="shortcut_display">Display</string>
+    <string name="shortcut_sound">Sound</string>
+    <string name="shortcut_apps">Apps</string>
+    <string name="shortcut_date">Date &amp; time</string>
+    <string name="shortcut_language">Language</string>
+    <string name="shortcut_accessibility">Accessibility</string>
+    <string name="shortcut_storage">Storage</string>
+    <string name="shortcut_screensaver">Screensaver</string>
+    <string name="shortcut_about">About</string>
+    <string name="shortcut_developer">Developer options</string>
+    <string name="shortcut_all_settings">All settings</string>
+
+    <!-- Speech recognition -->
+    <string name="voice_not_caught">I didn’t catch that.</string>
+    <string name="voice_no_connection">No connection to the speech service.</string>
+    <string name="voice_no_permission">Microphone permission is missing.</string>
+    <string name="voice_no_microphone">The microphone isn’t available.</string>
+    <string name="voice_busy">Speech recognition is busy – try again.</string>
+    <string name="voice_failed">Speech recognition failed (%1$d).</string>
+
+    <!-- Assistant voices: character of each Gemini voice (the voice names themselves stay as they are) -->
+    <string name="voice_char_warm">Warm</string>
+    <string name="voice_char_breezy">Breezy</string>
+    <string name="voice_char_soft">Soft</string>
+    <string name="voice_char_smooth">Smooth</string>
+    <string name="voice_char_firm">Firm</string>
+    <string name="voice_char_informative">Informative</string>
+    <string name="voice_char_upbeat">Upbeat</string>
+    <string name="voice_char_excitable">Excitable</string>
+    <string name="voice_char_youthful">Youthful</string>
+    <string name="voice_char_system">TV\'s own voice</string>
+    <string name="voice_system_name">System</string>
+    <string name="voice_option">%1$s · %2$s</string>
+    <string name="voice_preview">Hi, I\'m Halo. This is how I\'ll sound when I answer you.</string>
+
+    <!-- Assistant -->
+    <string name="assistant_opening">Opening %1$s.</string>
+    <string name="assistant_no_key">Add your Gemini API key in Settings → Assistant key to use the assistant.</string>
+    <string name="assistant_done">Done.</string>
+    <string name="assistant_no_answer">Sorry, I have no answer to that.</string>
+    <string name="assistant_incomplete">Sorry, I couldn’t finish that answer.</string>
+    <string name="assistant_error">Something went wrong.</string>
+    <string name="assistant_error_detail">The assistant couldn’t answer: %1$s</string>
+    <string name="assistant_offline">No connection to Google. Is the TV online?</string>
+    <string name="assistant_bad_key">Google didn’t accept the API key. Check it in Settings → Assistant key.</string>
+    <string name="assistant_quota">The assistant\'s free quota is used up for now. Try again later.</string>
+    <!-- What the assistant did ("done" chips) -->
+    <string name="act_app_not_found">App not found</string>
+    <string name="act_opened">Opened %1$s</string>
+    <string name="act_media_play">Play</string>
+    <string name="act_media_pause">Pause</string>
+    <string name="act_media_toggle">Play/pause</string>
+    <string name="act_media_next">Next track</string>
+    <string name="act_media_previous">Previous track</string>
+    <string name="act_theme">Theme: %1$s</string>
+    <string name="act_profile_not_found">Profile not found</string>
+    <string name="act_profile">Profile: %1$s</string>
+    <string name="act_background">Background: %1$s</string>
+    <string name="act_scene_no_pictures">The animated scene has no pictures</string>
+    <string name="act_next_background">Next background</string>
+    <string name="act_unknown_interval">Unknown interval</string>
+    <string name="act_weather">Weather: %1$s</string>
+    <string name="act_pinned">Pinned %1$s</string>
+    <string name="act_favourites_full">Favourites are full</string>
+    <string name="act_unpinned">Unpinned %1$s</string>
+    <string name="act_first_row">First row: %1$s</string>
+    <string name="act_screen_home">Home</string>
+    <string name="act_screen_search">Search</string>
+    <string name="act_unknown">Unknown action</string>
+
+    <!-- Settings panel -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_auto_hint">Switches at sunrise and sunset</string>
+    <string name="settings_motion">Motion effects</string>
+    <string name="settings_motion_hint">Focus animations and parallax</string>
+    <string name="settings_clock24">24-hour clock</string>
+    <string name="settings_sounds">Navigation sounds</string>
+    <string name="settings_sounds_hint">The TV\'s tick and click when you move and select</string>
+    <string name="settings_home_screen">Home screen</string>
+    <string name="settings_restore_hidden">Restore hidden apps</string>
+    <plurals name="settings_hidden_count">
+        <item quantity="one">%d hidden</item>
+        <item quantity="other">%d hidden</item>
+    </plurals>
+    <string name="settings_show_weather">Show weather</string>
+    <string name="settings_weather_location">Weather location</string>
+    <string name="settings_weather_device">This TV’s location</string>
+    <string name="settings_weather_city">Choose a city</string>
+    <string name="settings_city_placeholder">City, e.g. Munich</string>
+    <string name="settings_voice_section">Assistant voice</string>
+    <string name="settings_voice">Voice</string>
+    <string name="settings_voice_hint">Natural Gemini voices · OK plays a sample</string>
+    <string name="settings_start_after">Start after</string>
+    <string name="settings_screensaver_hint">Shows the clock over the Halo scene when idle</string>
+    <string name="settings_screensaver_now">Start screensaver now</string>
+    <string name="settings_setup">Setup</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_assistant_key">Assistant key</string>
+    <string name="settings_key_saved">✓ Saved</string>
+    <string name="settings_key_missing">Missing</string>
+    <string name="settings_home_button">Home button</string>
+    <string name="settings_home_opens_halo">Opens Halo</string>
+    <string name="settings_home_brings_back">✓ Brings Halo back</string>
+    <string name="settings_remote_buttons">Remote buttons</string>
+    <string name="settings_run_setup">Run setup again</string>
+    <string name="settings_more">More</string>
+    <string name="settings_profiles">Profiles</string>
+    <string name="settings_media_note">Run the one-time adb command from the Halo setup guide.</string>
+    <string name="settings_android_tv">Android TV settings</string>
+    <string name="settings_tile_look">App tiles</string>
+    <string name="settings_tile_look_hint">Changes every app at once. Single apps can still be styled on their own under “Customize icon”.</string>
+    <string name="settings_tile_halo">Halo cards</string>
+    <string name="settings_tile_banner">App banners</string>
+    <string name="settings_tile_icon">App icons</string>
+    <string name="act_tile_reset">%1$s: default look</string>
+    <string name="act_tile_changed">%1$s: new look</string>
+    <string name="act_uninstall">Uninstall %1$s?</string>
+    <string name="act_hidden">Hid %1$s</string>
+    <string name="act_moved">Moved %1$s</string>
+    <string name="act_volume">Volume</string>
+    <string name="act_setting">Setting changed: %1$s</string>
+    <string name="act_on">On</string>
+    <string name="act_off">Off</string>
+    <string name="act_profiles_full">No more profiles possible</string>
+    <string name="act_profile_created">Profile created: %1$s</string>
+    <string name="act_profile_changed">Profile updated: %1$s</string>
+    <string name="act_profile_main">The main profile stays</string>
+    <string name="act_profile_deleted">Profile deleted: %1$s</string>
+    <string name="overlay_listening">Listening …</string>
+    <string name="overlay_hint">Speak now, or press OK to ask again</string>
+    <string name="overlay_ask">Ask again</string>
+    <string name="overlay_open_halo">Open Halo</string>
+    <string name="overlay_close">Close</string>
+    <string name="overlay_no_key">Add your Gemini API key in Halo\'s settings to use the assistant.</string>
+    <string name="settings_assistant_button">Button for Halo assistant</string>
+    <string name="settings_assistant_button_hint">Press the remote\'s star button to ask Halo over any app. Needs the Halo service in the TV\'s accessibility settings.</string>
+    <string name="settings_assistant_button_star">Star button</string>
+</resources>

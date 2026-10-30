@@ -1,0 +1,44 @@
+# --- Gradle / Android build output ---
+.gradle/
+build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# --- Local configuration (machine-specific, may contain paths or secrets) ---
+local.properties
+keystore.properties
+*.keystore
+*.jks
+*.p12
+google-services.json
+
+# --- IDEs ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.fleet/
+.kotlin/
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+
+# --- Output of the tv.gradle.kts helper tasks (contain details of your own device) ---
+tv-*.txt
+!tv-debloat.example.txt
+tv-tour/
+tv-wizard/
+tv-screen.png

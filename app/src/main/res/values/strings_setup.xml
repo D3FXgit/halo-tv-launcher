@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Setup wizard, its standalone steps, the local key web page and the accessibility service. -->
+<resources>
+    <!-- Accessibility service (shown in the TV's Accessibility settings) -->
+    <string name="setup_a11y_service_label">Halo</string>
+    <string name="setup_a11y_service_description">Lets Halo stay your home screen (it brings Halo back when the TV opens its own home screen), opens the Halo assistant with the button you chose in Halo (the star button) and, if you choose an app in Halo, opens that app when you press the YouTube button. It does nothing else and reads no screen content.</string>
+
+    <!-- Wizard frame -->
+    <string name="setup_brand">HALO SETUP</string>
+    <string name="setup_brand_settings">HALO SETTINGS</string>
+    <string name="setup_step_of">Step %1$d of %2$d</string>
+    <string name="setup_back">Back</string>
+    <string name="setup_close">Close</string>
+    <string name="setup_continue">Continue</string>
+    <string name="setup_skip">Skip</string>
+    <string name="setup_skip_all">Set up later</string>
+    <string name="setup_done">Done</string>
+    <string name="setup_start">Start using Halo</string>
+
+    <!-- 1 · Welcome + language -->
+    <string name="setup_welcome_title">Welcome to Halo</string>
+    <string name="setup_welcome_subtitle">Let’s make this TV yours in a few quick steps. You can change everything later in Halo’s settings.</string>
+    <string name="setup_welcome_hint">Press ▲ to choose, OK to select. Continue is always the button at the bottom right.</string>
+    <string name="setup_language_label">Language</string>
+    <string name="setup_language_system">Same as the TV</string>
+    <string name="setup_language_en" translatable="false">English</string>
+    <string name="setup_language_de" translatable="false">Deutsch</string>
+
+    <!-- 2 · Theme -->
+    <string name="setup_theme_title">Light or dark?</string>
+    <string name="setup_theme_subtitle">Halo can follow the sun where you live, or always look the same.</string>
+    <string name="setup_theme_auto">Auto</string>
+    <string name="setup_theme_auto_hint">Light by day, dark after sunset</string>
+    <string name="setup_theme_dark">Dark</string>
+    <string name="setup_theme_dark_hint">Always dark – easy on the eyes</string>
+    <string name="setup_theme_light">Light</string>
+    <string name="setup_theme_light_hint">Always light and airy</string>
+    <string name="setup_motion">Motion effects</string>
+    <string name="setup_motion_hint">Focus animations and parallax. Switch off for a calmer, faster interface.</string>
+
+    <!-- 3 · Profile -->
+    <string name="setup_profile_title">Who’s watching?</string>
+    <string name="setup_profile_subtitle">Your name and picture. Others can add their own profiles later, each with their own favourites.</string>
+    <string name="setup_profile_name_hint">Your name</string>
+    <string name="setup_profile_name_tip">OK opens the keyboard</string>
+    <string name="setup_profile_picture">Picture</string>
+    <string name="setup_profile_credit">Avatars: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- 4 · Weather -->
+    <string name="setup_weather_title">Weather</string>
+    <string name="setup_weather_subtitle">Halo shows the weather on Home and switches the theme at sunrise and sunset.</string>
+    <string name="setup_weather_device">This TV’s location</string>
+    <string name="setup_weather_device_hint">Asks for permission – otherwise uses your internet connection’s location</string>
+    <string name="setup_weather_device_on">Location allowed</string>
+    <string name="setup_weather_city">A city</string>
+    <string name="setup_weather_city_hint">Always show the weather for one place</string>
+    <string name="setup_weather_city_placeholder">City, e.g. Munich</string>
+    <string name="setup_weather_denied">Location not allowed – Halo uses your internet connection’s location instead.</string>
+    <string name="setup_weather_hidden">Weather is hidden on Home.</string>
+    <string name="setup_weather_now">%1$s · %2$d°</string>
+    <string name="setup_weather_loading">Looking up the weather…</string>
+    <string name="setup_weather_show">Show weather on Home</string>
+
+    <!-- 5 · Background -->
+    <string name="setup_background_title">Background</string>
+    <string name="setup_background_subtitle">The animated Halo scene, or photos that change by themselves. Pictures are cached and keep working offline.</string>
+    <string name="setup_background_interval">Change picture</string>
+    <string name="setup_background_scene_hint">The Halo scene is drawn live. Choose a photo collection to have pictures change.</string>
+    <string name="setup_background_more">More options – a single favourite picture, song artwork while music plays – are in Settings → Background.</string>
+    <string name="setup_interval_keep">Keep one</string>
+    <string name="setup_interval_minutes">%1$d min</string>
+    <string name="setup_interval_hour">1 h</string>
+    <string name="setup_interval_daily">Daily</string>
+
+    <!-- 6 · Favourites -->
+    <string name="setup_favourites_title">Your favourites</string>
+    <string name="setup_favourites_subtitle">Pick up to %1$d apps for the top row of Home. OK adds or removes an app; the numbers show the order.</string>
+    <string name="setup_favourites_count">%1$d of %2$d chosen</string>
+    <string name="setup_favourites_full">The top row is full (%1$d). Remove one first.</string>
+    <string name="setup_favourites_loading">Loading your apps…</string>
+
+    <!-- 7 · Assistant -->
+    <string name="setup_assistant_title">Ask Halo</string>
+    <string name="setup_assistant_subtitle">Optional: talk to your TV. Halo uses Google Gemini with your own free API key.</string>
+    <string name="setup_assistant_key_saved">A key is saved – the assistant is ready.</string>
+    <string name="setup_assistant_key_missing">No key yet – the assistant stays off until you add one.</string>
+    <string name="setup_assistant_phone_label">With your phone</string>
+    <string name="setup_assistant_phone_text">Scan the code with your phone’s camera (same Wi-Fi as the TV) and paste your key.</string>
+    <string name="setup_assistant_starting">Starting…</string>
+    <string name="setup_assistant_waiting">Waiting for your phone…</string>
+    <string name="setup_assistant_checking">Key arrived – checking it with Google…</string>
+    <string name="setup_assistant_rejected">That key didn’t work. Try again on your phone.</string>
+    <string name="setup_assistant_offline">Couldn’t reach Google to check the key. Is the TV online?</string>
+    <string name="setup_assistant_received">Key received ✓</string>
+    <string name="setup_assistant_expired">This code has expired.</string>
+    <string name="setup_assistant_no_network">The TV isn’t connected to a home network. Type the key instead.</string>
+    <string name="setup_assistant_new_code">New code</string>
+    <string name="setup_assistant_tv_label">On the TV</string>
+    <string name="setup_assistant_tv_hint">Type or paste your API key</string>
+    <string name="setup_assistant_tv_text">OK opens the keyboard. Halo checks the key with Google before saving it.</string>
+    <string name="setup_assistant_tv_checking">Checking the key with Google…</string>
+    <string name="setup_assistant_tv_saved">Key saved ✓</string>
+    <string name="setup_assistant_tv_invalid">Google didn’t accept this key. Check it and try again.</string>
+    <string name="setup_assistant_tv_offline">Couldn’t reach Google to check the key.</string>
+    <string name="setup_assistant_save_anyway">Save without checking</string>
+    <string name="setup_assistant_get_key">No key yet? Create one for free (Google account needed):</string>
+    <string name="setup_assistant_remove">Remove key</string>
+    <string name="setup_voice_label">Voice</string>
+    <string name="setup_voice_hint">How Halo answers. OK plays a sample (natural voices need the key).</string>
+    <string name="setup_voice_system">The TV’s voice</string>
+
+    <!-- 8 · Home screen -->
+    <string name="setup_home_title">Make Halo your home screen</string>
+    <string name="setup_home_subtitle">Optional: open Halo every time you press Home on the remote.</string>
+    <string name="setup_home_is_default">Halo is your home screen ✓</string>
+    <string name="setup_home_a_label">Default home app</string>
+    <string name="setup_home_a_text">This TV lets you choose the home app. Pick Halo in the next dialog.</string>
+    <string name="setup_home_a_button">Choose Halo</string>
+    <string name="setup_home_a_refused">Halo wasn’t chosen. Use “Keep Halo as home” instead.</string>
+    <string name="setup_home_b_label">Keep Halo as home</string>
+    <string name="setup_home_b_text">Google TV doesn’t let you change the home app. Halo can bring itself back whenever the TV opens its own home screen. This needs the Halo service in the TV’s accessibility settings.</string>
+    <string name="setup_home_b_toggle">Bring Halo back when Home is pressed</string>
+    <string name="setup_home_test">Test it: press Home on your remote.</string>
+    <string name="setup_home_test_ok">Home pressed – Halo came back ✓</string>
+    <string name="setup_home_c_show">Advanced: adb commands</string>
+    <string name="setup_home_c_hide">Hide adb commands</string>
+    <string name="setup_home_c_service">Switch on the Halo service without the settings screens:</string>
+    <string name="setup_home_c_disable">Or disable Google TV’s home screen completely (advanced; Halo then becomes the only home app):</string>
+    <string name="setup_home_c_undo">Undo:</string>
+
+    <!-- Accessibility service status (steps 8 and 9) -->
+    <string name="setup_service_on">Halo service is on ✓</string>
+    <string name="setup_service_off">Halo service is off</string>
+    <string name="setup_service_needed">Switch on the Halo service to make this work</string>
+    <string name="setup_service_open">Open accessibility settings</string>
+    <string name="setup_service_steps">In the list, select “Halo”, switch it on and confirm. Then press Back to return here.</string>
+
+    <!-- 9 · Remote button -->
+    <string name="setup_remote_title">Remote buttons</string>
+    <string name="setup_remote_subtitle">Optional: choose the button that asks Halo over any app (the star button), and open another app (such as a different YouTube app) with the YouTube button. Both use the Halo service.</string>
+    <string name="setup_remote_keep">Keep YouTube</string>
+
+    <!-- 10 · Done -->
+    <string name="setup_done_title">You’re all set, %1$s</string>
+    <string name="setup_done_subtitle">Here’s your Halo. Everything can be changed later in Settings (top right on Home).</string>
+    <string name="setup_summary_language">Language</string>
+    <string name="setup_summary_theme">Theme</string>
+    <string name="setup_summary_profile">Profile</string>
+    <string name="setup_summary_weather">Weather</string>
+    <string name="setup_summary_background">Background</string>
+    <string name="setup_summary_favourites">Favourites</string>
+    <string name="setup_summary_favourites_value">%1$d apps</string>
+    <string name="setup_summary_assistant">Assistant</string>
+    <string name="setup_summary_home">Home button</string>
+    <string name="setup_summary_remote">YouTube button</string>
+    <string name="setup_summary_key_saved">Key saved ✓</string>
+    <string name="setup_summary_not_set">Not set up</string>
+    <string name="setup_summary_off">Off</string>
+    <string name="setup_summary_home_default">Opens Halo ✓</string>
+    <string name="setup_summary_home_override">Brings Halo back ✓</string>
+    <string name="setup_summary_needs_service">Needs the Halo service</string>
+    <string name="setup_summary_remote_unchanged">Opens YouTube (unchanged)</string>
+    <string name="setup_summary_remote_needs_service">%1$s (needs the Halo service)</string>
+
+    <!-- Local web page on the phone (KeyServer) -->
+    <string name="setup_web_title">Halo · Assistant key</string>
+    <string name="setup_web_heading">Send your Gemini API key to your TV</string>
+    <string name="setup_web_intro">Paste your key below. It goes straight to your TV over your home network and is stored only on the TV.</string>
+    <string name="setup_web_label">Gemini API key</string>
+    <string name="setup_web_send">Send to TV</string>
+    <string name="setup_web_get_key">No key yet? Create one for free:</string>
+    <string name="setup_web_footer">This page only works while the Assistant step is open on the TV.</string>
+    <string name="setup_web_ok_heading">Key received ✓</string>
+    <string name="setup_web_ok_text">Halo checked your key with Google and saved it on the TV. You can close this page.</string>
+    <string name="setup_web_bad_heading">That didn’t work</string>
+    <string name="setup_web_bad_text">Google didn’t accept this key. Make sure you copied all of it, then try again.</string>
+    <string name="setup_web_format_text">This doesn’t look like an API key. Copy the whole key and try again.</string>
+    <string name="setup_web_busy_text">The TV is still checking the previous key. Wait a moment and try again.</string>
+    <string name="setup_web_too_large">That was too much text. Paste only the key.</string>
+    <string name="setup_web_offline_heading">Couldn’t check the key</string>
+    <string name="setup_web_offline_text">The TV couldn’t reach Google. Check the TV’s internet connection, then try again.</string>
+    <string name="setup_web_expired_heading">This link has expired</string>
+    <string name="setup_web_expired_text">Open the Assistant step on the TV and scan the new code.</string>
+    <string name="setup_web_too_many">Too many attempts. Scan the new code on the TV.</string>
+    <string name="setup_web_used_heading">Key already received</string>
+    <string name="setup_web_used_text">The TV already got a key from this code. To change it, open Settings → Assistant key on the TV.</string>
+    <string name="setup_web_try_again">Try again</string>
+    <string name="setup_assistant_phone_off">Not active. Show a code to send a new key from your phone.</string>
+</resources>
