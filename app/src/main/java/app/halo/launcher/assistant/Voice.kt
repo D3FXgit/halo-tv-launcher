@@ -165,7 +165,7 @@ class Speaker(
         if (systemLang == lang) return
         runCatching {
             val locale = Lang.locale(appContext).takeIf { it.language == lang }
-                ?: if (lang == "de") Locale.GERMANY else Locale.US
+                ?: Lang.localeFor(lang, null)
             tts.setLanguage(locale)
             val best = tts.voices.orEmpty()
                 .filter { it.locale.language == lang && !it.features.orEmpty().contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) }
@@ -242,8 +242,11 @@ class Speaker(
      * announcer-like (model-facing, so it stays in code rather than in string resources).
      */
     private fun styled(text: String, lang: String): String =
-        if (lang == "de") "Sprich warm, entspannt und natürlich: $text"
-        else "Say in a warm, relaxed, natural tone: $text"
+        when (lang) {
+            "de" -> "Sprich warm, entspannt und natürlich: $text"
+            "tr" -> "Sıcak, rahat ve doğal bir tonla söyle: $text"
+            else -> "Say in a warm, relaxed, natural tone: $text"
+        }
 
     /** Set once a TTS model rejected speechConfig.languageCode; later requests leave it out. */
     @Volatile private var languageCodeUnsupported = false
@@ -254,7 +257,7 @@ class Speaker(
      * with the wrong accent.
      */
     private fun synthesize(text: String, voiceName: String, lang: String): ByteArray? {
-        val languageCode = if (lang == "de") "de-DE" else "en-US"
+        val languageCode = Lang.speechTagFor(lang)
         fun body(withLanguage: Boolean): String = kotlinx.serialization.json.buildJsonObject {
             put("contents", kotlinx.serialization.json.buildJsonArray {
                 add(kotlinx.serialization.json.buildJsonObject {

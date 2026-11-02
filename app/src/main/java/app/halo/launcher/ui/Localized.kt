@@ -41,6 +41,8 @@ fun pluralResource(@PluralsRes id: Int, count: Int, vararg args: Any): String {
 @StringRes
 fun collectionTitleRes(id: String): Int = when (id) {
     "scene" -> R.string.col_scene_title
+    "mine" -> R.string.col_mine_title
+    "favs" -> R.string.col_favs_title
     "daily" -> R.string.col_daily_title
     "landscapes" -> R.string.col_landscapes_title
     "forest" -> R.string.col_forest_title
@@ -55,6 +57,8 @@ fun collectionTitleRes(id: String): Int = when (id) {
 @StringRes
 fun collectionDescriptionRes(id: String): Int = when (id) {
     "scene" -> R.string.col_scene_desc
+    "mine" -> R.string.col_mine_desc
+    "favs" -> R.string.col_favs_desc
     "daily" -> R.string.col_daily_desc
     "landscapes" -> R.string.col_landscapes_desc
     "forest" -> R.string.col_forest_desc

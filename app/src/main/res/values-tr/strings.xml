@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Halo's interface (Turkish). English default: values/strings.xml. The setup wizard is in strings_setup.xml. -->
+<resources>
+    <string name="app_name">Halo</string>
+    <string name="dream_name">Halo Ambient</string>
+    <!-- Which resource set is in use; read by Lang.effective. "tr" in values-tr. -->
+    <string name="lang_code">tr</string>
+
+    <!-- Shared -->
+    <string name="done">Bitti</string>
+    <string name="back">Geri</string>
+    <string name="cancel">İptal</string>
+    <string name="apps">Uygulamalar</string>
+    <string name="favourites">Favoriler</string>
+    <string name="off">Kapalı</string>
+    <string name="on">Açık</string>
+    <string name="needs_setup">Kurulum gerekli</string>
+    <string name="halo_settings">Halo ayarları</string>
+    <string name="now_playing">Şimdi oynatılıyor</string>
+    <string name="now_playing_app">Şimdi oynatılıyor · %1$s</string>
+    <string name="nothing_playing">Hiçbir şey oynatılmıyor</string>
+    <string name="toast_cant_open">%1$s açılamıyor</string>
+    <!-- Long date on Home and in ambient mode (java.time pattern). -->
+    <string name="date_long_pattern">d MMMM EEEE</string>
+
+    <!-- Profiles: default names -->
+    <string name="profile_default_name">Ben</string>
+    <string name="profile_new_name">Profil %1$d</string>
+
+    <!-- First row of Home -->
+    <string name="toprow_favourites">Favoriler</string>
+    <string name="toprow_recent">Son kullanılanlar</string>
+    <string name="toprow_popular">En çok kullanılanlar</string>
+
+    <!-- Theme -->
+    <string name="theme_auto">Otomatik</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="theme_light">Açık</string>
+
+    <!-- Home -->
+    <string name="home_play_store">Play Store</string>
+    <string name="home_background">Arka plan</string>
+    <string name="home_arrange">Düzenle</string>
+    <string name="home_theme">Tema: %1$s</string>
+    <string name="home_launcher_settings">Başlatıcı ayarları</string>
+    <string name="home_tv_settings">TV ayarları</string>
+    <string name="home_ok_to_switch">Değiştirmek için OK</string>
+    <string name="home_search">Ara veya Halo\'ya sor</string>
+    <string name="greeting_morning">Günaydın, %1$s</string>
+    <string name="greeting_afternoon">İyi günler, %1$s</string>
+    <string name="greeting_evening">İyi akşamlar, %1$s</string>
+    <string name="media_access_off">Medya erişimi kapalı</string>
+
+    <!-- Weather -->
+    <string name="weather_title">Hava durumu</string>
+    <string name="weather_here">Burası</string>
+    <string name="weather_finding">Konum bulunuyor…</string>
+    <string name="weather_loading">Tahmin yükleniyor…</string>
+    <string name="weather_summary">%1$s · %2$d° / %3$d°</string>
+    <plurals name="weather_warnings">
+        <item quantity="one">%d uyarı</item>
+        <item quantity="other">%d uyarı</item>
+    </plurals>
+    <string name="weather_clear">Açık</string>
+    <string name="weather_mostly_clear">Çoğunlukla açık</string>
+    <string name="weather_partly_cloudy">Parçalı bulutlu</string>
+    <string name="weather_overcast">Kapalı</string>
+    <string name="weather_fog">Sis</string>
+    <string name="weather_drizzle">Çisenti</string>
+    <string name="weather_rain">Yağmur</string>
+    <string name="weather_snow">Kar</string>
+    <string name="weather_showers">Sağanak</string>
+    <string name="weather_snow_showers">Kar sağanağı</string>
+    <string name="weather_thunderstorm">Gök gürültülü fırtına</string>
+    <string name="weather_unknown">—</string>
+    <string name="weather_high_low">En yüksek %1$d°  ·  En düşük %2$d°</string>
+    <string name="weather_feels_like">Hissedilen</string>
+    <string name="weather_humidity">Nem</string>
+    <string name="weather_wind">Rüzgar</string>
+    <string name="weather_wind_value">%1$d km/sa</string>
+    <string name="weather_rain_today">Bugün yağış</string>
+    <string name="weather_change_location">Konumu değiştir</string>
+    <string name="weather_more_alerts">+%1$d tane daha</string>
+    <string name="weather_next_hours">Sonraki saatler</string>
+    <string name="weather_7_days">7 gün</string>
+    <string name="weather_today">Bugün</string>
+    <string name="percent">%%%1$d</string>
+    <string name="weather_rain_chance">%%%1$d yağış</string>
+    <string name="weather_credit">Hava durumu verileri: Open-Meteo.com (CC BY 4.0, DWD ICON) · Uyarılar: Bright Sky üzerinden Deutscher Wetterdienst</string>
+
+    <!-- Arrange Home -->
+    <string name="arrange_title">Ana ekranı düzenle</string>
+    <string name="arrange_hint">Bir uygulamayı almak için seç, sonra oklarla taşı.</string>
+    <string name="arrange_hint_held">◀ ▶ taşı  ·  ▲ ▼ satır değiştir  ·  bırakmak için OK veya GERİ</string>
+    <string name="arrange_count">%1$d / %2$d</string>
+    <string name="arrange_empty_favourites">Bir uygulamayı ▲ ile buraya taşı</string>
+    <string name="arrange_moving">%1$s taşınıyor</string>
+    <string name="arrange_to_apps">Uygulamalar\'a taşı</string>
+    <string name="arrange_favourites_full">Favoriler dolu</string>
+    <string name="arrange_to_favourites">Favoriler\'e taşı</string>
+    <string name="arrange_change_icon">Simgeyi değiştir</string>
+    <string name="arrange_hide">Gizle</string>
+    <string name="arrange_uninstall">Kaldır</string>
+    <string name="arrange_drop">Bırak</string>
+    <string name="arrange_bar_hint">OK  al, taşı veya gizle   ·   OK\'yi basılı tut  simgeyi değiştir</string>
+    <plurals name="arrange_restore_hidden">
+        <item quantity="one">%d gizli uygulamayı geri getir</item>
+        <item quantity="other">%d gizli uygulamayı geri getir</item>
+    </plurals>
+
+    <!-- Customize icon -->
+    <string name="customize_back_hint">İptal için GERİ</string>
+    <string name="customize_title">Simgeyi özelleştir</string>
+    <string name="customize_subtitle">Bu uygulamanın ana ekranında nasıl görüneceğini seç.</string>
+    <string name="customize_on_home">Ana ekranında</string>
+    <string name="customize_editing">DÜZENLENİYOR</string>
+    <string name="customize_source">Kaynak</string>
+    <string name="customize_source_card">Halo kartı</string>
+    <string name="customize_source_logo">Logo</string>
+    <string name="customize_source_glass">Cam</string>
+    <string name="customize_source_banner">Banner</string>
+    <string name="customize_source_icon">Simge</string>
+    <string name="customize_source_card_hint">Uygulamanın logosu parlak bir kart üzerinde. Rengini ve gösterilecek adı seç.</string>
+    <string name="customize_source_logo_hint">Apple TV tarzı: logo renkli bir kutunun ortasında.</string>
+    <string name="customize_source_glass_hint">Kendi cam simgen: bir sembol, bir renk tonu ve ne göstereceğini seç.</string>
+    <string name="customize_source_banner_hint">Uygulamanın Android TV için sunduğu banner, değiştirilmeden.</string>
+    <string name="customize_source_icon_hint">Uygulamanın normal simgesi cam üzerinde.</string>
+    <string name="customize_artwork">Görselin kaynağı</string>
+    <string name="customize_artwork_hint">Yüklü başka bir uygulamanın kartını, banner\'ını veya simgesini kullan (ör. SmartTube için YouTube\'unkini).</string>
+    <string name="customize_artwork_own">Kendi</string>
+    <string name="customize_card_colour">Kart rengi</string>
+    <string name="customize_box_colour">Kutu rengi</string>
+    <string name="customize_first_swatch">İlk renk = uygulamanın kendi rengi</string>
+    <string name="customize_logo_size">Logo boyutu</string>
+    <string name="customize_small">Küçük</string>
+    <string name="customize_medium">Orta</string>
+    <string name="customize_large">Büyük</string>
+    <string name="customize_glyph">Sembol</string>
+    <string name="customize_glass_tint">Cam rengi</string>
+    <string name="customize_layout">Düzen</string>
+    <string name="customize_layout_both">Sembol + ad</string>
+    <string name="customize_layout_glyph">Sembol</string>
+    <string name="customize_layout_name">Ad</string>
+    <string name="customize_name_on_card">Karttaki ad</string>
+    <string name="customize_name_on_icon">Simgedeki ad</string>
+    <string name="customize_reset">Sıfırla</string>
+    <string name="customize_save">Simgeyi kaydet</string>
+
+    <!-- Profiles -->
+    <string name="profiles_title">Kim izliyor?</string>
+    <string name="profiles_subtitle">Her profilin kendi favorileri, uygulama sırası ve simgeleri olur.</string>
+    <string name="profiles_current">Geçerli</string>
+    <string name="profiles_hint">OK profili değiştirir  ·  Yeniden adlandırmak, resmi değiştirmek veya kaldırmak için OK\'yi basılı tut</string>
+    <string name="profiles_add">Profil ekle</string>
+    <string name="profiles_name">Ad</string>
+    <string name="profiles_picture">Resim</string>
+    <string name="profiles_remove">Kaldır</string>
+    <string name="profiles_remove_confirm">Tamamen kaldırılsın mı?</string>
+    <string name="profiles_colour">Renk</string>
+    <string name="profiles_avatar_credit">Avatarlar: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- Background picker -->
+    <string name="bg_title">Arka plan</string>
+    <string name="bg_subtitle">Her profilin kendi arka planı var. Resimler önbelleğe alınır, böylece çevrimdışı da çalışır.</string>
+    <string name="bg_song_artwork">Çalarken şarkı kapağı</string>
+    <string name="bg_next">Sonraki resim</string>
+    <string name="bg_change">Resmi değiştir</string>
+    <string name="bg_scene_info">Halo sahnesi canlı çiziliyor – resim seçmek için bir fotoğraf koleksiyonu seç.</string>
+    <string name="bg_loading">%1$s · resimler yükleniyor…</string>
+    <string name="bg_empty">%1$s · henüz resim yok – internet bağlantısını kontrol et.</string>
+    <plurals name="bg_info">
+        <item quantity="one">%1$s · %2$d resim · %3$s</item>
+        <item quantity="other">%1$s · %2$d resim · %3$s</item>
+    </plurals>
+    <string name="bg_rotate">Değiştir</string>
+    <plurals name="bg_rotate_keep">
+        <item quantity="one">%1$d resim – “Sonraki resim” düğmesine kadar kalır</item>
+        <item quantity="other">%1$d resmin tamamı, karışık – biri “Sonraki resim” düğmesine kadar kalır</item>
+    </plurals>
+    <plurals name="bg_rotate_every">
+        <item quantity="one">%1$d resim, her %2$s değişir</item>
+        <item quantity="other">%1$d resmin tamamı, karışık, her %2$s değişir</item>
+    </plurals>
+    <plurals name="bg_rotate_daily">
+        <item quantity="one">%1$d resim, her gün değişir</item>
+        <item quantity="other">%1$d resmin tamamı, karışık, her gün değişir</item>
+    </plurals>
+    <string name="interval_keep">Birini tut</string>
+    <string name="interval_minutes">%1$d dk</string>
+    <string name="interval_hour">1 sa</string>
+    <string name="interval_daily">Günlük</string>
+
+    <!-- Background collections (ids in wallpaper/Wallpapers.kt) -->
+    <string name="col_scene_title">Halo sahnesi</string>
+    <string name="col_scene_desc">Günün saatine göre değişen hareketli dağlar</string>
+    <string name="col_daily_title">Günün resmi</string>
+    <string name="col_daily_desc">Wikimedia Commons\'ın günün resmi – son birkaç hafta</string>
+    <string name="col_landscapes_title">Manzaralar</string>
+    <string name="col_landscapes_desc">Dağlar, göller ve vadiler</string>
+    <string name="col_forest_title">Ormanlar ve Doğa</string>
+    <string name="col_forest_desc">Ormanlar, nehirler ve vahşi doğa</string>
+    <string name="col_aero_title">Aero</string>
+    <string name="col_aero_desc">Parlak gökyüzü, bulutlar, berrak sular ve kutup ışıkları</string>
+    <string name="col_space_title">Uzay</string>
+    <string name="col_space_desc">Bulutsular, galaksiler ve Samanyolu – NASA, Hubble, Webb</string>
+    <string name="col_ocean_title">Okyanus ve Kıyı</string>
+    <string name="col_ocean_desc">Kıyı şeritleri, plajlar, deniz fenerleri ve açık deniz</string>
+    <string name="col_night_title">Şehirler ve Gece</string>
+    <string name="col_night_desc">Şehir siluetleri, eski şehirler ve şehir ışıkları</string>
+    <string name="col_photos_title">Fotoğrafçılık</string>
+    <string name="col_photos_desc">Yüzlerce Unsplash fotoğrafı</string>
+
+    <!-- Player -->
+    <string name="player_access_off">Medya erişimi kapalı</string>
+    <string name="player_nothing_hint">Herhangi bir uygulamada müzik veya video başlat ve buradan kontrol et.</string>
+    <string name="player_access_hint">Kurulum kılavuzundaki adb komutuyla bir kez etkinleştir.</string>
+    <string name="player_back_home">Ana ekrana dön</string>
+    <string name="player_open_app">%1$s uygulamasını aç</string>
+    <string name="player_back_hint">Dönmek için GERİ</string>
+
+    <!-- Search / Ask Halo -->
+    <string name="search_placeholder">Uygulama ara veya Halo\'ya her şeyi sor</string>
+    <string name="search_listening">Dinleniyor…</string>
+    <string name="search_ask">Halo\'ya sor</string>
+    <string name="search_no_apps">Eşleşen uygulama yok</string>
+    <string name="search_settings">Ayarlar</string>
+    <string name="search_no_settings">Eşleşen ayar yok</string>
+    <string name="search_heard">“%1$s”</string>
+    <string name="search_no_speech">Bu TV\'de konuşma tanıma kullanılamıyor.</string>
+    <string name="search_mic_needed">Halo\'nun dinlemek için mikrofon erişimine ihtiyacı var.</string>
+    <string name="shortcut_wifi">Wi-Fi ve ağ</string>
+    <string name="shortcut_bluetooth">Bluetooth ve kumandalar</string>
+    <string name="shortcut_display">Ekran</string>
+    <string name="shortcut_sound">Ses</string>
+    <string name="shortcut_apps">Uygulamalar</string>
+    <string name="shortcut_date">Tarih ve saat</string>
+    <string name="shortcut_language">Dil</string>
+    <string name="shortcut_accessibility">Erişilebilirlik</string>
+    <string name="shortcut_storage">Depolama</string>
+    <string name="shortcut_screensaver">Ekran koruyucu</string>
+    <string name="shortcut_about">Hakkında</string>
+    <string name="shortcut_developer">Geliştirici seçenekleri</string>
+    <string name="shortcut_all_settings">Tüm ayarlar</string>
+
+    <!-- Speech recognition -->
+    <string name="voice_not_caught">Bunu anlayamadım.</string>
+    <string name="voice_no_connection">Konuşma hizmetine bağlantı yok.</string>
+    <string name="voice_no_permission">Mikrofon izni eksik.</string>
+    <string name="voice_no_microphone">Mikrofon kullanılamıyor.</string>
+    <string name="voice_busy">Konuşma tanıma meşgul – tekrar dene.</string>
+    <string name="voice_failed">Konuşma tanıma başarısız oldu (%1$d).</string>
+
+    <!-- Assistant voices: character of each Gemini voice (the voice names themselves stay as they are) -->
+    <string name="voice_char_warm">Sıcak</string>
+    <string name="voice_char_breezy">Ferah</string>
+    <string name="voice_char_soft">Yumuşak</string>
+    <string name="voice_char_smooth">Akıcı</string>
+    <string name="voice_char_firm">Kararlı</string>
+    <string name="voice_char_informative">Bilgilendirici</string>
+    <string name="voice_char_upbeat">Neşeli</string>
+    <string name="voice_char_excitable">Heyecanlı</string>
+    <string name="voice_char_youthful">Genç</string>
+    <string name="voice_char_system">TV\'nin kendi sesi</string>
+    <string name="voice_system_name">Sistem</string>
+    <string name="voice_option">%1$s · %2$s</string>
+    <string name="voice_preview">Merhaba, ben Halo. Sana cevap verirken sesim böyle olacak.</string>
+
+    <!-- Assistant -->
+    <string name="assistant_opening">%1$s açılıyor.</string>
+    <string name="assistant_no_key">Asistanı kullanmak için Gemini API anahtarını Ayarlar → Asistan anahtarı bölümüne ekle.</string>
+    <string name="assistant_done">Tamam.</string>
+    <string name="assistant_no_answer">Üzgünüm, buna bir cevabım yok.</string>
+    <string name="assistant_incomplete">Üzgünüm, bu cevabı tamamlayamadım.</string>
+    <string name="assistant_error">Bir şeyler ters gitti.</string>
+    <string name="assistant_error_detail">Asistan cevap veremedi: %1$s</string>
+    <string name="assistant_offline">Google\'a bağlantı yok. TV çevrimiçi mi?</string>
+    <string name="assistant_bad_key">Google API anahtarını kabul etmedi. Ayarlar → Asistan anahtarı bölümünden kontrol et.</string>
+    <string name="assistant_quota">Asistanın ücretsiz kotası şimdilik doldu. Daha sonra tekrar dene.</string>
+    <!-- What the assistant did ("done" chips) -->
+    <string name="act_app_not_found">Uygulama bulunamadı</string>
+    <string name="act_opened">%1$s açıldı</string>
+    <string name="act_media_play">Oynat</string>
+    <string name="act_media_pause">Duraklat</string>
+    <string name="act_media_toggle">Oynat/duraklat</string>
+    <string name="act_media_next">Sonraki parça</string>
+    <string name="act_media_previous">Önceki parça</string>
+    <string name="act_theme">Tema: %1$s</string>
+    <string name="act_profile_not_found">Profil bulunamadı</string>
+    <string name="act_profile">Profil: %1$s</string>
+    <string name="act_background">Arka plan: %1$s</string>
+    <string name="act_scene_no_pictures">Hareketli sahnede resim yok</string>
+    <string name="act_next_background">Sonraki arka plan</string>
+    <string name="act_fav_background">Favori resimlerine eklendi.</string>
+    <string name="act_fav_background_none">Ekranda eklenecek bir resim yok.</string>
+    <string name="act_unknown_interval">Bilinmeyen aralık</string>
+    <string name="act_weather">Hava durumu: %1$s</string>
+    <string name="act_pinned">%1$s sabitlendi</string>
+    <string name="act_favourites_full">Favoriler dolu</string>
+    <string name="act_unpinned">%1$s sabitlemesi kaldırıldı</string>
+    <string name="act_first_row">İlk satır: %1$s</string>
+    <string name="act_screen_home">Ana ekran</string>
+    <string name="act_screen_search">Arama</string>
+    <string name="act_unknown">Bilinmeyen işlem</string>
+
+    <!-- Settings panel -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_appearance">Görünüm</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_auto_hint">Gün doğumunda ve gün batımında değişir</string>
+    <string name="settings_motion">Hareket efektleri</string>
+    <string name="settings_motion_hint">Odak animasyonları ve paralaks</string>
+    <string name="settings_clock24">24 saat biçimi</string>
+    <string name="settings_sounds">Gezinme sesleri</string>
+    <string name="settings_sounds_hint">Gezinirken ve seçerken TV\'nin tık sesleri</string>
+    <string name="settings_home_screen">Ana ekran</string>
+    <string name="settings_restore_hidden">Gizli uygulamaları geri getir</string>
+    <plurals name="settings_hidden_count">
+        <item quantity="one">%d gizli</item>
+        <item quantity="other">%d gizli</item>
+    </plurals>
+    <string name="settings_show_weather">Hava durumunu göster</string>
+    <string name="settings_weather_location">Hava durumu konumu</string>
+    <string name="settings_weather_device">Bu TV\'nin konumu</string>
+    <string name="settings_weather_city">Bir şehir seç</string>
+    <string name="settings_city_placeholder">Şehir, ör. İstanbul</string>
+    <string name="settings_voice_section">Asistan sesi</string>
+    <string name="settings_voice">Ses</string>
+    <string name="settings_voice_hint">Doğal Gemini sesleri · OK örnek çalar</string>
+    <string name="settings_start_after">Başlama süresi</string>
+    <string name="settings_screensaver_hint">Boşta kalınca Halo sahnesinin üzerinde saati gösterir</string>
+    <string name="settings_screensaver_now">Ekran koruyucuyu şimdi başlat</string>
+    <string name="settings_setup">Kurulum</string>
+    <string name="settings_language">Dil</string>
+    <string name="settings_language_system">Sistem</string>
+    <string name="settings_assistant_key">Asistan anahtarı</string>
+    <string name="settings_key_saved">✓ Kaydedildi</string>
+    <string name="settings_key_missing">Eksik</string>
+    <string name="settings_home_button">Ana ekran düğmesi</string>
+    <string name="settings_home_opens_halo">Halo\'yu açar</string>
+    <string name="settings_home_brings_back">✓ Halo\'yu geri getirir</string>
+    <string name="settings_remote_buttons">Kumanda düğmeleri</string>
+    <string name="settings_run_setup">Kurulumu yeniden çalıştır</string>
+    <string name="settings_more">Daha fazla</string>
+    <string name="settings_profiles">Profiller</string>
+    <string name="settings_media_note">Halo kurulum kılavuzundaki tek seferlik adb komutunu çalıştır.</string>
+    <string name="settings_android_tv">Android TV ayarları</string>
+    <string name="settings_tile_look">Uygulama kutucukları</string>
+    <string name="settings_tile_look_hint">Tüm uygulamaları aynı anda değiştirir. Tek tek uygulamalar yine de “Simgeyi özelleştir” altından ayrı ayrı biçimlendirilebilir.</string>
+    <string name="settings_tile_halo">Halo kartları</string>
+    <string name="settings_tile_banner">Uygulama banner\'ları</string>
+    <string name="settings_tile_icon">Uygulama simgeleri</string>
+    <string name="settings_tile_mono">Tek renkli simgeler</string>
+    <string name="act_tile_reset">%1$s: varsayılan görünüm</string>
+    <string name="act_tile_changed">%1$s: yeni görünüm</string>
+    <string name="act_uninstall">%1$s kaldırılsın mı?</string>
+    <string name="act_hidden">%1$s gizlendi</string>
+    <string name="act_moved">%1$s taşındı</string>
+    <string name="act_volume">Ses düzeyi</string>
+    <string name="act_setting">Ayar değiştirildi: %1$s</string>
+    <string name="act_on">Açık</string>
+    <string name="act_off">Kapalı</string>
+    <string name="act_profiles_full">Daha fazla profil eklenemez</string>
+    <string name="act_profile_created">Profil oluşturuldu: %1$s</string>
+    <string name="act_profile_changed">Profil güncellendi: %1$s</string>
+    <string name="act_profile_main">Ana profil silinemez</string>
+    <string name="act_profile_deleted">Profil silindi: %1$s</string>
+    <string name="overlay_listening">Dinleniyor …</string>
+    <string name="overlay_hint">Şimdi konuş veya tekrar sormak için OK\'ye bas</string>
+    <string name="overlay_ask">Tekrar sor</string>
+    <string name="overlay_open_halo">Halo\'yu aç</string>
+    <string name="overlay_close">Kapat</string>
+    <string name="overlay_no_key">Asistanı kullanmak için Gemini API anahtarını Halo\'nun ayarlarına ekle.</string>
+    <string name="settings_assistant_button">Halo asistanı düğmesi</string>
+    <string name="settings_assistant_button_hint">Herhangi bir uygulamanın üzerinden Halo\'ya sormak için kumandadaki yıldız düğmesine bas. TV\'nin erişilebilirlik ayarlarında Halo hizmeti gerekir.</string>
+    <string name="settings_assistant_button_star">Yıldız düğmesi</string>
+    <string name="col_mine_title">Resimlerim</string>
+    <string name="col_mine_desc">Telefonundan gönderdiğin kendi fotoğrafların</string>
+    <string name="upload_add_pictures">Telefondan ekle</string>
+    <string name="upload_own_icon">Telefondan kendi simgen</string>
+    <string name="upload_title_pictures">Kendi resimlerini ekle</string>
+    <string name="upload_title_icon">%1$s için kendi simgen</string>
+    <string name="upload_scan">Kodu telefonunun kamerasıyla tara (TV ile aynı Wi-Fi) ve resimleri seç. Duvar kâğıtları “Resimlerim”e eklenir; orada her uygulamaya kendi simgesini de verebilirsin. Her şey bu TV\'de kalır.</string>
+    <string name="upload_waiting">Telefonun bekleniyor …</string>
+    <string name="upload_received">Alındı: %1$d</string>
+    <string name="upload_no_network">TV bir ağa bağlı değil.</string>
+    <string name="qr_vpn_hint">Bir VPN açık ve telefonunu engelleyebilir. Sayfa açılmazsa VPN uygulamasında yerel ağ erişimine izin ver (genelde \"Yerel ağ paylaşımı\" ya da \"LAN erişimi\") ya da Halo\'yu VPN dışında bırak.</string>
+    <string name="upload_expired">Kodun süresi doldu. Bunu kapatıp yeniden aç.</string>
+    <string name="customize_own_icon">Kendi resmin</string>
+    <string name="customize_own_icon_remove">Kendi resmini kaldır</string>
+    <string name="upload_web_expired">Bu sayfanın süresi doldu. TV\'den yeniden aç.</string>
+    <string name="upload_web_title">Halo için resimlerin</string>
+    <string name="upload_web_intro">Buradan gönderdiğin her şey yalnızca TV\'nde saklanır.</string>
+    <string name="upload_web_icons">Uygulama simgeleri</string>
+    <string name="upload_web_icons_hint">Bir uygulama, ardından bir resim seç. En iyisi bir logo ya da geniş bir banner.</string>
+    <string name="upload_web_choose_icon">Resim seç</string>
+    <string name="upload_web_reset_icon">Kendi simgeni kaldır</string>
+    <string name="upload_web_walls">Duvar kâğıtları</string>
+    <string name="upload_web_walls_hint">Bir veya birden fazla fotoğraf seç. Yatay fotoğraflar en iyi görünür.</string>
+    <string name="upload_web_choose_walls">Fotoğraf seç</string>
+    <string name="upload_web_uploading">%1$d / %2$d gönderiliyor …</string>
+    <string name="upload_web_done">Tamam – TV\'nde.</string>
+    <string name="upload_web_failed">Olmadı: %1$s</string>
+    <string name="upload_web_remove">Kaldır</string>
+    <string name="upload_web_no_icon">Kendi simgen kaldırıldı.</string>
+    <string name="upload_web_err_empty">Hiçbir şey alınmadı.</string>
+    <string name="upload_web_err_large">Resim çok büyük (en fazla 25 MB).</string>
+    <string name="upload_web_err_app">Bu uygulama TV\'de yok.</string>
+    <string name="upload_web_err_image">Bu dosya TV\'nin okuyabileceği bir resim değil.</string>
+    <string name="bg_download">TV\'ye indir</string>
+    <string name="bg_download_retry">Tekrar dene</string>
+    <string name="bg_downloading">%1$d / %2$d</string>
+    <string name="bg_pack_info">Henüz TV\'de değil: yaklaşık 72 resmi (yaklaşık 50 MB) indirmek için seç. Birkaç dakika sürer; sonra çevrimdışı da çalışır.</string>
+    <string name="bg_pack_downloading">%1$s indiriliyor … %2$d / %3$d. Wikimedia engellemesin diye bilerek yavaş. Şimdiden kullanabilirsin.</string>
+    <string name="bg_pack_failed">%1$s indirmesi durdu (resim kaynağı meşgul). Devam etmek için daha sonra \"TV\'ye indir\"e bas.</string>
+    <string name="bg_remove_pack">TV\'den kaldır</string>
+    <string name="bg_waiting">Sırada</string>
+    <string name="bg_on_tv">TV\'de</string>
+    <string name="bg_pack_waiting">%1$s sırada: paketler tek tek indirilir.</string>
+    <string name="col_favs_title">Favoriler</string>
+    <string name="col_favs_desc">Tüm koleksiyonlardan favori resimlerin</string>
+    <string name="bg_hold_hint">Favori / kaldır için OK\'a basılı tut</string>
+    <string name="bg_favs_empty">Henüz favori yok. Bir koleksiyondaki resimde OK\'a basılı tut ve \"Favorilere ekle\" seçeneğini seç.</string>
+    <string name="bg_show_picture">Bu resmi göster</string>
+    <string name="bg_favourite">Favorilere ekle</string>
+    <string name="bg_unfavourite">Favorilerden kaldır</string>
+    <string name="bg_remove_picture">Resmi kaldır</string>
+</resources>

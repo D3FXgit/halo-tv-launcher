@@ -183,6 +183,30 @@ object AppCards {
         return Result(card, brandColor or 0xFF000000.toInt())
     }
 
+    /** Neutral graphite background of the mono look (no brand colour). */
+    private val MONO = Look(0xFF3B404A.toInt(), 0xFF14161B.toInt(), null, 0f, false)
+
+    /**
+     * The mono card of an app: its logo as a white silhouette on neutral graphite, so all apps look
+     * alike (like themed icons). Apps without a cut-out logo show their name instead.
+     */
+    fun mono(context: Context, packageName: String, parts: Parts, name: String? = null): Bitmap {
+        val brand = KnownApps.brand(packageName)
+        val title = (name?.trim()?.takeIf { it.isNotEmpty() } ?: brand?.name ?: KnownApps.lookup(packageName)?.label ?: parts.label)
+            .trim().ifEmpty { parts.label }
+        val keyed = parts.keyed?.takeIf { brand?.logo != CardLogo.Text }
+        val mark = parts.mark?.takeIf { !parts.markIsBubble && opaqueFraction(it) < 0.85f }
+        val content: Content = when {
+            keyed != null -> {
+                val logo = silhouette(keyed, WHITE)
+                if (logo.width.toFloat() / logo.height < 1.7f) Content.Lockup(logo, false, title, WHITE) else Content.Logo(logo)
+            }
+            mark != null -> Content.Lockup(silhouette(mark, WHITE), false, title, WHITE)
+            else -> Content.Text(title, WHITE)
+        }
+        return render(context, MONO, content, seed = packageName.hashCode())
+    }
+
     // =====================================================================================
     // Low level: draw one card
     // =====================================================================================

@@ -1,4 +1,4 @@
-# Halo (Downloader Shortcode:8311458)
+# Halo
 
 **A calm, glassy home screen for Google TV and Android TV.**
 
@@ -44,6 +44,8 @@ Kotlin with Jetpack Compose and runs on Android 9 (API 28) and newer.
 - **Picture library** with collections — Picture of the day (Wikimedia Commons), Landscapes,
   Forests & Nature, Aero, Space (NASA, Hubble, Webb), Ocean & Coast, Cities & Night and
   Photography (Unsplash via Lorem Picsum).
+- **My pictures:** your own photos as backgrounds. Scan a QR code on the TV with your phone and
+  pick photos; they are stored only on the TV.
 - **Intervals:** keep one picture, or change every 1, 5, 15, 30 or 60 minutes or daily; or pin a
   single picture. Every picture is shown with its credit (title, author, licence, source).
 - **Now-playing artwork background:** while music or video plays, the artwork of what is playing
@@ -74,7 +76,9 @@ Kotlin with Jetpack Compose and runs on Android 9 (API 28) and newer.
 - **Arrange Home:** move apps between favourites and the app grid, reorder, hide, and uninstall
   (via the system dialog).
 - **App tile style for all apps at once:** uniform Halo cards, the apps' own TV banners (like the
-  stock launcher) or app icons.
+  stock launcher), app icons, or **mono icons** (white logos on graphite, all apps alike).
+- **Your own icons:** give any app its own picture, sent from your phone (Customize → "Own icon
+  from phone", or the phone page from Backgrounds → "Add from phone").
 - **Customize cards:** rename an app, change its colour, choose card / logo / glass / banner /
   icon style, or **borrow another app's artwork** (for example a YouTube card for an alternative
   YouTube client).
@@ -87,7 +91,8 @@ Kotlin with Jetpack Compose and runs on Android 9 (API 28) and newer.
 - **Home-button override:** bring Halo back whenever the stock launcher would open — works without
   adb on devices that do not let you change the home app.
 - **Halo Ambient** can also be used as the system screensaver.
-- **English and German** user interface and assistant (follows the system language or can be set).
+- **English, German and Turkish** user interface and assistant (follows the system language or can
+  be set).
 - **First-run setup wizard** for language, theme, profile, weather, background, favourites,
   assistant key (also from your phone via QR code), home screen and remote button.
 
@@ -136,7 +141,7 @@ The step-by-step guide for end users, including how to undo everything, is in
 
 On first launch Halo walks you through a short wizard (optional steps can be skipped):
 
-1. **Language** — system, English or German.
+1. **Language** — system, English, German or Turkish.
 2. **Theme** — automatic, dark or light.
 3. **Profile** — your name and avatar.
 4. **Weather** — location from the TV, from the internet connection, or a city (optional).
@@ -234,6 +239,9 @@ the TV. The only network requests Halo makes (directly or through the TV's own s
   one-time code from the QR code, stopped after the key arrives or after 15 minutes); the key is
   checked with Google and never sent anywhere else. Requests made with your key are governed by
   [Google's Gemini API terms](https://ai.google.dev/gemini-api/terms).
+- **Your own pictures and icons** are sent from your phone to a small temporary web page on the TV
+  (home network only, one-time code from the QR code, open only while the QR code is shown, at
+  most 30 minutes). They are re-encoded and kept only in Halo's private storage on the TV.
 - **Speech recognition** uses the TV's own system speech service (on Google TV: Google's).
 - **Location** (if granted) is used only to look up the weather; it never leaves the TV except as
   the coordinates in the weather requests above.

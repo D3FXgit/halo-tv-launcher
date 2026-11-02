@@ -240,6 +240,37 @@ class AppRepository(context: Context, private val scope: CoroutineScope) {
         return bmp
     }
 
+    /** Mono cards (white logo on graphite) by app key + custom name; rendered on first use. */
+    private val monoCards = object : LinkedHashMap<String, ImageBitmap>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>?): Boolean = size > 160
+    }
+
+    /** Own icons (MyMedia) by app key + version stamp. */
+    private val ownIcons = object : LinkedHashMap<String, ImageBitmap>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>?): Boolean = size > 64
+    }
+
+    /** The app's own icon (a 16:9 card sent from a phone), or null when there is none. */
+    fun ownIcon(key: String, version: String): ImageBitmap? {
+        val k = key + "\u0000" + version
+        synchronized(ownIcons) { ownIcons[k] }?.let { return it }
+        val b = app.halo.launcher.wallpaper.MyMedia.loadIcon(appContext, key) ?: return null
+        val bmp = runCatching { toHardware(b).asImageBitmap() }.getOrNull() ?: return null
+        synchronized(ownIcons) { ownIcons[k] = bmp }
+        return bmp
+    }
+
+    /** The app's mono card (see AppCards.mono). Null if its logo parts are not loaded yet. */
+    fun monoCard(app: AppEntry, name: String?): ImageBitmap? {
+        val n = name?.trim()?.takeIf { it.isNotEmpty() }
+        val k = app.key + "\u0000" + (n ?: "")
+        synchronized(monoCards) { monoCards[k] }?.let { return it }
+        val p = parts[app.key] ?: return null
+        val bmp = runCatching { toHardware(AppCards.mono(appContext, app.packageName, p, n)).asImageBitmap() }.getOrNull() ?: return null
+        synchronized(monoCards) { monoCards[k] = bmp }
+        return bmp
+    }
+
     private fun query(): List<Pair<ResolveInfo, Boolean>> {
         val own = appContext.packageName
         val seen = HashSet<String>()

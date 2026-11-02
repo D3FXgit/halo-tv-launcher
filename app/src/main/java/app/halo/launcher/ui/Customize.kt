@@ -59,6 +59,8 @@ fun CustomizeScreen(
     /** Every installed app (unresolved), to borrow artwork from. */
     allApps: List<app.halo.launcher.data.AppEntry> = emptyList(),
     onSave: (String, TileStyle?) -> Unit,
+    /** Opens the "send from your phone" panel for this app's own icon. */
+    onOwnIcon: (key: String, label: String) -> Unit = { _, _ -> },
     onBack: () -> Unit,
 ) {
     val c = LocalHalo.current.colors
@@ -68,6 +70,11 @@ fun CustomizeScreen(
     val key = base.app.key
     // Working copy, reset whenever another app is selected.
     var draft by remember(key) { mutableStateOf(styleOf(key) ?: TileStyle()) }
+    // An own icon arriving from the phone (saved directly) shows up in the working copy too.
+    val savedArt = styleOf(key)?.art
+    LaunchedEffect(key, savedArt) {
+        if (savedArt != draft.art) draft = draft.copy(art = savedArt, source = if (savedArt != null) null else draft.source)
+    }
     val preview = resolve(base, draft)
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -173,8 +180,8 @@ fun CustomizeScreen(
                     stringResource(R.string.customize_source_banner),
                     stringResource(R.string.customize_source_icon),
                 ),
-                selected = sources.indexOf(preview.source),
-                onSelect = { i -> draft = draft.copy(source = sources[i].name) },
+                selected = if (draft.art != null) -1 else sources.indexOf(preview.source),
+                onSelect = { i -> draft = draft.copy(source = sources[i].name, art = null) },
                 enabled = { i ->
                     when (sources[i]) {
                         TileSource.Card -> preview.app.card != null
@@ -199,6 +206,16 @@ fun CustomizeScreen(
                 Modifier.padding(top = 10.px, start = 4.px),
                 style = hstyle(16, FontWeight.Medium, c.sub),
             )
+            Spacer(Modifier.height(24.px))
+
+            // Own picture from a phone (wins over the looks above).
+            Caption(stringResource(R.string.customize_own_icon))
+            Row(horizontalArrangement = Arrangement.spacedBy(14.px)) {
+                PillButton(stringResource(R.string.upload_own_icon), { onOwnIcon(key, base.app.label) }, icon = Icons.camera, height = 56)
+                if (draft.art != null) {
+                    PillButton(stringResource(R.string.customize_own_icon_remove), { draft = draft.copy(art = null) }, icon = Icons.trash, height = 56)
+                }
+            }
             Spacer(Modifier.height(24.px))
 
             if (allApps.size > 1) {

@@ -61,7 +61,7 @@
 
     <!-- 5 · Hintergrund -->
     <string name="setup_background_title">Hintergrund</string>
-    <string name="setup_background_subtitle">Die animierte Halo-Szene oder Fotos, die von selbst wechseln. Bilder werden gespeichert und funktionieren auch offline.</string>
+    <string name="setup_background_subtitle">Die animierte Halo-Szene oder Fotos, die von selbst wechseln. Bilder werden gestreamt; unter Hintergründe kannst du eine Sammlung auf den Fernseher laden.</string>
     <string name="setup_background_interval">Bild wechseln</string>
     <string name="setup_background_scene_hint">Die Halo-Szene wird live gezeichnet. Wähle eine Fotosammlung, damit die Bilder wechseln.</string>
     <string name="setup_background_more">Weitere Optionen – ein einzelnes Lieblingsbild, Album-Cover während Musik läuft – findest du unter Einstellungen → Hintergrund.</string>

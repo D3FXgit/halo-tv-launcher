@@ -63,6 +63,8 @@ data class TileStyle(
     val logoScale: Float? = null,
     /** Borrow the artwork (card, banner, logo, icon, colours) of another installed app, by its key. */
     val artFrom: String? = null,
+    /** Own icon sent from a phone (MyMedia), by its version stamp; it wins over every other look. */
+    val art: String? = null,
 )
 
 /** Final, resolved look of a tile. */
@@ -131,7 +133,7 @@ data class HaloSettings(
     val sounds: Boolean = true,
     /** The one-time setup wizard has been completed (or skipped). */
     val setupDone: Boolean = false,
-    /** Interface + assistant language: "system", "en" or "de". */
+    /** Interface + assistant language: "system", "en", "de" or "tr". */
     val language: String = "system",
     /** The user's own Gemini API key (entered in setup – on the TV or from a phone via QR code). */
     val geminiKey: String = "",

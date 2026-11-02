@@ -181,6 +181,10 @@ internal fun AssistantStep(vm: HaloViewModel, settings: HaloSettings) {
                                 KeyServer.Phase.NoNetwork -> R.string.setup_assistant_no_network to false
                             }
                             StatusLine(stringResource(msg), ok = ok, size = 20)
+                            if (st.phase == KeyServer.Phase.Waiting && remember(st.url) { app.halo.launcher.setup.Lan.vpnActive(context) }) {
+                                Spacer(Modifier.height(10.px))
+                                SetupText(stringResource(R.string.qr_vpn_hint), maxLines = 4)
+                            }
                             if (st.phase == KeyServer.Phase.Expired || st.phase == KeyServer.Phase.NoNetwork ||
                                 st.phase == KeyServer.Phase.Received || (st.phase == KeyServer.Phase.Idle && !serverWanted)
                             ) {

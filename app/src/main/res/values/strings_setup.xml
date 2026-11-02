@@ -25,6 +25,7 @@
     <string name="setup_language_system">Same as the TV</string>
     <string name="setup_language_en" translatable="false">English</string>
     <string name="setup_language_de" translatable="false">Deutsch</string>
+    <string name="setup_language_tr" translatable="false">Türkçe</string>
 
     <!-- 2 · Theme -->
     <string name="setup_theme_title">Light or dark?</string>
@@ -63,7 +64,7 @@
 
     <!-- 5 · Background -->
     <string name="setup_background_title">Background</string>
-    <string name="setup_background_subtitle">The animated Halo scene, or photos that change by themselves. Pictures are cached and keep working offline.</string>
+    <string name="setup_background_subtitle">The animated Halo scene, or photos that change by themselves. Pictures stream from the internet; in Backgrounds you can download a collection to the TV.</string>
     <string name="setup_background_interval">Change picture</string>
     <string name="setup_background_scene_hint">The Halo scene is drawn live. Choose a photo collection to have pictures change.</string>
     <string name="setup_background_more">More options – a single favourite picture, song artwork while music plays – are in Settings → Background.</string>

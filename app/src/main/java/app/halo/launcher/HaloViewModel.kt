@@ -65,6 +65,12 @@ sealed interface Screen {
 
 enum class Panel { None, Quick, Appearance }
 
+/** What the "send from your phone" panel is for: own wallpapers, or an own icon for one app. */
+sealed interface UploadTarget {
+    data object Pictures : UploadTarget
+    data class Icon(val key: String, val label: String) : UploadTarget
+}
+
 data class HomeModel(
     val favourites: List<Tile> = emptyList(),
     val apps: List<Tile> = emptyList(),
@@ -268,14 +274,25 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
         val label = style?.label?.takeIf { it.isNotBlank() }
             ?: KnownApps.lookup(app0.packageName)?.label?.takeIf { it !in GENERIC_LABELS }
             ?: app0.label
-        val cardColor = if (source == TileSource.Card) cardColorOf(style) else null
+        // Own icon sent from a phone: wins over every other look.
+        val ownArt = style?.art?.let { v -> appsRepo.ownIcon(app0.key, v) }
+        if (ownArt != null) source = TileSource.Banner
+        // Mono look (Settings → App tiles): white logo on graphite for every app without its own style.
+        val mono = if (ownArt == null && settings.value.tileLook == "mono" && style?.source == null) {
+            appsRepo.monoCard(donor ?: app0, style?.label)
+        } else null
+        if (mono != null) source = TileSource.Card
+        val cardColor = if (source == TileSource.Card && mono == null) cardColorOf(style) else null
         return Tile(
-            app = if (source != TileSource.Card) app
+            app = if (ownArt != null) app.copy(banner = ownArt)
+            else if (mono != null) app.copy(card = mono)
+            else if (source != TileSource.Card) app
             else if (donor == null) withCard(app, style, cardColor)
             else app.copy(card = withCard(donor, style, cardColor).card),
             source = source,
             glyph = Glyph.of(style?.glyph) ?: known?.glyph ?: KnownApps.guessGlyph(app.label),
             tint = when {
+                mono != null -> androidx.compose.ui.graphics.Color(0xFF5A6070)
                 tintSet -> tint
                 source == TileSource.Card -> cardColor?.let { androidx.compose.ui.graphics.Color(it) } ?: app.brand ?: known?.tint ?: app.autoTint
                 source == TileSource.Banner -> app.bannerTint ?: known?.tint ?: app.autoTint
@@ -423,6 +440,17 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun styleOf(key: String): TileStyle? = layout.value.styles[key]
+
+    // ---- own pictures and icons from a phone ------------------------------------------
+
+    /** What the "send from your phone" panel is open for (null = closed). */
+    val upload = MutableStateFlow<UploadTarget?>(null)
+
+    /** An own icon was saved (or removed) for [key]: the tile shows it (or its usual look again). */
+    fun setOwnIcon(key: String, saved: Boolean) {
+        val st = styleOf(key) ?: TileStyle()
+        saveStyle(key, st.copy(art = if (saved) System.currentTimeMillis().toString(36) else null).takeIf { it != TileStyle() })
+    }
 
     fun updateSettings(f: (HaloSettings) -> HaloSettings) {
         viewModelScope.launch { prefs.updateSettings(f) }

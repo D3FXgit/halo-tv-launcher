@@ -97,6 +97,7 @@ object Assistant {
             WallpaperRepository.collections.joinToString("; ") { "${it.id}: ${it.title}" } + ".",
             mapOf("source" to ("Picture collection" to WallpaperRepository.collections.map { it.id }))),
         Tool("next_background", "Show the next background picture now."),
+        Tool("favourite_background", "Add the background picture shown right now to the user's Favourites picture collection (favs)."),
         Tool("set_background_interval", "How often the background picture changes, in minutes (0 = keep one picture, 1440 = daily).",
             mapOf("minutes" to ("Minutes between pictures" to WallpaperRepository.INTERVALS.map { it.toString() }))),
         Tool("open_settings", "Open a page of the TV's system settings.",
@@ -160,9 +161,9 @@ object Assistant {
         "navigation_sounds" to "on|off",
         "show_weather" to "on|off",
         "screensaver_after_minutes" to "0 (off)|2|5|10|15|30",
-        "tile_style" to "halo (uniform Halo cards)|banner (the apps' own TV banners)|icon (app icons)",
+        "tile_style" to "halo (uniform Halo cards)|banner (the apps' own TV banners)|icon (app icons)|mono (white logos on graphite, all apps alike)",
         "song_artwork_background" to "on|off (artwork of what's playing as background)",
-        "language" to "system|en|de (Halo's interface and voice language)",
+        "language" to "system|en|de|tr (Halo's interface and voice language)",
         "voice" to Speaker.VOICES.joinToString("|") { it.first },
         "assistant_button" to "off|star (the remote's star button opens Halo's assistant over any app)",
         "keep_halo_as_home" to "on|off (bring Halo back when the TV opens its own home screen)",
@@ -175,8 +176,9 @@ object Assistant {
      * resolved to). The facts below are given in English for the model; it answers in [language].
      */
     fun systemPrompt(context: Context, home: HomeModel, s: HaloSettings, w: Weather?, np: NowPlaying?): String = buildString {
-        val german = Lang.isGerman(context)
-        val language = if (german) "German" else "English"
+        val lang = Lang.effective(context)
+        val german = lang == "de"
+        val language = Lang.englishName(lang)
         val device = listOf(Build.MANUFACTURER, Build.MODEL).filter { !it.isNullOrBlank() }.distinct().joinToString(" ")
         appendLine(
             "You are Halo, the voice assistant built into the user's TV home screen " +
@@ -184,7 +186,7 @@ object Assistant {
         )
         appendLine("Act with the tools whenever the user wants something done; you may call several tools.")
         appendLine(
-            "Always answer in $language" + (if (german) " (Deutsch, informal \"du\")" else "") +
+            "Always answer in $language" + (when (lang) { "de" -> " (Deutsch, informal \"du\")"; "tr" -> " (Türkçe, informal \"sen\")"; else -> "" }) +
                 ", the language of the TV's interface, even if the request or the data below is in another language. " +
                 "Keep app names, titles and proper names as they are."
         )
@@ -292,6 +294,10 @@ object Assistant {
                 if (p.wallpaperPin != null) vm.updateActiveProfile { it.copy(wallpaperPin = null) }
                 vm.wallpapers.skip()
                 t(R.string.act_next_background) to "ok"
+            }
+            "favourite_background" -> {
+                if (vm.wallpapers.favouriteCurrent()) t(R.string.act_fav_background) to "ok"
+                else t(R.string.act_fav_background_none) to "no background picture is shown (animated scene or nothing loaded)"
             }
             "set_background_interval" -> {
                 val m = args["minutes"]?.trim()?.toDoubleOrNull()?.toInt()
@@ -470,17 +476,19 @@ object Assistant {
                 tt(R.string.act_setting, if (m == 0) tt(R.string.off) else tt(R.string.interval_minutes, m)) to "ok"
             }
             "tile_style" -> {
-                val look = value.lowercase().takeIf { it in listOf("halo", "banner", "icon") } ?: return bad
+                val look = value.lowercase().takeIf { it in listOf("halo", "banner", "icon", "mono") } ?: return bad
                 vm.updateSettings { it.copy(tileLook = look) }
                 tt(R.string.act_setting, tt(when (look) {
-                    "banner" -> R.string.settings_tile_banner; "icon" -> R.string.settings_tile_icon; else -> R.string.settings_tile_halo
+                    "banner" -> R.string.settings_tile_banner; "icon" -> R.string.settings_tile_icon
+                    "mono" -> R.string.settings_tile_mono; else -> R.string.settings_tile_halo
                 })) to "ok"
             }
             "language" -> {
                 val code = value.lowercase().takeIf { it in Lang.CODES } ?: return bad
                 actions.setLanguage(code)
                 tt(R.string.act_setting, tt(when (code) {
-                    "en" -> R.string.setup_language_en; "de" -> R.string.setup_language_de; else -> R.string.setup_language_system
+                    "en" -> R.string.setup_language_en; "de" -> R.string.setup_language_de; "tr" -> R.string.setup_language_tr
+                    else -> R.string.setup_language_system
                 })) to "ok (Halo now answers in the new language)"
             }
             "voice" -> {

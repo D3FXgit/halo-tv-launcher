@@ -196,12 +196,13 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                     }
                     Spacer(Modifier.height(14.px))
                     ChoiceCaption(stringResource(R.string.settings_tile_look), stringResource(R.string.settings_tile_look_hint))
-                    val looks = listOf("halo", "banner", "icon")
+                    val looks = listOf("halo", "banner", "icon", "mono")
                     Segmented(
                         options = listOf(
                             stringResource(R.string.settings_tile_halo),
                             stringResource(R.string.settings_tile_banner),
                             stringResource(R.string.settings_tile_icon),
+                            stringResource(R.string.settings_tile_mono),
                         ),
                         selected = looks.indexOf(settings.tileLook).coerceAtLeast(0),
                         onSelect = { i -> a.updateSettings { it.copy(tileLook = looks[i]) } },
@@ -294,6 +295,7 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                             value = when (language) {
                                 "en" -> stringResource(R.string.setup_language_en)
                                 "de" -> stringResource(R.string.setup_language_de)
+                                "tr" -> stringResource(R.string.setup_language_tr)
                                 else -> stringResource(R.string.settings_language_system)
                             },
                             onClick = { app.halo.launcher.ui.setup.SetupNav.open(app.halo.launcher.ui.setup.SetupStep.Language, single = true) },

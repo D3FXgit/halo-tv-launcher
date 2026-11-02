@@ -4,7 +4,6 @@ import android.os.SystemClock
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.net.ConnectivityManager
 import androidx.annotation.StringRes
 import app.halo.launcher.R
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +22,6 @@ import java.net.HttpURLConnection
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.URL
@@ -219,26 +217,7 @@ class KeyServer(context: Context, private val onKey: (String) -> Unit) {
         return null
     }
 
-    /**
-     * The TV's private LAN IPv4 address (10/8, 172.16/12, 192.168/16) – never a public or carrier
-     * address, so the page is only reachable inside the home network.
-     */
-    private fun lanAddress(): Inet4Address? {
-        runCatching {
-            val cm = app.getSystemService(ConnectivityManager::class.java)
-            val lp = cm?.getLinkProperties(cm.activeNetwork)
-            lp?.linkAddresses?.map { it.address }?.filterIsInstance<Inet4Address>()
-                ?.firstOrNull { it.isSiteLocalAddress }
-        }.getOrNull()?.let { return it }
-        return runCatching {
-            NetworkInterface.getNetworkInterfaces()?.toList().orEmpty()
-                .filter { it.isUp && !it.isLoopback && !it.isVirtual }
-                .sortedBy { if (it.name.startsWith("eth") || it.name.startsWith("wlan")) 0 else 1 }
-                .flatMap { it.inetAddresses.toList() }
-                .filterIsInstance<Inet4Address>()
-                .firstOrNull { it.isSiteLocalAddress }
-        }.getOrNull()
-    }
+    private fun lanAddress(): Inet4Address? = Lan.address(app)
 
     private fun acceptLoop(socket: ServerSocket, scope: CoroutineScope) {
         while (scope.isActive && !socket.isClosed) {
@@ -374,6 +353,8 @@ class KeyServer(context: Context, private val onKey: (String) -> Unit) {
             if (buf.size() % 256 == 0 && !budget(s, deadline)) return null
             val b = input.read()
             if (b < 0) return null
+            // A TLS handshake (browsers that try https:// first): close at once so they fall back to http://.
+            if (buf.size() == 0 && b == 0x16) return null
             buf.write(b)
             matched = if (b.toByte() == end[matched]) matched + 1 else if (b.toByte() == end[0]) 1 else 0
             if (matched == 4) return buf.toString(Charsets.ISO_8859_1.name())
@@ -453,10 +434,14 @@ class KeyServer(context: Context, private val onKey: (String) -> Unit) {
 
     // ---- Pages ------------------------------------------------------------------------
 
-    /** English or German, following the phone's browser language. */
+    /** English, German or Turkish, following the phone's browser language. */
     private fun resourcesFor(acceptLanguage: String?): Resources {
         val first = acceptLanguage?.split(',')?.firstOrNull()?.substringBefore(';')?.trim()?.lowercase(Locale.ROOT).orEmpty()
-        val lang = if (first.startsWith("de")) "de" else "en"
+        val lang = when {
+            first.startsWith("de") -> "de"
+            first.startsWith("tr") -> "tr"
+            else -> "en"
+        }
         val cfg = Configuration(baseConfig)
         cfg.setLocale(Locale.forLanguageTag(lang))
         return app.createConfigurationContext(cfg).resources

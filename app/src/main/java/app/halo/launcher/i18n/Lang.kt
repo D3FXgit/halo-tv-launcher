@@ -11,7 +11,7 @@ import app.halo.launcher.R
 import java.util.Locale
 
 /**
- * Halo's interface language: "system", "en" or "de".
+ * Halo's interface language: "system", "en", "de" or "tr".
  *
  * Android 13+: per-app language via [LocaleManager]. The system persists it and delivers it as a
  * configuration change; MainActivity recreates itself when the locale changes, so every screen
@@ -26,7 +26,9 @@ import java.util.Locale
 object Lang {
     private const val PREFS = "halo_lang"
     private const val KEY = "code"
-    val CODES = listOf("system", "en", "de")
+    val CODES = listOf("system", "en", "de", "tr")
+    /** The languages Halo ships (besides "system"). */
+    val LANGUAGES = listOf("en", "de", "tr")
 
     fun set(activity: Activity, code: String) {
         val c = code.takeIf { it in CODES } ?: "system"
@@ -90,12 +92,12 @@ object Lang {
         localized(context).resources.getString(id, *args)
 
     /**
-     * The language the interface is really shown in: "de" or "en". For "system" this is what
-     * Android resolved from the TV's language list (German if it prefers German, else English).
+     * The language the interface is really shown in: "en", "de" or "tr". For "system" this is what
+     * Android resolved from the TV's language list (a shipped language it prefers, else English).
      */
     fun effective(context: Context): String =
         runCatching { localized(context).resources.getString(R.string.lang_code) }.getOrNull()
-            ?.takeIf { it == "de" || it == "en" } ?: "en"
+            ?.takeIf { it in LANGUAGES } ?: "en"
 
     fun isGerman(context: Context): Boolean = effective(context) == "de"
 
@@ -106,10 +108,27 @@ object Lang {
     /** [configured] when it speaks [language] (keeps de-AT, en-GB …), else the plain language. */
     fun localeFor(language: String, configured: Locale?): Locale =
         if (configured != null && configured.language == language) configured
-        else if (language == "de") Locale.GERMANY else Locale.US
+        else when (language) {
+            "de" -> Locale.GERMANY
+            "tr" -> Locale.forLanguageTag("tr-TR")
+            else -> Locale.US
+        }
 
-    /** BCP-47 tag for speech (Gemini TTS, speech recognition): "de-DE" or "en-US". */
-    fun speechTag(context: Context): String = if (isGerman(context)) "de-DE" else "en-US"
+    /** BCP-47 tag for speech (Gemini TTS, speech recognition): "de-DE", "tr-TR" or "en-US". */
+    fun speechTag(context: Context): String = speechTagFor(effective(context))
+
+    fun speechTagFor(language: String): String = when (language) {
+        "de" -> "de-DE"
+        "tr" -> "tr-TR"
+        else -> "en-US"
+    }
+
+    /** The language's name in English, for the assistant's instructions. */
+    fun englishName(language: String): String = when (language) {
+        "de" -> "German"
+        "tr" -> "Turkish"
+        else -> "English"
+    }
 
     private fun systemLocale(): Locale =
         android.content.res.Resources.getSystem().configuration.locales.get(0) ?: Locale.getDefault()

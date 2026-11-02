@@ -62,6 +62,7 @@ fun Modifier.control(
     enabled: Boolean = true,
     focusRequester: FocusRequester? = null,
     focusScale: Float = 1.08f,
+    onLongClick: (() -> Unit)? = null,
 ): Modifier {
     val motion = LocalHalo.current.motion
     val target = when {
@@ -79,7 +80,7 @@ fun Modifier.control(
         .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
         .focusProperties { canFocus = enabled }
         .onFocusChanged { state.focused = it.isFocused }
-        .remoteClickable(onClick = onClick, onPressedChange = { state.pressed = it })
+        .remoteClickable(onClick = onClick, onLongClick = onLongClick, onPressedChange = { state.pressed = it })
 }
 
 /** Aero gloss over a filled control (draw after clip + background). Built once per size. */

@@ -109,6 +109,7 @@ internal fun LanguageStep(vm: HaloViewModel, settings: HaloSettings) {
                 icon = GlobeIcon,
                 selected = current == "system",
                 onClick = { choose("system") },
+                width = 380,
             )
             ChoiceCard(
                 title = stringResource(R.string.setup_language_en),
@@ -116,6 +117,7 @@ internal fun LanguageStep(vm: HaloViewModel, settings: HaloSettings) {
                 icon = null,
                 selected = current == "en",
                 onClick = { choose("en") },
+                width = 380,
             )
             ChoiceCard(
                 title = stringResource(R.string.setup_language_de),
@@ -123,6 +125,15 @@ internal fun LanguageStep(vm: HaloViewModel, settings: HaloSettings) {
                 icon = null,
                 selected = current == "de",
                 onClick = { choose("de") },
+                width = 380,
+            )
+            ChoiceCard(
+                title = stringResource(R.string.setup_language_tr),
+                subtitle = Locale.forLanguageTag("tr").getDisplayLanguage(ui).replaceFirstChar { it.titlecase(ui) },
+                icon = null,
+                selected = current == "tr",
+                onClick = { choose("tr") },
+                width = 380,
             )
         }
         Spacer(Modifier.height(40.px))
@@ -345,7 +356,7 @@ internal fun intervalLabel(minutes: Int): String = when (minutes) {
 internal fun BackgroundStep(vm: HaloViewModel, settings: HaloSettings) {
     val c = LocalHalo.current.colors
     val profile = settings.profile
-    val cols = WallpaperRepository.collections
+    val cols = WallpaperRepository.collections.filter { it.id != WallpaperRepository.FAVS }
     val selected = WallpaperRepository.of(profile.wallpaper)
     val isScene = selected.id == WallpaperRepository.SCENE
     val selIndex = cols.indexOfFirst { it.id == selected.id }.coerceAtLeast(0)
@@ -458,6 +469,7 @@ internal fun DoneStep(vm: HaloViewModel, settings: HaloSettings) {
     val language = when (app.halo.launcher.i18n.Lang.current(context)) {
         "en" -> stringResource(R.string.setup_language_en)
         "de" -> stringResource(R.string.setup_language_de)
+        "tr" -> stringResource(R.string.setup_language_tr)
         else -> stringResource(R.string.setup_language_system) + " · " +
             (android.content.res.Resources.getSystem().configuration.locales.get(0) ?: ui).getDisplayLanguage(ui)
     }

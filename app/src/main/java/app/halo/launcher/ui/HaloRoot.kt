@@ -218,6 +218,7 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                                     vm.wallpapers.skip()
                                 },
                                 onBack = { vm.open(Screen.Home) },
+                                onAddFromPhone = { vm.upload.value = app.halo.launcher.UploadTarget.Pictures },
                             )
                             is Screen.Arrange -> ArrangeScreen(
                                 favourites = home.favourites,
@@ -239,6 +240,7 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                                 resolve = { t, st -> vm.resolve(t.app, st) },
                                 allApps = vm.appsRepo.apps.collectAsStateWithLifecycle().value,
                                 onSave = vm::saveStyle,
+                                onOwnIcon = { k, label -> vm.upload.value = app.halo.launcher.UploadTarget.Icon(k, label) },
                                 onBack = { vm.open(s.returnTo) },
                             )
                             Screen.Search, Screen.VoiceSearch -> SearchScreen(
@@ -336,6 +338,23 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                             },
                         )
                     }
+                }
+
+                // "Send from your phone" (own wallpapers / an own app icon).
+                val upload by vm.upload.collectAsStateWithLifecycle()
+                upload?.let { t ->
+                    PhoneUploadPanel(
+                        target = t,
+                        apps = { vm.home.value.all.map { it.app.key to it.label } },
+                        onIcon = { k, saved -> vm.setOwnIcon(k, saved) },
+                        onClose = { n ->
+                            vm.upload.value = null
+                            // New own pictures: show them right away.
+                            if (t == app.halo.launcher.UploadTarget.Pictures && n > 0) {
+                                vm.updateActiveProfile { it.copy(wallpaper = app.halo.launcher.wallpaper.WallpaperRepository.MINE, wallpaperPin = null) }
+                            }
+                        },
+                    )
                 }
 
                 // Ambient mode on top of everything.

@@ -16,8 +16,8 @@ android {
         applicationId = "app.halo.tv"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         // The Gemini API key is entered by each user in the setup wizard (never built into the APK).
         // Public project page, sent as contact in the User-Agent of picture downloads (Wikimedia
         // asks for one). Set halo.projectUrl in gradle.properties (or -Phalo.projectUrl=...).

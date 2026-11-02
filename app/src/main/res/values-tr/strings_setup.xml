@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Setup wizard, its standalone steps, the local key web page and the accessibility service (Turkish). -->
+<resources>
+    <!-- Accessibility service (shown in the TV's Accessibility settings) -->
+    <string name="setup_a11y_service_label">Halo</string>
+    <string name="setup_a11y_service_description">Halo\'nun ana ekranın olarak kalmasını sağlar (TV kendi ana ekranını açtığında Halo\'yu geri getirir), Halo\'da seçtiğin düğmeyle (yıldız düğmesi) Halo asistanını açar ve Halo\'da bir uygulama seçersen YouTube düğmesine bastığında o uygulamayı açar. Başka hiçbir şey yapmaz ve ekran içeriğini okumaz.</string>
+
+    <!-- Wizard frame -->
+    <string name="setup_brand">HALO KURULUMU</string>
+    <string name="setup_brand_settings">HALO AYARLARI</string>
+    <string name="setup_step_of">Adım %1$d / %2$d</string>
+    <string name="setup_back">Geri</string>
+    <string name="setup_close">Kapat</string>
+    <string name="setup_continue">Devam</string>
+    <string name="setup_skip">Atla</string>
+    <string name="setup_skip_all">Daha sonra kur</string>
+    <string name="setup_done">Bitti</string>
+    <string name="setup_start">Halo\'yu kullanmaya başla</string>
+
+    <!-- 1 · Welcome + language -->
+    <string name="setup_welcome_title">Halo\'ya hoş geldin</string>
+    <string name="setup_welcome_subtitle">Birkaç kısa adımda bu TV\'yi kendine göre ayarlayalım. Her şeyi daha sonra Halo\'nun ayarlarından değiştirebilirsin.</string>
+    <string name="setup_welcome_hint">Seçenekler arasında gezinmek için ▲, seçmek için OK\'ye bas. Devam düğmesi her zaman sağ alttadır.</string>
+    <string name="setup_language_label">Dil</string>
+    <string name="setup_language_system">TV ile aynı</string>
+
+    <!-- 2 · Theme -->
+    <string name="setup_theme_title">Açık mı, koyu mu?</string>
+    <string name="setup_theme_subtitle">Halo bulunduğun yerdeki güneşi takip edebilir ya da hep aynı görünebilir.</string>
+    <string name="setup_theme_auto">Otomatik</string>
+    <string name="setup_theme_auto_hint">Gündüz açık, gün batımından sonra koyu</string>
+    <string name="setup_theme_dark">Koyu</string>
+    <string name="setup_theme_dark_hint">Her zaman koyu – gözleri yormaz</string>
+    <string name="setup_theme_light">Açık</string>
+    <string name="setup_theme_light_hint">Her zaman açık ve ferah</string>
+    <string name="setup_motion">Hareket efektleri</string>
+    <string name="setup_motion_hint">Odak animasyonları ve paralaks. Daha sakin ve hızlı bir arayüz için kapat.</string>
+
+    <!-- 3 · Profile -->
+    <string name="setup_profile_title">Kim izliyor?</string>
+    <string name="setup_profile_subtitle">Adın ve resmin. Diğerleri daha sonra her biri kendi favorileriyle kendi profillerini ekleyebilir.</string>
+    <string name="setup_profile_name_hint">Adın</string>
+    <string name="setup_profile_name_tip">OK klavyeyi açar</string>
+    <string name="setup_profile_picture">Resim</string>
+    <string name="setup_profile_credit">Avatarlar: Microsoft Fluent Emoji (MIT)</string>
+
+    <!-- 4 · Weather -->
+    <string name="setup_weather_title">Hava durumu</string>
+    <string name="setup_weather_subtitle">Halo ana ekranda hava durumunu gösterir ve temayı gün doğumunda ve gün batımında değiştirir.</string>
+    <string name="setup_weather_device">Bu TV\'nin konumu</string>
+    <string name="setup_weather_device_hint">İzin ister – vermezsen internet bağlantının konumunu kullanır</string>
+    <string name="setup_weather_device_on">Konuma izin verildi</string>
+    <string name="setup_weather_city">Bir şehir</string>
+    <string name="setup_weather_city_hint">Her zaman tek bir yerin hava durumunu göster</string>
+    <string name="setup_weather_city_placeholder">Şehir, ör. İstanbul</string>
+    <string name="setup_weather_denied">Konuma izin verilmedi – Halo bunun yerine internet bağlantının konumunu kullanıyor.</string>
+    <string name="setup_weather_hidden">Hava durumu ana ekranda gizli.</string>
+    <string name="setup_weather_now">%1$s · %2$d°</string>
+    <string name="setup_weather_loading">Hava durumuna bakılıyor…</string>
+    <string name="setup_weather_show">Ana ekranda hava durumunu göster</string>
+
+    <!-- 5 · Background -->
+    <string name="setup_background_title">Arka plan</string>
+    <string name="setup_background_subtitle">Hareketli Halo sahnesi ya da kendiliğinden değişen fotoğraflar. Resimler internetten akar; Arka planlar bölümünde bir koleksiyonu TV\'ye indirebilirsin.</string>
+    <string name="setup_background_interval">Resmi değiştir</string>
+    <string name="setup_background_scene_hint">Halo sahnesi canlı çiziliyor. Resimlerin değişmesi için bir fotoğraf koleksiyonu seç.</string>
+    <string name="setup_background_more">Daha fazla seçenek – tek bir favori resim, müzik çalarken şarkı kapağı – Ayarlar → Arka plan bölümünde.</string>
+    <string name="setup_interval_keep">Birini tut</string>
+    <string name="setup_interval_minutes">%1$d dk</string>
+    <string name="setup_interval_hour">1 sa</string>
+    <string name="setup_interval_daily">Günlük</string>
+
+    <!-- 6 · Favourites -->
+    <string name="setup_favourites_title">Favorilerin</string>
+    <string name="setup_favourites_subtitle">Ana ekranın üst satırı için en fazla %1$d uygulama seç. OK bir uygulamayı ekler veya kaldırır; numaralar sırayı gösterir.</string>
+    <string name="setup_favourites_count">%1$d / %2$d seçildi</string>
+    <string name="setup_favourites_full">Üst satır dolu (%1$d). Önce birini kaldır.</string>
+    <string name="setup_favourites_loading">Uygulamaların yükleniyor…</string>
+
+    <!-- 7 · Assistant -->
+    <string name="setup_assistant_title">Halo\'ya sor</string>
+    <string name="setup_assistant_subtitle">İsteğe bağlı: TV\'nle konuş. Halo, kendi ücretsiz API anahtarınla Google Gemini\'yi kullanır.</string>
+    <string name="setup_assistant_key_saved">Bir anahtar kayıtlı – asistan hazır.</string>
+    <string name="setup_assistant_key_missing">Henüz anahtar yok – sen ekleyene kadar asistan kapalı kalır.</string>
+    <string name="setup_assistant_phone_label">Telefonunla</string>
+    <string name="setup_assistant_phone_text">Kodu telefonunun kamerasıyla tara (TV ile aynı Wi-Fi) ve anahtarını yapıştır.</string>
+    <string name="setup_assistant_starting">Başlatılıyor…</string>
+    <string name="setup_assistant_waiting">Telefonun bekleniyor…</string>
+    <string name="setup_assistant_checking">Anahtar geldi – Google ile kontrol ediliyor…</string>
+    <string name="setup_assistant_rejected">Bu anahtar çalışmadı. Telefonunda tekrar dene.</string>
+    <string name="setup_assistant_offline">Anahtarı kontrol etmek için Google\'a ulaşılamadı. TV çevrimiçi mi?</string>
+    <string name="setup_assistant_received">Anahtar alındı ✓</string>
+    <string name="setup_assistant_expired">Bu kodun süresi doldu.</string>
+    <string name="setup_assistant_no_network">TV bir ev ağına bağlı değil. Bunun yerine anahtarı yaz.</string>
+    <string name="setup_assistant_new_code">Yeni kod</string>
+    <string name="setup_assistant_tv_label">TV\'de</string>
+    <string name="setup_assistant_tv_hint">API anahtarını yaz veya yapıştır</string>
+    <string name="setup_assistant_tv_text">OK klavyeyi açar. Halo, anahtarı kaydetmeden önce Google ile kontrol eder.</string>
+    <string name="setup_assistant_tv_checking">Anahtar Google ile kontrol ediliyor…</string>
+    <string name="setup_assistant_tv_saved">Anahtar kaydedildi ✓</string>
+    <string name="setup_assistant_tv_invalid">Google bu anahtarı kabul etmedi. Kontrol edip tekrar dene.</string>
+    <string name="setup_assistant_tv_offline">Anahtarı kontrol etmek için Google\'a ulaşılamadı.</string>
+    <string name="setup_assistant_save_anyway">Kontrol etmeden kaydet</string>
+    <string name="setup_assistant_get_key">Henüz anahtarın yok mu? Ücretsiz bir tane oluştur (Google hesabı gerekir):</string>
+    <string name="setup_assistant_remove">Anahtarı kaldır</string>
+    <string name="setup_voice_label">Ses</string>
+    <string name="setup_voice_hint">Halo\'nun nasıl cevap vereceği. OK örnek çalar (doğal sesler için anahtar gerekir).</string>
+    <string name="setup_voice_system">TV\'nin sesi</string>
+
+    <!-- 8 · Home screen -->
+    <string name="setup_home_title">Halo\'yu ana ekranın yap</string>
+    <string name="setup_home_subtitle">İsteğe bağlı: kumandada Ana ekran düğmesine her bastığında Halo açılsın.</string>
+    <string name="setup_home_is_default">Halo ana ekranın ✓</string>
+    <string name="setup_home_a_label">Varsayılan ana ekran uygulaması</string>
+    <string name="setup_home_a_text">Bu TV ana ekran uygulamasını seçmene izin veriyor. Sonraki pencerede Halo\'yu seç.</string>
+    <string name="setup_home_a_button">Halo\'yu seç</string>
+    <string name="setup_home_a_refused">Halo seçilmedi. Bunun yerine “Halo\'yu ana ekran olarak tut” seçeneğini kullan.</string>
+    <string name="setup_home_b_label">Halo\'yu ana ekran olarak tut</string>
+    <string name="setup_home_b_text">Google TV ana ekran uygulamasını değiştirmene izin vermiyor. TV kendi ana ekranını her açtığında Halo kendini geri getirebilir. Bunun için TV\'nin erişilebilirlik ayarlarında Halo hizmeti gerekir.</string>
+    <string name="setup_home_b_toggle">Ana ekran düğmesine basılınca Halo\'yu geri getir</string>
+    <string name="setup_home_test">Dene: kumandanda Ana ekran düğmesine bas.</string>
+    <string name="setup_home_test_ok">Ana ekran düğmesine basıldı – Halo geri geldi ✓</string>
+    <string name="setup_home_c_show">Gelişmiş: adb komutları</string>
+    <string name="setup_home_c_hide">adb komutlarını gizle</string>
+    <string name="setup_home_c_service">Halo hizmetini ayar ekranlarına girmeden aç:</string>
+    <string name="setup_home_c_disable">Ya da Google TV\'nin ana ekranını tamamen devre dışı bırak (gelişmiş; Halo bu durumda tek ana ekran uygulaması olur):</string>
+    <string name="setup_home_c_undo">Geri al:</string>
+
+    <!-- Accessibility service status (steps 8 and 9) -->
+    <string name="setup_service_on">Halo hizmeti açık ✓</string>
+    <string name="setup_service_off">Halo hizmeti kapalı</string>
+    <string name="setup_service_needed">Bunun çalışması için Halo hizmetini aç</string>
+    <string name="setup_service_open">Erişilebilirlik ayarlarını aç</string>
+    <string name="setup_service_steps">Listede “Halo”yu seç, aç ve onayla. Sonra buraya dönmek için Geri\'ye bas.</string>
+
+    <!-- 9 · Remote button -->
+    <string name="setup_remote_title">Kumanda düğmeleri</string>
+    <string name="setup_remote_subtitle">İsteğe bağlı: herhangi bir uygulamanın üzerinden Halo\'ya soran düğmeyi (yıldız düğmesi) seç ve YouTube düğmesiyle başka bir uygulama (ör. farklı bir YouTube uygulaması) aç. İkisi de Halo hizmetini kullanır.</string>
+    <string name="setup_remote_keep">YouTube kalsın</string>
+
+    <!-- 10 · Done -->
+    <string name="setup_done_title">Her şey hazır, %1$s</string>
+    <string name="setup_done_subtitle">İşte Halo\'n. Her şeyi daha sonra Ayarlar\'dan (ana ekranda sağ üstte) değiştirebilirsin.</string>
+    <string name="setup_summary_language">Dil</string>
+    <string name="setup_summary_theme">Tema</string>
+    <string name="setup_summary_profile">Profil</string>
+    <string name="setup_summary_weather">Hava durumu</string>
+    <string name="setup_summary_background">Arka plan</string>
+    <string name="setup_summary_favourites">Favoriler</string>
+    <string name="setup_summary_favourites_value">%1$d uygulama</string>
+    <string name="setup_summary_assistant">Asistan</string>
+    <string name="setup_summary_home">Ana ekran düğmesi</string>
+    <string name="setup_summary_remote">YouTube düğmesi</string>
+    <string name="setup_summary_key_saved">Anahtar kaydedildi ✓</string>
+    <string name="setup_summary_not_set">Kurulmadı</string>
+    <string name="setup_summary_off">Kapalı</string>
+    <string name="setup_summary_home_default">Halo\'yu açar ✓</string>
+    <string name="setup_summary_home_override">Halo\'yu geri getirir ✓</string>
+    <string name="setup_summary_needs_service">Halo hizmeti gerekli</string>
+    <string name="setup_summary_remote_unchanged">YouTube\'u açar (değişmedi)</string>
+    <string name="setup_summary_remote_needs_service">%1$s (Halo hizmeti gerekli)</string>
+
+    <!-- Local web page on the phone (KeyServer) -->
+    <string name="setup_web_title">Halo · Asistan anahtarı</string>
+    <string name="setup_web_heading">Gemini API anahtarını TV\'ne gönder</string>
+    <string name="setup_web_intro">Anahtarını aşağıya yapıştır. Ev ağın üzerinden doğrudan TV\'ne gider ve yalnızca TV\'de saklanır.</string>
+    <string name="setup_web_label">Gemini API anahtarı</string>
+    <string name="setup_web_send">TV\'ye gönder</string>
+    <string name="setup_web_get_key">Henüz anahtarın yok mu? Ücretsiz bir tane oluştur:</string>
+    <string name="setup_web_footer">Bu sayfa yalnızca TV\'de Asistan adımı açıkken çalışır.</string>
+    <string name="setup_web_ok_heading">Anahtar alındı ✓</string>
+    <string name="setup_web_ok_text">Halo anahtarını Google ile kontrol etti ve TV\'ye kaydetti. Bu sayfayı kapatabilirsin.</string>
+    <string name="setup_web_bad_heading">Bu işe yaramadı</string>
+    <string name="setup_web_bad_text">Google bu anahtarı kabul etmedi. Tamamını kopyaladığından emin ol, sonra tekrar dene.</string>
+    <string name="setup_web_format_text">Bu bir API anahtarına benzemiyor. Anahtarın tamamını kopyalayıp tekrar dene.</string>
+    <string name="setup_web_busy_text">TV hâlâ önceki anahtarı kontrol ediyor. Biraz bekleyip tekrar dene.</string>
+    <string name="setup_web_too_large">Bu çok fazla metin. Yalnızca anahtarı yapıştır.</string>
+    <string name="setup_web_offline_heading">Anahtar kontrol edilemedi</string>
+    <string name="setup_web_offline_text">TV Google\'a ulaşamadı. TV\'nin internet bağlantısını kontrol et, sonra tekrar dene.</string>
+    <string name="setup_web_expired_heading">Bu bağlantının süresi doldu</string>
+    <string name="setup_web_expired_text">TV\'de Asistan adımını aç ve yeni kodu tara.</string>
+    <string name="setup_web_too_many">Çok fazla deneme yapıldı. TV\'deki yeni kodu tara.</string>
+    <string name="setup_web_used_heading">Anahtar zaten alındı</string>
+    <string name="setup_web_used_text">TV bu koddan zaten bir anahtar aldı. Değiştirmek için TV\'de Ayarlar → Asistan anahtarı bölümünü aç.</string>
+    <string name="setup_web_try_again">Tekrar dene</string>
+    <string name="setup_assistant_phone_off">Etkin değil. Telefonundan yeni bir anahtar göndermek için bir kod göster.</string>
+</resources>

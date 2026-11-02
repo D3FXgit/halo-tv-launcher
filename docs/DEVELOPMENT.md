@@ -70,6 +70,8 @@ describes your own device).
 | `tvScreenshot` | Screenshot of the TV → `tv-screen.png` | – |
 | `tvTour` | Opens every Halo screen (via the `halo.open` intent extra) and saves screenshots to `tv-tour/` | – |
 | `tvWizardTour` | Walks through the setup wizard (OK on every step) and saves a screenshot of each step to `tv-wizard/`. Finishes the wizard. | – |
+| `tvWallTest` | Has the TV load every picture collection (list, 8 thumbnails, 3 full pictures) and logs the result and every failing request → `tv-walltest.txt` (debug build) | – |
+| `tvUploadTest` | Opens "Add from phone" on the TV, loads the upload page from your PC and logs what happened → `tv-uploadtest.txt` (debug build; closes the panel again) | – |
 | `tvLogcat` | Halo's recent log (tags `HaloWall`, `HaloVoice`, `HaloKeys`, `Halo`, crashes) and accessibility state → `tv-log.txt` | – |
 
 ### Debloat list

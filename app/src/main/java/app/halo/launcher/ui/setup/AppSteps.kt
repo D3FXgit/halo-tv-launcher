@@ -119,7 +119,7 @@ internal fun FavouritesStep(vm: HaloViewModel) {
         Spacer(Modifier.height(20.px))
         // Look of every tile (live: the grid below updates at once).
         val settings by vm.settings.collectAsStateWithLifecycle()
-        val looks = listOf("halo", "banner", "icon")
+        val looks = listOf("halo", "banner", "icon", "mono")
         Row(verticalAlignment = Alignment.CenterVertically) {
             GroupLabel(stringResource(R.string.settings_tile_look), Modifier.width(260.px))
             Segmented(
@@ -127,10 +127,11 @@ internal fun FavouritesStep(vm: HaloViewModel) {
                     stringResource(R.string.settings_tile_halo),
                     stringResource(R.string.settings_tile_banner),
                     stringResource(R.string.settings_tile_icon),
+                    stringResource(R.string.settings_tile_mono),
                 ),
                 selected = looks.indexOf(settings.tileLook).coerceAtLeast(0),
                 onSelect = { i -> vm.updateSettings { it.copy(tileLook = looks[i]) } },
-                modifier = Modifier.width(900.px),
+                modifier = Modifier.width(1180.px),
             )
         }
         Spacer(Modifier.height(4.px))

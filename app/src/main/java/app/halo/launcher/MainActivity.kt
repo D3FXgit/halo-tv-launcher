@@ -95,6 +95,8 @@ class MainActivity : ComponentActivity(), HaloActions {
         setContent { HaloRoot(vm, this) }
         // Compose paints its own opaque background; skip the window fill (one full-screen draw less per frame).
         window.setBackgroundDrawable(null)
+        // Developer hooks (debug builds) also when Halo wasn't running yet.
+        if (savedInstanceState == null) openFromIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -115,6 +117,14 @@ class MainActivity : ComponentActivity(), HaloActions {
     private fun openFromIntent(intent: Intent?): Boolean {
         if (!BuildConfig.DEV_HOOKS) return false
         val what = intent?.getStringExtra("halo.open") ?: return false
+        if (what == "upload") {
+            vm.upload.value = UploadTarget.Pictures
+            return true
+        }
+        if (what == "walltest") {
+            lifecycleScope.launch { vm.wallpapers.selfTest() }
+            return true
+        }
         vm.panel.value = Panel.None
         if (what == "setup" || what.startsWith("setup:")) {
             val step = app.halo.launcher.ui.setup.SetupStep.entries.firstOrNull { it.name.equals(what.substringAfter(':', ""), true) }

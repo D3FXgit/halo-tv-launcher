@@ -40,6 +40,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -57,6 +58,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.foundation.layout.Spacer
+import kotlinx.coroutines.launch
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -265,6 +269,8 @@ fun BackgroundsScreen(
     onMediaBackdrop: (Boolean) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
+    /** Opens the "send from your phone" panel for own pictures. */
+    onAddFromPhone: () -> Unit = {},
 ) {
     val c = LocalHalo.current.colors
     val cols = WallpaperRepository.collections
@@ -279,7 +285,11 @@ fun BackgroundsScreen(
         delay(80)
         runCatching { first.requestFocus() }
     }
-    val pictures by produceState<List<Picture>?>(null, col.id) {
+    // Own pictures change while the phone sends them: reload that list on every change.
+    val mine by app.halo.launcher.wallpaper.MyMedia.version.collectAsStateWithLifecycle()
+    val packs by repo.packs.collectAsStateWithLifecycle()
+    val packVersion by repo.packVersion.collectAsStateWithLifecycle()
+    val pictures by produceState<List<Picture>?>(null, col.id, if (col.id == WallpaperRepository.MINE) mine else 0L, packVersion) {
         value = null
         value = if (col.id == WallpaperRepository.SCENE) {
             emptyList()
@@ -288,9 +298,16 @@ fun BackgroundsScreen(
         }
     }
     var hint by remember { mutableStateOf<String?>(null) }
+    val favKeys by produceState(emptySet<String>(), packVersion) {
+        value = withContext(Dispatchers.IO) { repo.favouriteKeys() }
+    }
+    /** The picture whose options (hold OK) are open. */
+    var menuFor by remember { mutableStateOf<Picture?>(null) }
+    val holdHint = stringResource(R.string.bg_hold_hint)
 
     // Light scrim: the chosen picture stays visible as a preview, but the text on it is readable.
     // ScrollPadding keeps focused cards 120 px from the screen edges (aligned with the header).
+    Box(Modifier.fillMaxSize()) {
     ScrollPadding(120.px) {
     Column(
         Modifier
@@ -331,7 +348,22 @@ fun BackgroundsScreen(
                     onToggle = onMediaBackdrop,
                     icon = Glyph.music.spec,
                 )
+                PillButton(stringResource(R.string.upload_add_pictures), onAddFromPhone, icon = Icons.camera)
                 if (!isScene) PillButton(stringResource(R.string.bg_next), onNext, icon = Icons.chevronRight)
+                // Streamed by default; "Download to TV" keeps the collection on the TV (works offline).
+                if (!isScene && col.id != WallpaperRepository.MINE && col.id != WallpaperRepository.FAVS) {
+                    val st = packs[col.id]
+                    val downloaded = remember(col.id, packVersion) { repo.isDownloaded(col.id) }
+                    val complete = remember(col.id, packVersion) { repo.isPackComplete(col.id) }
+                    when {
+                        st?.queued == true -> PillButton(stringResource(R.string.bg_waiting), {}, icon = Icons.chevronDown)
+                        st?.running == true -> PillButton(stringResource(R.string.bg_downloading, st.done, st.total), {}, icon = Icons.chevronDown)
+                        !complete -> PillButton(stringResource(R.string.bg_download), { repo.downloadPack(col.id) }, icon = Icons.chevronDown)
+                    }
+                    if (downloaded && st?.running != true && st?.queued != true) {
+                        PillButton(stringResource(R.string.bg_remove_pack), { repo.removePack(col.id) }, icon = Icons.trash)
+                    }
+                }
                 PillButton(stringResource(R.string.done), onBack, primary = true, icon = Icons.check)
             }
         }
@@ -381,8 +413,13 @@ fun BackgroundsScreen(
         // ---- Pictures ----------------------------------------------------------------
         val list = pictures
         val title = collectionTitle(col)
+        val packState = packs[col.id]
         val info = when {
             isScene -> stringResource(R.string.bg_scene_info)
+            packState?.queued == true -> stringResource(R.string.bg_pack_waiting, title)
+            packState?.running == true -> stringResource(R.string.bg_pack_downloading, title, packState.done, packState.total)
+            packState?.failed == true -> stringResource(R.string.bg_pack_failed, title)
+            col.id == WallpaperRepository.FAVS && list?.isEmpty() == true -> stringResource(R.string.bg_favs_empty)
             list == null -> stringResource(R.string.bg_loading, title)
             list.isEmpty() -> stringResource(R.string.bg_empty, title)
             else -> hint ?: pluralResource(R.plurals.bg_info, list.size, title, list.size, collectionDescription(col))
@@ -420,14 +457,126 @@ fun BackgroundsScreen(
                             repo = repo,
                             picture = p,
                             pinned = p.key == pin,
-                            onFocus = { hint = p.credit },
+                            favourite = col.id != WallpaperRepository.FAVS && p.key in favKeys,
+                            onFocus = { hint = listOf(p.credit, holdHint).filter { it.isNotBlank() }.joinToString("  ·  ") },
                             onClick = { onPin(col.id, p.key) },
+                            onLongClick = { menuFor = p },
                         )
                     }
                 }
             }
         }
     }
+    }
+    menuFor?.let { p ->
+        PictureMenu(
+            repo = repo,
+            picture = p,
+            inFavourites = col.id == WallpaperRepository.FAVS,
+            favourite = p.key in favKeys,
+            onShow = {
+                menuFor = null
+                onPin(col.id, p.key)
+            },
+            onRemove = {
+                menuFor = null
+                if (p.key == pin) onRotate()
+                repo.removePicture(col.id, p)
+            },
+            onClose = { menuFor = null },
+        )
+    }
+    }
+}
+
+/** Options for one picture (hold OK on it): show it, favourite / unfavourite, remove it. */
+@Composable
+private fun PictureMenu(
+    repo: WallpaperRepository,
+    picture: Picture,
+    inFavourites: Boolean,
+    favourite: Boolean,
+    onShow: () -> Unit,
+    onRemove: () -> Unit,
+    onClose: () -> Unit,
+) {
+    val c = LocalHalo.current.colors
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val first = remember { FocusRequester() }
+    var busy by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(60)
+        runCatching { first.requestFocus() }
+    }
+    androidx.activity.compose.BackHandler { onClose() }
+    val img by produceState(repo.cachedThumbnail(picture.key), picture.key) {
+        if (value == null) value = repo.thumbnail(picture)
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF03050C).copy(alpha = 0.7f))
+            .focusProperties { onExit = { cancelFocusChange() } }
+            .focusGroup(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .glass(RoundedCornerShape(36.px), strong = true, fillAlpha = 0.92f)
+                .padding(40.px),
+            horizontalArrangement = Arrangement.spacedBy(40.px),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.size(480.px, 270.px).clip(RoundedCornerShape(22.px)).background(c.pill)) {
+                img?.let { Image(bitmap = it, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop) }
+            }
+            Column(Modifier.width(420.px), verticalArrangement = Arrangement.spacedBy(14.px)) {
+                if (picture.credit.isNotBlank()) {
+                    BasicText(
+                        picture.credit,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        style = hstyle(19, FontWeight.Medium, c.sub),
+                    )
+                }
+                PillButton(
+                    stringResource(R.string.bg_show_picture),
+                    onShow,
+                    primary = true,
+                    icon = Icons.check,
+                    focusRequester = first,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (!inFavourites) {
+                    PillButton(
+                        stringResource(if (favourite) R.string.bg_unfavourite else R.string.bg_favourite),
+                        {
+                            if (busy) return@PillButton
+                            if (favourite) {
+                                repo.removeFavourite(picture.key)
+                                onClose()
+                            } else {
+                                busy = true
+                                scope.launch {
+                                    repo.addFavourite(picture)
+                                    busy = false
+                                    onClose()
+                                }
+                            }
+                        },
+                        icon = if (favourite) Icons.close else app.halo.launcher.data.Glyph.heart.spec,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                PillButton(
+                    stringResource(if (inFavourites) R.string.bg_unfavourite else R.string.bg_remove_picture),
+                    onRemove,
+                    icon = Icons.trash,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                PillButton(stringResource(R.string.cancel), onClose, modifier = Modifier.fillMaxWidth())
+            }
+        }
     }
 }
 
@@ -443,7 +592,13 @@ private fun CollectionCard(
     val c = LocalHalo.current.colors
     val st = remember { ControlState() }
     val shape = RoundedCornerShape(26.px)
-    val preview by produceState<ImageBitmap?>(null, col.id) {
+    val packs by repo.packs.collectAsStateWithLifecycle()
+    val packVersion by repo.packVersion.collectAsStateWithLifecycle()
+    val downloaded = remember(col.id, packVersion) {
+        col.id != WallpaperRepository.SCENE && col.id != WallpaperRepository.MINE && col.id != WallpaperRepository.FAVS && repo.isDownloaded(col.id)
+    }
+    val pack = packs[col.id]
+    val preview by produceState<ImageBitmap?>(null, col.id, packVersion) {
         if (col.id != WallpaperRepository.SCENE) {
             var wait = 10_000L
             repeat(3) {
@@ -481,6 +636,35 @@ private fun CollectionCard(
             }
             if (st.focused) Box(Modifier.fillMaxSize().drawBehind { drawSheen(c.sheen) })
             if (selected) CheckBadge(Modifier.align(Alignment.TopEnd).padding(10.px))
+            // Not on the TV yet: a download badge, or the download progress.
+            if (downloaded || pack?.running == true || pack?.queued == true) {
+                Row(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(10.px)
+                        .clip(RoundedCornerShape(16.px))
+                        .background(Color.Black.copy(alpha = 0.62f))
+                        .padding(horizontal = 12.px, vertical = 6.px),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (pack?.queued == true) {
+                        BasicText(stringResource(R.string.bg_waiting), style = hstyle(16, FontWeight.Bold, Color.White))
+                    } else if (pack?.running == true) {
+                        BasicText(
+                            stringResource(R.string.bg_downloading, pack.done, pack.total),
+                            style = hstyle(16, FontWeight.Bold, Color.White),
+                        )
+                    } else {
+                        // On the TV (works offline).
+                        HaloIcon(Icons.chevronDown, 18.px, Color.White)
+                        BasicText(
+                            stringResource(R.string.bg_on_tv),
+                            Modifier.padding(start = 6.px),
+                            style = hstyle(16, FontWeight.Bold, Color.White),
+                        )
+                    }
+                }
+            }
         }
         BasicText(
             collectionTitle(col),
@@ -543,8 +727,10 @@ private fun ThumbCard(
     repo: WallpaperRepository,
     picture: Picture,
     pinned: Boolean,
+    favourite: Boolean,
     onFocus: () -> Unit,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
 ) {
     val c = LocalHalo.current.colors
     val st = remember { ControlState() }
@@ -566,7 +752,7 @@ private fun ThumbCard(
     Box(
         Modifier
             .size(320.px, 180.px)
-            .control(st, onClick, focusScale = 1.08f)
+            .control(st, onClick, focusScale = 1.08f, onLongClick = onLongClick)
             .clip(shape)
             .background(c.pill)
             .then(
@@ -583,6 +769,14 @@ private fun ThumbCard(
         }
         if (st.focused) Box(Modifier.fillMaxSize().drawBehind { drawSheen(c.sheen) })
         if (pinned) CheckBadge(Modifier.align(Alignment.TopEnd).padding(10.px))
+        if (favourite) {
+            HaloIcon(
+                app.halo.launcher.data.IconSpec(app.halo.launcher.data.Glyph.heart.spec.paths, filled = true),
+                30.px,
+                Color(0xFFFF6B8A),
+                Modifier.align(Alignment.BottomStart).padding(10.px),
+            )
+        }
     }
 }
 

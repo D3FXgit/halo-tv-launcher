@@ -17,8 +17,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -87,6 +85,9 @@ sealed interface Feed {
 
     /** Lorem Picsum catalogue (Unsplash photographs, Unsplash licence). */
     data object Picsum : Feed
+
+    /** The user's own pictures (MyMedia), sent from a phone. */
+    data object Mine : Feed
 }
 
 /** A collection of the picture library. */
@@ -121,6 +122,10 @@ class WallpaperCollection(
 class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     companion object {
         const val SCENE = "scene"
+        /** The user's own pictures ("My pictures"). */
+        const val MINE = "mine"
+        /** Favourite pictures collected from every collection. */
+        const val FAVS = "favs"
         private const val TAG = "HaloWall"
 
         /** Minutes between pictures the user can choose (0 = keep one picture). */
@@ -140,9 +145,15 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
 
         val collections: List<WallpaperCollection> = listOf(
             WallpaperCollection(SCENE, "Halo scene", "Animated mountains that follow the time of day", Icons.screensaver),
+            WallpaperCollection(MINE, "My pictures", "Your own photos, sent from your phone", Icons.camera, feeds = listOf(Feed.Mine)),
+            WallpaperCollection(FAVS, "Favourites", "Your favourite pictures from every collection", app.halo.launcher.data.Glyph.heart.spec),
             WallpaperCollection(
                 "daily", "Picture of the day", "Wikimedia Commons’ picture of the day — the last few weeks", Icons.image,
-                feeds = listOf(Feed.PictureOfTheDay(days = 45)),
+                feeds = listOf(
+                    Feed.PictureOfTheDay(days = 30),
+                    Feed.Commons("Pictures of the day (2026)"),
+                    Feed.Commons("Pictures of the day (2025)"),
+                ),
                 ttlHours = 12,
             ),
             WallpaperCollection(
@@ -196,7 +207,6 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                 feeds = listOf(
                     Feed.Commons("Featured pictures of coasts"),
                     Feed.Commons("Quality images of coasts"),
-                    Feed.Commons("Quality images of oceans and seas"),
                     Feed.Commons("Featured pictures of islands"),
                     Feed.Commons("Featured pictures of bodies of water"),
                 ),
@@ -231,9 +241,13 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         private const val THUMB_W = 400
         private const val THUMB_H = 225
         private const val MAX_PICTURES = 400
+        /** Pictures per downloaded pack (≈ 40–60 MB). */
+        private const val PACK_SIZE = 72
+        /** A pack download gives up for now after this long (it resumes the next time). */
+        private const val PACK_BUDGET_MS = 45 * 60_000L
         private const val MAX_DOWNLOAD = 30L * 1024 * 1024
         /** v6: Bing and wallhaven were removed; older caches must not keep their pictures. */
-        private const val MANIFEST_VERSION = 6
+        private const val MANIFEST_VERSION = 7
     }
 
     private data class Config(val id: String, val minutes: Int, val pin: String?)
@@ -242,6 +256,25 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
 
     @Serializable
     private data class ManifestFile(val at: Long, val pictures: List<Picture>)
+
+    /**
+     * A pack's index. [complete] = false: interrupted, it is topped up the next time.
+     * [removed]: file names of pictures the user removed (never downloaded again).
+     */
+    @Serializable
+    private data class PackFile(
+        val at: Long,
+        val pictures: List<Picture>,
+        val complete: Boolean = false,
+        val removed: List<String> = emptyList(),
+    )
+
+    /** One favourite: its own copy ([file] in filesDir/favourites) and the picture it came from. */
+    @Serializable
+    private data class Favourite(val origin: String, val file: String, val credit: String)
+
+    @Serializable
+    private data class FavouriteFile(val items: List<Favourite> = emptyList())
 
     private class NasaLink(val href: String, val rel: String, val w: Int, val h: Int)
 
@@ -257,6 +290,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         data object Failed : Decoded
     }
 
+    private val appContext: Context = context.applicationContext
     private val dir = File(context.applicationContext.filesDir, "wallpapers").apply { mkdirs() }
     private val thumbDir = File(dir, "thumbs").apply { mkdirs() }
     private val manifestDir = File(dir, "manifests").apply { mkdirs() }
@@ -293,6 +327,8 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     private val hostLast = ConcurrentHashMap<String, Long>()
     private val hostCooldown = ConcurrentHashMap<String, Long>()
     private val failedUrls = ConcurrentHashMap<String, Long>()
+    /** Rate limits in a row per host: each one doubles the pause (30 s … 10 min). */
+    private val hostStrikes = ConcurrentHashMap<String, Int>()
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -347,8 +383,349 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     /** The collection's pictures (cached manifest, else downloaded). Empty for the Halo scene. */
     suspend fun pictures(collectionId: String): List<Picture> = withContext(Dispatchers.IO) {
         val col = of(collectionId)
-        if (col.id == SCENE) emptyList() else manifest(col).filterNot { it.key in bad }
+        when {
+            col.id == SCENE -> emptyList()
+            col.id == MINE -> manifest(col)
+            col.id == FAVS -> favouritePictures()
+            // Downloaded (or partly downloaded) pack: the pictures on the TV; otherwise streamed.
+            else -> (localPack(col.id) ?: manifest(col)).filterNot { it.key in bad }
+        }
     }
+
+    // ---- downloadable picture packs ---------------------------------------------------
+
+    /** Download state of a picture pack. */
+    data class PackState(
+        val done: Int = 0,
+        val total: Int = 0,
+        val running: Boolean = false,
+        val failed: Boolean = false,
+        /** Waiting for another pack to finish (packs download one after the other). */
+        val queued: Boolean = false,
+    )
+
+    private val _packs = MutableStateFlow<Map<String, PackState>>(emptyMap())
+    /** Packs being downloaded (or that failed), by collection id. */
+    val packs: StateFlow<Map<String, PackState>> = _packs
+    private val packLocks = ConcurrentHashMap<String, Mutex>()
+    /** Packs download one after the other, one picture at a time (Wikimedia rate-limits bursts). */
+    private val packQueue = Mutex()
+
+    private fun packDir(id: String) = File(appContext.filesDir, "packs/$id")
+    private fun packIndex(id: String) = File(packDir(id), "pack.json")
+
+    /** True when the pack is on the TV (the Halo scene and own pictures always are). */
+    fun isDownloaded(id: String): Boolean = id == SCENE || id == MINE || id == FAVS || packIndex(id).isFile
+
+    private fun readPack(id: String): PackFile? = runCatching {
+        json.decodeFromString(PackFile.serializer(), packIndex(id).readText())
+    }.getOrNull()?.let { f ->
+        f.copy(pictures = f.pictures.filter { p -> runCatching { File(java.net.URI(p.full)).isFile }.getOrDefault(false) })
+    }
+
+    private fun writePack(id: String, pictures: List<Picture>, complete: Boolean) {
+        val tmp = File(packDir(id), "pack.json.part")
+        val removed = readPack(id)?.removed.orEmpty()
+        tmp.writeText(json.encodeToString(PackFile.serializer(), PackFile(System.currentTimeMillis(), pictures, complete, removed)))
+        if (!tmp.renameTo(packIndex(id))) tmp.delete()
+    }
+
+    /** True when the whole pack is on the TV. */
+    fun isPackComplete(id: String): Boolean = readPack(id)?.complete == true
+
+    /** The pack's pictures on the TV (also of a partly downloaded pack), or null when there are none. */
+    private fun localPack(id: String): List<Picture>? = readPack(id)?.pictures?.takeIf { it.isNotEmpty() }
+
+    /** Starts (or resumes) downloading a pack; no-op when it is complete or already downloading. */
+    fun downloadPack(id: String) {
+        if (id == SCENE || id == MINE || id == FAVS) return
+        val st = _packs.value[id]
+        if (st?.running == true || st?.queued == true) return
+        if (readPack(id)?.complete == true) return
+        _packs.value = _packs.value + (id to PackState(localPack(id)?.size ?: 0, PACK_SIZE, queued = true))
+        scope.launch(Dispatchers.IO) { runCatching { fillPack(of(id)) } }
+    }
+
+    /** Deletes a downloaded pack (frees its space; it can be downloaded again). */
+    fun removePack(id: String) {
+        if (id == SCENE || id == MINE || id == FAVS) return
+        packDir(id).deleteRecursively()
+        _packs.value = _packs.value - id
+        _packVersion.value++
+    }
+
+    private val _packVersion = MutableStateFlow(0)
+    /** Bumped when a pack finished downloading or was removed (screens refresh their lists). */
+    val packVersion: StateFlow<Int> = _packVersion
+
+    /**
+     * The pack's pictures on the TV. A pack that isn't there yet is downloaded first (waiting for its
+     * turn); a partly downloaded one is used right away and topped up in the background.
+     */
+    private suspend fun ensurePack(col: WallpaperCollection): List<Picture> {
+        readPack(col.id)?.let { f ->
+            if (f.pictures.isNotEmpty()) {
+                if (!f.complete) downloadPack(col.id)
+                return f.pictures
+            }
+        }
+        // Not there yet: start (or join) the download and use the pack as soon as its first pictures are in.
+        downloadPack(col.id)
+        while (true) {
+            localPack(col.id)?.let { return it }
+            val st = _packs.value[col.id]
+            if (st == null || st.failed) throw IOException("${col.id}: nothing could be downloaded")
+            delay(2_000)
+        }
+    }
+
+    /**
+     * Downloads a pack, or the rest of it: up to [PACK_SIZE] landscape pictures from the collection's
+     * sources, one at a time with pauses, waiting out rate limits instead of giving up. Progress is
+     * saved as it goes, so the pack is usable after the first pictures and an interrupted download
+     * resumes where it stopped.
+     */
+    private suspend fun fillPack(col: WallpaperCollection) {
+        val lock = packLocks.getOrPut(col.id) { Mutex() }
+        lock.withLock {
+            val before = readPack(col.id)
+            if (before?.complete == true) {
+                _packs.value = _packs.value - col.id
+                return
+            }
+            _packs.value = _packs.value + (col.id to PackState(before?.pictures?.size ?: 0, PACK_SIZE, queued = true))
+            packQueue.withLock {
+                val dir = packDir(col.id).apply { mkdirs() }
+                val out = ArrayList(readPack(col.id)?.pictures.orEmpty())
+                val removed = readPack(col.id)?.removed.orEmpty().toHashSet()
+                fun progress() {
+                    _packs.value = _packs.value + (col.id to PackState(minOf(out.size, PACK_SIZE), PACK_SIZE, running = true))
+                }
+                progress()
+                try {
+                    val online = packSource(col)
+                    val started = System.currentTimeMillis()
+                    var failsInRow = 0
+                    var reachedEnd = true
+                    for (p in online) {
+                        if (out.size >= PACK_SIZE) break
+                        if (System.currentTimeMillis() - started > PACK_BUDGET_MS || failsInRow >= 12) {
+                            reachedEnd = false
+                            break
+                        }
+                        val target = fileFor(p.full, dir)
+                        val local = target.toURI().toString()
+                        if (target.name in removed || out.any { it.key == local }) continue
+                        // Already shown before? Take it from the cache instead of downloading again.
+                        val cached = fileFor(p.full, this.dir)
+                        val f = if (cached.isFile) {
+                            runCatching { cached.copyTo(target, overwrite = true) }.getOrNull()
+                        } else {
+                            patientDownload(p.full, dir)
+                        }
+                        if (f == null) {
+                            failsInRow++
+                            continue
+                        }
+                        failsInRow = 0
+                        val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                        BitmapFactory.decodeFile(f.path, o)
+                        if (o.outWidth < 1000 || o.outWidth < o.outHeight * 1.15f) {
+                            f.delete()
+                            continue
+                        }
+                        out += Picture(local, local, p.credit)
+                        progress()
+                        // Save every few pictures: the pack can be used while the rest arrives.
+                        if (out.size == 1 || out.size % 6 == 0) {
+                            writePack(col.id, out, complete = false)
+                            _packVersion.value++
+                        }
+                    }
+                    if (out.isEmpty()) throw IOException("${col.id}: nothing could be downloaded")
+                    val complete = out.size >= PACK_SIZE || reachedEnd
+                    writePack(col.id, out, complete)
+                    Log.i(TAG, "${col.id}: pack has ${out.size} pictures (complete=$complete)")
+                    _packs.value = if (complete) _packs.value - col.id
+                    else _packs.value + (col.id to PackState(out.size, PACK_SIZE, failed = true))
+                    _packVersion.value++
+                } catch (e: CancellationException) {
+                    if (out.isNotEmpty()) writePack(col.id, out, complete = false)
+                    _packs.value = _packs.value - col.id
+                    throw e
+                } catch (e: Exception) {
+                    Log.w(TAG, "${col.id}: pack download failed: ${e.message}")
+                    if (out.isNotEmpty()) writePack(col.id, out, complete = false)
+                    _packs.value = _packs.value + (col.id to PackState(out.size, PACK_SIZE, failed = true))
+                    _packVersion.value++
+                    throw e
+                }
+            }
+        }
+    }
+
+    /** The collection's online list for a pack download: real pictures only (no stand-ins), patiently. */
+    private suspend fun packSource(col: WallpaperCollection): List<Picture> {
+        val file = File(manifestDir, "${col.id}.v$MANIFEST_VERSION.json")
+        val disk = runCatching { json.decodeFromString(ManifestFile.serializer(), file.readText()) }.getOrNull()
+            ?.takeIf { it.pictures.isNotEmpty() }
+        val now = System.currentTimeMillis()
+        if (disk != null && now - disk.at < col.ttlHours * 3_600_000L) return disk.pictures
+        val (fresh, _) = fetch(col, patient = true)
+        if (fresh.isNotEmpty()) {
+            runCatching { file.writeText(json.encodeToString(ManifestFile.serializer(), ManifestFile(now, fresh))) }
+            return fresh
+        }
+        return disk?.pictures ?: throw IOException("${col.id}: picture sources unreachable")
+    }
+
+    /** Waits until [host] may be asked again (after a "too many requests" answer). */
+    private suspend fun waitForHost(host: String) {
+        val wait = (hostCooldown[host] ?: return) - System.currentTimeMillis()
+        if (wait > 0) {
+            Log.i(TAG, "waiting ${wait / 1000} s for $host")
+            delay(wait + 500)
+        }
+    }
+
+    /** One picture for a pack: retries after rate limits (waiting them out) and network trouble. Null = skip it. */
+    private suspend fun patientDownload(url: String, folder: File): File? {
+        val host = hostOf(url)
+        repeat(4) {
+            waitForHost(host)
+            failedUrls.remove(url)
+            try {
+                val f = download(url, folder)
+                delay(if (host.endsWith("wikimedia.org")) 1_200L else 300L)
+                return f
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: HttpException) {
+                if (e.code != 429 && e.code != 503 && e.code !in 500..599) return null
+            } catch (e: Exception) {
+                if (e.message?.startsWith("not an image") == true || e.message?.startsWith("too large") == true) return null
+                delay(3_000)
+            }
+        }
+        return null
+    }
+
+    /** Pictures for rotation/pinning: own pictures, or the downloaded pack (downloading it if needed). */
+    private suspend fun picturesFor(col: WallpaperCollection): List<Picture> = when (col.id) {
+        MINE -> manifest(col)
+        FAVS -> favouritePictures()
+        else -> streamOrPack(col)
+    }
+
+    /**
+     * A collection is streamed (pictures downloaded as they are shown, kept in a small cache) unless
+     * the user downloaded it to the TV; a partly downloaded pack is used and its download resumed.
+     */
+    private suspend fun streamOrPack(col: WallpaperCollection): List<Picture> {
+        val pack = readPack(col.id)
+        if (pack != null && pack.pictures.isNotEmpty()) {
+            if (!pack.complete) downloadPack(col.id)
+            return pack.pictures
+        }
+        return manifest(col)
+    }
+
+    // ---- favourites and removing pictures ---------------------------------------------
+
+    private val favDir get() = File(appContext.filesDir, "favourites").apply { mkdirs() }
+    private val favIndex get() = File(favDir, "favourites.json")
+    private val favLock = Any()
+
+    private fun readFavourites(): List<Favourite> = runCatching {
+        json.decodeFromString(FavouriteFile.serializer(), favIndex.readText()).items
+    }.getOrDefault(emptyList()).filter { File(favDir, it.file).isFile }
+
+    private fun writeFavourites(items: List<Favourite>) {
+        val tmp = File(favDir, "favourites.json.part")
+        tmp.writeText(json.encodeToString(FavouriteFile.serializer(), FavouriteFile(items)))
+        if (!tmp.renameTo(favIndex)) tmp.delete()
+    }
+
+    /** Favourites, newest first. Each is an own copy, so it stays when its pack is removed. */
+    private fun favouritePictures(): List<Picture> = readFavourites().map { f ->
+        File(favDir, f.file).toURI().toString().let { Picture(it, it, f.credit) }
+    }
+
+    /** Keys of all favourites: the original pictures' keys and the favourites' own keys. */
+    fun favouriteKeys(): Set<String> = readFavourites().flatMap {
+        listOf(it.origin, File(favDir, it.file).toURI().toString())
+    }.toSet()
+
+    /** Adds [p] to the favourites (copies its picture, downloading it if needed). False if that failed. */
+    suspend fun addFavourite(p: Picture): Boolean = withContext(Dispatchers.IO) {
+        if (p.key in favouriteKeys()) return@withContext true
+        val src = try {
+            download(p.full, dir)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return@withContext false
+        }
+        val name = MessageDigest.getInstance("SHA-1").digest(p.key.toByteArray()).joinToString("") { "%02x".format(it) } + ".jpg"
+        val ok = runCatching { src.copyTo(File(favDir, name), overwrite = true) }.isSuccess
+        if (ok) synchronized(favLock) {
+            writeFavourites(listOf(Favourite(p.key, name, p.credit)) + readFavourites().filterNot { it.origin == p.key })
+        }
+        _packVersion.value++
+        ok
+    }
+
+    /** Adds the background picture on screen to the favourites (voice assistant). False if none is shown. */
+    suspend fun favouriteCurrent(): Boolean {
+        val w = _current.value ?: return false
+        return addFavourite(Picture(w.key, w.key, w.credit))
+    }
+
+    /** Removes a favourite, given either the original picture's key or the favourite's own key. */
+    fun removeFavourite(key: String) {
+        synchronized(favLock) {
+            val all = readFavourites()
+            val gone = all.filter { it.origin == key || File(favDir, it.file).toURI().toString() == key }
+            if (gone.isEmpty()) return
+            gone.forEach { File(favDir, it.file).delete() }
+            writeFavourites(all - gone.toSet())
+        }
+        _packVersion.value++
+    }
+
+    /**
+     * Removes a picture from a collection: deletes the file of a downloaded pack (it isn't
+     * downloaded again), an own picture, or a favourite. A favourite made from it stays.
+     */
+    fun removePicture(collectionId: String, p: Picture) {
+        when (collectionId) {
+            SCENE -> return
+            MINE -> runCatching { MyMedia.deleteWallpaper(appContext, File(java.net.URI(p.full)).name) }
+            FAVS -> removeFavourite(p.key)
+            else -> {
+                // A streamed picture: hidden from now on.
+                if (!p.full.startsWith("file:")) {
+                    markBad(p.key)
+                    _packVersion.value++
+                    if (_current.value?.key == p.key && config.id == collectionId) skip()
+                    return
+                }
+                val pack = readPack(collectionId) ?: return
+                val file = runCatching { File(java.net.URI(p.full)) }.getOrNull() ?: return
+                file.delete()
+                val tmp = File(packDir(collectionId), "pack.json.part")
+                tmp.writeText(json.encodeToString(PackFile.serializer(), pack.copy(
+                    pictures = pack.pictures.filterNot { it.key == p.key },
+                    removed = (pack.removed + file.name).distinct(),
+                )))
+                if (!tmp.renameTo(packIndex(collectionId))) tmp.delete()
+                _packVersion.value++
+            }
+        }
+        // The picture on screen was removed: move on.
+        if (_current.value?.key == p.key && config.id == collectionId) skip()
+    }
+
 
     /** A thumbnail already in memory (no I/O). */
     fun cachedThumbnail(key: String): ImageBitmap? = thumbs.get(key)
@@ -388,6 +765,25 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         }
     }
 
+    /**
+     * Diagnostics (debug builds, tvWallTest): loads every collection's list, 8 thumbnails and
+     * 3 full pictures, and logs the counts (failures are logged by [request] with their HTTP code).
+     */
+    suspend fun selfTest() = withContext(Dispatchers.IO) {
+        for (col in collections) {
+            if (col.id == SCENE) continue
+            val list = runCatching { manifest(col) }.getOrElse { e -> Log.w(TAG, "TEST ${col.id}: list failed ${e.javaClass.simpleName} ${e.message}"); emptyList() }
+            var thumbsOk = 0
+            val tried = list.take(8)
+            for (p in tried) if (thumbnail(p) != null) thumbsOk++
+            var fullOk = 0
+            val full = list.take(3)
+            for (p in full) if (load(p) != null) fullOk++
+            Log.i(TAG, "TEST ${col.id}: ${list.size} pictures, thumbs $thumbsOk/${tried.size}, full $fullOk/${full.size}")
+        }
+        Log.i(TAG, "TEST done")
+    }
+
     /** The collection's picture of the day (thumbnail), for the collection cards. */
     suspend fun preview(collectionId: String): ImageBitmap? {
         val list = pictures(collectionId)
@@ -407,7 +803,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         val pin = cfg.pin ?: return
         prefetched = null
         while (currentCoroutineContext().isActive) {
-            val list = runCatching { manifest(col) }.getOrDefault(emptyList())
+            val list = runCatching { picturesFor(col) }.getOrDefault(emptyList())
             val p = list.firstOrNull { it.key == pin } ?: Picture(pin, pin, "")
             val shown = _current.value?.takeIf { it.key == p.key } ?: load(p)
             if (shown != null) {
@@ -425,10 +821,10 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         while (currentCoroutineContext().isActive) {
             // Shuffle over the whole (unfiltered) list; broken pictures are skipped when picked,
             // so a newly broken picture doesn't reshuffle the cycle.
-            val list = runCatching { manifest(col) }.getOrDefault(emptyList())
+            val list = runCatching { picturesFor(col) }.getOrDefault(emptyList())
             if (list.none { it.key !in bad }) {
-                Log.w(TAG, "$id: no usable pictures, retrying in 60 s")
-                delay(60_000)
+                Log.w(TAG, "$id: no usable pictures yet, retrying later")
+                delay(60_000L)
                 continue
             }
             val size = list.size
@@ -571,7 +967,8 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         } catch (e: Exception) {
             return null // already logged; temporary
         }
-        return when (val d = decode(file, FULL_W, FULL_H, requireLandscape = true, hardware = false)) {
+        val own = p.full.startsWith("file:")
+        return when (val d = decode(file, FULL_W, FULL_H, requireLandscape = !own, hardware = false)) {
             is Decoded.Ok -> Wallpaper(d.image, p.credit, p.key)
             Decoded.Unsuitable -> {
                 Log.i(TAG, "unsuitable (portrait/small): ${p.full.take(160)}")
@@ -592,6 +989,9 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     // ---- manifests ----------------------------------------------------------------
 
     private suspend fun manifest(col: WallpaperCollection): List<Picture> {
+        // Own pictures: always the current files (nothing to download or cache).
+        if (col.id == MINE) return MyMedia.wallpapers(appContext).map { f -> f.toURI().toString().let { Picture(it, it, "") } }
+        if (col.id == FAVS) return favouritePictures()
         val lock = manifestLocks.getOrPut(col.id) { Mutex() }
         return lock.withLock {
             val ttl = col.ttlHours * 3_600_000L
@@ -629,23 +1029,42 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     }
 
     /** All feeds of a collection, interleaved so the picker shows a mix. Second = no feed failed. */
-    private suspend fun fetch(col: WallpaperCollection): Pair<List<Picture>, Boolean> {
+    private suspend fun fetch(col: WallpaperCollection, patient: Boolean = false): Pair<List<Picture>, Boolean> {
         val perFeed = ArrayList<List<Picture>>()
         var complete = true
         for (feed in col.feeds) {
-            val got: List<Picture> = try {
-                when (feed) {
-                    is Feed.Nasa -> nasa(feed.query)
-                    is Feed.Commons -> commonsCategory(feed.category)
-                    is Feed.PictureOfTheDay -> pictureOfTheDay(feed.days)
-                    Feed.Picsum -> picsumList()
+            var tries = 0
+            var got: List<Picture>
+            while (true) {
+                got = try {
+                    when (feed) {
+                        is Feed.Nasa -> nasa(feed.query)
+                        is Feed.Commons -> commonsCategory(feed.category)
+                        is Feed.PictureOfTheDay -> pictureOfTheDay(feed.days)
+                        Feed.Picsum -> picsumList()
+                        Feed.Mine -> MyMedia.wallpapers(appContext).map { f -> f.toURI().toString().let { Picture(it, it, "") } }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // Rate-limited: for a pack download, wait it out and ask again (twice at most).
+                    val host = when (feed) {
+                        is Feed.Nasa -> "images-api.nasa.gov"
+                        is Feed.Commons -> "commons.wikimedia.org"
+                        is Feed.PictureOfTheDay -> "api.wikimedia.org"
+                        else -> ""
+                    }
+                    val until = hostCooldown[host] ?: 0L
+                    if (patient && tries < 2 && until > System.currentTimeMillis()) {
+                        tries++
+                        waitForHost(host)
+                        continue
+                    }
+                    complete = false
+                    Log.w(TAG, "${col.id}: feed $feed failed: ${e.javaClass.simpleName} ${e.message}")
+                    emptyList()
                 }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                complete = false
-                Log.w(TAG, "${col.id}: feed $feed failed: ${e.javaClass.simpleName} ${e.message}")
-                emptyList()
+                break
             }
             Log.i(TAG, "${col.id}: feed $feed → ${got.size}")
             perFeed += got
@@ -800,8 +1219,9 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         val today = LocalDate.now(ZoneOffset.UTC)
         val primaryDown = AtomicBoolean(false)
         val failures = AtomicInteger(0)
+        // One day after the other (a burst of parallel requests gets rate-limited).
         val perDay = (0 until days.coerceIn(1, 90)).map { back ->
-            async {
+            run {
                 val d = today.minusDays(back.toLong())
                 val path = d.toString().replace('-', '/') // ISO yyyy-MM-dd → yyyy/MM/dd
                 val primary = "https://api.wikimedia.org/feed/v1/wikipedia/en/featured/$path"
@@ -827,7 +1247,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                 }
                 root?.obj("image")?.let { potdPicture(it) }
             }
-        }.awaitAll()
+        }
         val out = perDay.filterNotNull().distinctBy { it.key }
         if (out.isEmpty() && failures.get() > 0) throw IOException("picture of the day unreachable")
         out
@@ -884,15 +1304,17 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         Semaphore(
             when {
                 host == "commons.wikimedia.org" -> 1 // Action API: one request at a time
-                host.endsWith("wikimedia.org") -> 2  // upload / api.wikimedia.org: ≤ 2 parallel
-                host.endsWith("wikipedia.org") -> 2  // REST API fallback for the picture of the day
+                host.endsWith("wikimedia.org") -> 1  // upload / api.wikimedia.org: one at a time
+                host.endsWith("wikipedia.org") -> 1  // REST API fallback for the picture of the day
                 else -> 3
             }
         )
     }
 
     private fun minGapMs(host: String): Long = when (host) {
-        "commons.wikimedia.org" -> 400L
+        "commons.wikimedia.org" -> 500L
+        "api.wikimedia.org", "en.wikipedia.org" -> 400L
+        "upload.wikimedia.org" -> 250L
         else -> 0L
     }
 
@@ -926,7 +1348,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                     } finally {
                         c.disconnect()
                     }
-                }
+                }.also { hostStrikes.remove(host) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: HttpException) {
@@ -936,8 +1358,10 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                     val backoff = e.retryAfterMs ?: (5_000L shl attempt)
                     if (attempt >= 2 || backoff > 30_000L) {
                         if (e.code == 429 || e.code == 503) {
-                            hostCooldown[host] = t + backoff.coerceIn(30_000L, 15 * 60_000L)
-                            Log.w(TAG, "$host rate-limited, pausing ${backoff.coerceIn(30_000L, 15 * 60_000L) / 1000} s")
+                            val strikes = hostStrikes.merge(host, 1) { a, b -> a + b } ?: 1
+                            val pause = maxOf(backoff, 30_000L shl (strikes - 1).coerceAtMost(5)).coerceIn(30_000L, 10 * 60_000L)
+                            hostCooldown[host] = t + pause
+                            Log.w(TAG, "$host rate-limited, pausing ${pause / 1000} s")
                         }
                         failedUrls[url] = t + 5 * 60_000L
                         throw e
@@ -1001,6 +1425,9 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
 
     /** Downloads [url] into [folder] once (one download per file at a time); returns the cached file. */
     private suspend fun download(url: String, folder: File): File {
+        if (url.startsWith("file:")) {
+            return File(java.net.URI(url)).takeIf { it.isFile } ?: throw IOException("own picture removed: ${url.take(120)}")
+        }
         val file = fileFor(url, folder)
         if (file.exists()) return file
         val lock = fileLocks.getOrPut(file.name) { Mutex() }

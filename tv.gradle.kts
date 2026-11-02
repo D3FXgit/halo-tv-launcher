@@ -302,3 +302,59 @@ tasks.register("tvWizardTour") {
         println("saved ${dir.listFiles()?.size ?: 0} screenshots to $dir")
     }
 }
+
+/** Has the TV load every picture collection and logs what works (debug build) → tv-walltest.txt. */
+tasks.register("tvWallTest") {
+    group = "halo tv"
+    description = "Tests every picture collection on the TV (lists, thumbnails, full pictures) → tv-walltest.txt"
+    doLast {
+        val s = tv()
+        adb("-s", s, "logcat", "-c")
+        sh(s, "am start -n $HOME_COMPONENT --es halo.open walltest")
+        var log = ""
+        for (i in 0 until 90) {
+            Thread.sleep(2000)
+            log = adb("-s", s, "logcat", "-d", "-s", "HaloWall:*")
+            if ("TEST done" in log) break
+        }
+        rootProject.file("tv-walltest.txt").writeText(log)
+        println(log.lines().filter { "TEST" in it || "HTTP" in it }.joinToString("\n"))
+    }
+}
+
+/** Opens the phone-upload page on the TV and loads it from this PC (same network) → tv-uploadtest.txt. */
+tasks.register("tvUploadTest") {
+    group = "halo tv"
+    description = "Opens 'Add from phone' on the TV, loads its page from this PC and logs the result → tv-uploadtest.txt"
+    doLast {
+        val s = tv()
+        val mask = { t: String -> t.replace(Regex("t=[a-z0-9]{6,}"), "t=…") }
+        adb("-s", s, "logcat", "-c")
+        sh(s, "am start -n $HOME_COMPONENT --es halo.open upload")
+        var url: String? = null
+        for (i in 0 until 20) {
+            Thread.sleep(1000)
+            url = Regex("""http://[0-9.]+:\d+/\?t=[a-z0-9]+""").find(adb("-s", s, "logcat", "-d", "-s", "HaloUpload:*"))?.value
+            if (url != null) break
+        }
+        val out = StringBuilder()
+        out.appendLine("TV addresses:\n" + sh(s, "ip -4 -o addr show").lines().joinToString("\n") { "  " + it.replace(Regex("\\s+"), " ").take(90) })
+        out.appendLine("page: ${url?.let(mask) ?: "no URL (panel did not start a server)"}")
+        if (url != null) {
+            for (u in listOf(url, url.substringBefore("?"))) {
+                out.appendLine(runCatching {
+                    val c = java.net.URL(u).openConnection() as java.net.HttpURLConnection
+                    c.connectTimeout = 5000
+                    c.readTimeout = 10000
+                    val code = c.responseCode
+                    val body = (if (code < 400) c.inputStream else c.errorStream)?.bufferedReader()?.readText().orEmpty()
+                    "GET ${mask(u)} -> HTTP $code, ${body.length} chars: ${body.take(100).replace("\n", " ")}"
+                }.getOrElse { "GET ${mask(u)} -> ${it.javaClass.simpleName}: ${it.message}" })
+            }
+        }
+        Thread.sleep(500)
+        out.appendLine("TV log:\n" + mask(adb("-s", s, "logcat", "-d", "-s", "HaloUpload:*")))
+        sh(s, "input keyevent 4")
+        report("tv-uploadtest.txt", out.toString())
+    }
+}

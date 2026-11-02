@@ -41,6 +41,11 @@ runs a small temporary web page that is reachable only in your home network (bou
 LAN address, protected by a one-time code from the QR code, stopped after the key arrives or after
 15 minutes). The key is verified with Google's Gemini API and then stored on the TV.
 
+Your own wallpapers and app icons are sent the same way: while the "send from your phone" QR code
+is on screen (at most 30 minutes), the TV runs a temporary page in your home network only,
+protected by a one-time code. Pictures are decoded and re-encoded on the TV and stored only in
+Halo's private app storage; they never leave the TV. Uninstalling Halo deletes them.
+
 Like any internet request, these requests reveal your IP address to the respective service. Each
 service's own privacy policy applies.
 
