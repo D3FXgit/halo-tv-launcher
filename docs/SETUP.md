@@ -16,7 +16,8 @@ Choose one of these ways:
 
 **A – Downloader app (TV only)**
 1. On the TV, install **Downloader** (by AFTVnews) from the Play Store.
-2. Open it, enter the download link of the APK from the Releases page, and download.
+2. Open it, enter the code **3931871** (Halo 1.2.0) – or the download link of the APK from the
+   Releases page – and download.
 3. When the TV asks, allow Downloader to **install unknown apps**, then select **Install**.
 
 **B – Send Files to TV (TV + phone or computer)**

@@ -116,8 +116,8 @@ Kotlin with Jetpack Compose and runs on Android 9 (API 28) and newer.
 1. Download the latest `Halo-<version>.apk` from the
    [**Releases**](../../releases) page of this repository.
 2. Get the APK onto your TV — pick one:
-   - **Downloader** (by AFTVnews, free in the Play Store on the TV): enter the APK's download URL
-     and install it.
+   - **Downloader** (by AFTVnews, free in the Play Store on the TV): enter the code **3931871**
+     (Halo 1.2.0) or the APK's download URL, and install it.
    - **Send Files to TV** (Play Store, on the TV and on your phone/PC): send the APK, then open
      it on the TV.
    - **adb** from a computer on the same network:
