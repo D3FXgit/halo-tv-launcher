@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Updates from GitHub releases (see update/Updater.kt). -->
+<resources>
+    <string name="upd_title">Halo %1$s is available</string>
+    <string name="upd_current">You have version %1$s. Your settings, profiles and pictures stay as they are.</string>
+    <string name="upd_now">Update now</string>
+    <string name="upd_later">Later</string>
+    <string name="upd_skip">Skip this version</string>
+    <string name="upd_hide">Hide</string>
+    <string name="upd_close">Close</string>
+    <string name="upd_retry">Try again</string>
+    <string name="upd_open_settings">Open settings</string>
+    <string name="upd_downloading">Downloading … %1$d %%</string>
+    <string name="upd_downloading_hint">The update is being downloaded. You can keep watching meanwhile.</string>
+    <string name="upd_permission_title">One permission first</string>
+    <string name="upd_permission">To update itself, Halo needs to be allowed to install apps. Choose \"Open settings\", allow Halo there, then come back and choose \"Try again\".</string>
+    <string name="upd_installing">Almost done</string>
+    <string name="upd_installing_hint">Confirm the update on the screen that opens. Halo restarts afterwards.</string>
+    <string name="upd_failed_title">The update didn\'t work</string>
+    <string name="upd_err_offline">GitHub couldn\'t be reached. Check the internet connection and try again later.</string>
+    <string name="upd_err_download">The download failed. Try again later.</string>
+    <string name="upd_err_signature">The downloaded file isn\'t signed like your Halo, so it wasn\'t installed. (Debug builds can\'t update themselves.)</string>
+    <string name="upd_err_not_newer">The downloaded version isn\'t newer than yours.</string>
+    <string name="upd_err_install">Android didn\'t install the update. Try again, or install it by hand from the project page.</string>
+    <string name="settings_updates">Check for updates</string>
+    <string name="settings_updates_auto">Check for updates automatically</string>
+    <string name="settings_updates_auto_hint">Once a day; you\'re always asked before anything is installed</string>
+    <string name="upd_state_checking">Checking …</string>
+    <string name="upd_state_up_to_date">Up to date (%1$s)</string>
+    <string name="upd_state_available">%1$s available</string>
+    <string name="upd_state_error">Couldn\'t check</string>
+    <string name="act_update_checking">Checking for updates.</string>
+    <string name="act_update_off">Updates aren\'t available in this version of Halo.</string>
+    <string name="a11y_off_banner">Halo\'s remote buttons (star button, Home) are off. Android turns them off when Halo is force-stopped.</string>
+    <string name="a11y_turn_on">Turn on</string>
+</resources>

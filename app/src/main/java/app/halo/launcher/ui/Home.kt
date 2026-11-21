@@ -55,8 +55,14 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
@@ -141,6 +147,9 @@ fun HomeScreen(
     themeMode: ThemeMode,
     clock24h: Boolean,
     showWeather: Boolean,
+    widgets: List<String>,
+    widgetScale: Float,
+    worldZone: String,
     nowPlaying: NowPlaying?,
     mediaAccess: Boolean,
     weather: Weather?,
@@ -149,6 +158,7 @@ fun HomeScreen(
     onLaunch: (Tile, Rect) -> Unit,
     onArrange: (String?) -> Unit,
     onQuickSettings: () -> Unit,
+    onTasks: () -> Unit,
     onAppearance: () -> Unit,
     onProfiles: () -> Unit,
     onSearch: () -> Unit,
@@ -167,6 +177,13 @@ fun HomeScreen(
     var zone by remember { mutableStateOf(Zone.Favourites) }
     val firstTop = remember { FocusRequester() }
     val firstApp = remember { FocusRequester() }
+    // One requester per row: ▲/▼ always go to the next row (the tile last focused there),
+    // instead of a geometric guess that can skip a row or land on a far-away card.
+    val topReq = remember { FocusRequester() }
+    val heroReq = remember { FocusRequester() }
+    val chipReq = remember { FocusRequester() }
+    val favReq = remember { FocusRequester() }
+    val appsReq = remember { FocusRequester() }
     val appsState = rememberLazyListState()
 
     // Initial focus, and "Home" pressed again → back to the first tile.
@@ -197,7 +214,11 @@ fun HomeScreen(
                 .height(64.px)
                 .padding(horizontal = 96.px)
                 .graphicsLayer { alpha = heroAlpha; compositingStrategy = CompositingStrategy.ModulateAlpha }
-                .onFocusChanged { if (it.hasFocus) zone = Zone.Top },
+                .onFocusChanged { if (it.hasFocus) zone = Zone.Top }
+                .rowLinks(up = { emptyList() }, down = { listOf(heroReq, chipReq, favReq, appsReq) })
+                .focusRequester(topReq)
+                .focusRestorer()
+                .focusGroup(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SearchPill(onSearch, onVoice)
@@ -221,6 +242,7 @@ fun HomeScreen(
                     stringResource(R.string.home_theme, stringResource(themeRes(themeMode))),
                     onToggleTheme,
                 )
+                TopButton(app.halo.launcher.data.Glyph.stack.spec, stringResource(R.string.tasks_title), onTasks)
                 TopButton(Icons.sliders, stringResource(R.string.home_launcher_settings), onAppearance)
                 TopButton(Icons.settings, stringResource(R.string.home_tv_settings), onQuickSettings)
                 ProfileChip(profile, onProfiles)
@@ -236,13 +258,24 @@ fun HomeScreen(
                 .padding(horizontal = 96.px)
                 .graphicsLayer { alpha = heroAlpha; compositingStrategy = CompositingStrategy.ModulateAlpha }
                 .onFocusChanged { if (it.hasFocus) zone = Zone.Hero }
+                .rowLinks(up = { listOf(topReq) }, down = { listOf(chipReq, favReq, appsReq) })
+                .focusRequester(heroReq)
+                .focusRestorer()
                 .focusGroup(),
             verticalAlignment = Alignment.Bottom,
         ) {
             // The widgets are exactly as tall as the clock block, so the hero reads as one line.
             var clockH by remember { mutableIntStateOf(0) }
-            ClockBlock(clock24h, profileName(profile), Modifier.onSizeChanged { clockH = it.height })
+            var clockW by remember { mutableIntStateOf(0) }
+            ClockBlock(clock24h, profileName(profile), widgetScale, Modifier.onSizeChanged { clockH = it.height; clockW = it.width })
             val cardH = if (clockH > 0) with(LocalDensity.current) { clockH.toDp() } else 250.px
+            // As many widgets as fit next to the clock (and the player, while something plays).
+            val density = LocalDensity.current
+            val rowW = with(density) { (1920 - 192).px.toPx() }
+            val cardW = with(density) { (300 * widgetScale + 24).px.toPx() }
+            val npW = if (nowPlaying != null) with(density) { (580 + 24).px.toPx() } else 0f
+            val fit = if (clockW > 0) ((rowW - clockW - npW - with(density) { 40.px.toPx() }) / cardW).toInt().coerceAtLeast(0) else 2
+            val shown = ((if (showWeather) listOf("weather") else emptyList()) + widgets).distinct().take(fit)
             Spacer(Modifier.weight(1f))
             // The player only appears while something is playing (or paused).
             AnimatedVisibility(
@@ -255,10 +288,14 @@ fun HomeScreen(
                 if (nowPlaying != null) last[0] = nowPlaying
                 Row {
                     NowPlayingCard(nowPlaying ?: last[0], mediaAccess, cardH, onPlayPause, onNext, onPrevious, onOpenMedia)
-                    if (showWeather) Spacer(Modifier.width(24.px))
+                    if (shown.isNotEmpty()) Spacer(Modifier.width(24.px))
                 }
             }
-            if (showWeather) WeatherCard(weather, cardH, onWeather)
+            shown.forEachIndexed { i, id ->
+                if (i > 0) Spacer(Modifier.width(24.px))
+                if (id == "weather") WeatherCard(weather, cardH, widgetScale, onWeather)
+                else HomeWidget(id, widgetScale, cardH, weather, clock24h, worldZone)
+            }
         }
 
         Spacer(Modifier.height(32.px))
@@ -270,13 +307,21 @@ fun HomeScreen(
                     .padding(start = 84.px)
                     .graphicsLayer { alpha = favAlpha; compositingStrategy = CompositingStrategy.ModulateAlpha },
             ) {
-                RowModeChip(topRowMode, onCycleTopRow)
+                RowModeChip(
+                    topRowMode,
+                    onCycleTopRow,
+                    Modifier
+                        .rowLinks(up = { listOf(heroReq, topReq) }, down = { listOf(favReq, appsReq) })
+                        .focusRequester(chipReq),
+                )
             }
             Spacer(Modifier.height(14.px))
             Row(
                 modifier = Modifier
                     .padding(horizontal = 96.px)
                     .graphicsLayer { alpha = favAlpha; compositingStrategy = CompositingStrategy.ModulateAlpha }
+                    .rowLinks(up = { listOf(chipReq, heroReq, topReq) }, down = { listOf(appsReq) })
+                    .focusRequester(favReq)
                     .focusRestorer()
                     .focusGroup()
                     .onFocusChanged { if (it.hasFocus) zone = Zone.Favourites },
@@ -318,7 +363,10 @@ fun HomeScreen(
                 .height(164.px)
                 .bleed(40.px)
                 .graphicsLayer { alpha = appsAlpha; compositingStrategy = CompositingStrategy.ModulateAlpha }
+                .rowLinks(up = { listOf(favReq, chipReq, heroReq, topReq) }, down = { emptyList() })
+                .focusRequester(appsReq)
                 .focusRestorer()
+                .focusGroup()
                 .onFocusChanged { if (it.hasFocus) zone = Zone.Apps },
             contentPadding = PaddingValues(start = 96.px, end = 96.px, top = 40.px, bottom = 40.px),
             horizontalArrangement = Arrangement.spacedBy(28.px),
@@ -378,11 +426,11 @@ private fun CaptionTile(t: Tile, w: Int, h: Int, tile: @Composable (Modifier) ->
 
 /** "Favourites ⌄" – OK switches what the first row shows. */
 @Composable
-private fun RowModeChip(mode: TopRow, onClick: () -> Unit) {
+private fun RowModeChip(mode: TopRow, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = LocalHalo.current.colors
     val st = remember { ControlState() }
     Row(
-        Modifier
+        modifier
             .control(st, onClick, focusScale = 1.05f)
             .height(40.px)
             .clip(RoundedCornerShape(20.px))
@@ -524,7 +572,7 @@ fun Avatar(profile: Profile, size: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ClockBlock(clock24h: Boolean, name: String, modifier: Modifier = Modifier) {
+private fun ClockBlock(clock24h: Boolean, name: String, scale: Float, modifier: Modifier = Modifier) {
     val c = LocalHalo.current.colors
     val now = rememberNow()
     // Dates in the interface language, not the TV's ("Mittwoch, 29. Oktober" / "Wednesday 29 October").
@@ -548,12 +596,12 @@ private fun ClockBlock(clock24h: Boolean, name: String, modifier: Modifier = Mod
             modifier = Modifier.padding(start = 8.px, bottom = 6.px).widthIn(max = 1000.px),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = hstyle(20, FontWeight.Bold, c.sub, tracking = 0.12f).copy(shadow = textShadow),
+            style = hstyle((20 * scale).toInt(), FontWeight.Bold, c.sub, tracking = 0.12f).copy(shadow = textShadow),
         )
         RollingText(
             time,
-            hstyle(184, FontWeight.Light, c.text, tracking = -0.05f).copy(
-                lineHeight = (184 * 0.9f).tsp,
+            hstyle((184 * scale).toInt(), FontWeight.Light, c.text, tracking = -0.05f).copy(
+                lineHeight = (184 * scale * 0.9f).toInt().tsp,
                 fontFeatureSettings = "tnum",
                 shadow = textShadow,
             ),
@@ -561,7 +609,7 @@ private fun ClockBlock(clock24h: Boolean, name: String, modifier: Modifier = Mod
         BasicText(
             date,
             modifier = Modifier.padding(start = 8.px, top = 10.px),
-            style = hstyle(28, FontWeight.Medium, c.sub).copy(shadow = textShadow),
+            style = hstyle((28 * scale).toInt(), FontWeight.Medium, c.sub).copy(shadow = textShadow),
         )
     }
 }
@@ -669,22 +717,23 @@ private fun NowPlayingCard(
 }
 
 @Composable
-private fun WeatherCard(w: Weather?, height: androidx.compose.ui.unit.Dp, onClick: () -> Unit) {
+internal fun WeatherCard(w: Weather?, height: androidx.compose.ui.unit.Dp, s: Float, onClick: () -> Unit) {
+    fun Int.sc() = (this * s).toInt()
     val c = LocalHalo.current.colors
     val st = remember { ControlState() }
     val shape = RoundedCornerShape(36.px)
     Column(
         modifier = Modifier
             .control(st, onClick, focusScale = 1.05f)
-            .width(300.px)
+            .width((300 * s).toInt().px)
             .height(height)
             .glass(shape, strong = st.focused)
-            .padding(26.px),
+            .padding(26.sc().px),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (w?.fromDevice == true) {
-                HaloIcon(Icons.pin, 18.px, c.sub)
+                HaloIcon(Icons.pin, 18.sc().px, c.sub)
                 Spacer(Modifier.width(6.px))
             }
             BasicText(
@@ -692,14 +741,14 @@ private fun WeatherCard(w: Weather?, height: androidx.compose.ui.unit.Dp, onClic
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = hstyle(18, FontWeight.SemiBold, c.sub),
+                style = hstyle(18.sc(), FontWeight.SemiBold, c.sub),
             )
-            HaloIcon(w?.icon ?: Icons.partly, 40.px, c.text, strokeWidth = 1.6f)
+            HaloIcon(w?.icon ?: Icons.partly, 46.sc().px, c.text, strokeWidth = 1.6f)
         }
         Column {
             BasicText(
                 if (w != null) "${w.temperature}°" else "—",
-                style = hstyle(64, FontWeight.Light, c.text, tracking = -0.04f).copy(lineHeight = 64.tsp),
+                style = hstyle(64.sc(), FontWeight.Light, c.text, tracking = -0.04f).copy(lineHeight = 64.sc().tsp),
             )
             BasicText(
                 when {
@@ -715,31 +764,33 @@ private fun WeatherCard(w: Weather?, height: androidx.compose.ui.unit.Dp, onClic
                 modifier = Modifier.padding(top = 6.px),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = hstyle(17, FontWeight.Medium, c.sub),
+                style = hstyle(19.sc(), FontWeight.Medium, c.sub),
             )
             if (w != null && w.alerts.isNotEmpty()) {
                 Row(Modifier.padding(top = 6.px), verticalAlignment = Alignment.CenterVertically) {
-                    HaloIcon(Icons.warning, 16.px, alertColor(w.alerts.first().severity))
+                    HaloIcon(Icons.warning, 16.sc().px, alertColor(w.alerts.first().severity))
                     Spacer(Modifier.width(6.px))
                     BasicText(
                         pluralResource(R.plurals.weather_warnings, w.alerts.size, w.alerts.size),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = hstyle(15, FontWeight.Bold, alertColor(w.alerts.first().severity)),
+                        style = hstyle(17.sc(), FontWeight.Bold, alertColor(w.alerts.first().severity)),
                     )
                 }
             } else {
                 // Next hours, compact.
                 val hours = w?.hourly.orEmpty().drop(1).take(3)
                 if (hours.isNotEmpty()) {
+                    // Readable from the sofa: hour + icon on one line, a large temperature below.
                     Row(Modifier.fillMaxWidth().padding(top = 8.px), horizontalArrangement = Arrangement.SpaceBetween) {
                         hours.forEach { h ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                BasicText(h.time.format(DateTimeFormatter.ofPattern("HH")), style = hstyle(14, FontWeight.SemiBold, c.sub))
-                                Spacer(Modifier.width(3.px))
-                                HaloIcon(Weather.iconFor(h.code, h.isDay), 18.px, c.text, strokeWidth = 1.8f)
-                                Spacer(Modifier.width(2.px))
-                                BasicText("${h.temp}°", style = hstyle(14, FontWeight.SemiBold, c.text))
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    BasicText(h.time.format(DateTimeFormatter.ofPattern("HH")), style = hstyle(16.sc(), FontWeight.SemiBold, c.sub))
+                                    Spacer(Modifier.width(4.px))
+                                    HaloIcon(Weather.iconFor(h.code, h.isDay), 26.sc().px, c.text, strokeWidth = 1.8f)
+                                }
+                                BasicText("${h.temp}°", style = hstyle(22.sc(), FontWeight.SemiBold, c.text))
                             }
                         }
                     }
@@ -756,3 +807,20 @@ fun alertColor(severity: String): Color = when (severity) {
     "moderate" -> Color(0xFFF2994A)
     else -> Color(0xFFF2C94C)
 }
+
+/**
+ * ▲/▼ leave the row for the first of [up]/[down] that can take focus (each target restores the
+ * tile last focused in it). Rows that are missing or have nothing focusable are skipped, so the
+ * D-pad never lands on a far-away card or gets stuck below a row. No target → default behaviour
+ * (the edge bounce).
+ */
+private fun Modifier.rowLinks(up: () -> List<FocusRequester>, down: () -> List<FocusRequester>): Modifier =
+    onPreviewKeyEvent { e ->
+        if (e.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+        val targets = when (e.key) {
+            Key.DirectionUp -> up()
+            Key.DirectionDown -> down()
+            else -> return@onPreviewKeyEvent false
+        }
+        targets.any { runCatching { it.requestFocus() }.getOrDefault(false) }
+    }

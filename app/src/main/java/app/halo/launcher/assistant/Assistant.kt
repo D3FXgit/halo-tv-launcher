@@ -97,6 +97,15 @@ object Assistant {
             WallpaperRepository.collections.joinToString("; ") { "${it.id}: ${it.title}" } + ".",
             mapOf("source" to ("Picture collection" to WallpaperRepository.collections.map { it.id }))),
         Tool("next_background", "Show the next background picture now."),
+        Tool("running_apps", "Show the running apps screen (apps used since the TV started, with force stop)."),
+        Tool("close_app", "Close (force-stop) a running app. Use name=all to close every running app.",
+            mapOf("name" to ("App name, or all" to null))),
+        Tool("check_for_updates", "Check GitHub for a new version of Halo (the user is asked before anything is installed)."),
+        Tool("easter_egg", "Play one of Halo's hidden fun extras when the user asks for it: sing (sings Daisy Bell), pod_bay, " +
+            "barrel_roll, self_destruct, meaning (of life), beam (me up), snow, skynet, secret, hello_there, sandwich, sudo_sandwich, " +
+            "coin (flip), dice (roll), party, goodnight, daddy (who made Halo), credits, retro (retro look on/off). " +
+            "The extra shows and speaks its own line, so reply with nothing more.",
+            mapOf("name" to ("Which extra" to app.halo.launcher.easter.Egg.entries.map { it.id }))),
         Tool("favourite_background", "Add the background picture shown right now to the user's Favourites picture collection (favs)."),
         Tool("set_background_interval", "How often the background picture changes, in minutes (0 = keep one picture, 1440 = daily).",
             mapOf("minutes" to ("Minutes between pictures" to WallpaperRepository.INTERVALS.map { it.toString() }))),
@@ -160,6 +169,13 @@ object Assistant {
         "clock_24h" to "on|off",
         "navigation_sounds" to "on|off",
         "show_weather" to "on|off",
+        "widget_size" to "small|normal|large|xlarge (text and cards of the clock and widgets)",
+        "widget_forecast" to "on|off (next days' weather)",
+        "widget_calendar" to "on|off (month calendar)",
+        "widget_sunmoon" to "on|off (sunrise, sunset, moon phase)",
+        "widget_worldclock" to "on|off|<city> (clock of another city: " + app.halo.launcher.ui.HomeWidgets.ZONES.joinToString { app.halo.launcher.ui.HomeWidgets.city(it) } + ")",
+        "widget_countdown" to "on|off (days until the next holiday)",
+        "widget_device" to "on|off (connection, VPN, free storage)",
         "screensaver_after_minutes" to "0 (off)|2|5|10|15|30",
         "tile_style" to "halo (uniform Halo cards)|banner (the apps' own TV banners)|icon (app icons)|mono (white logos on graphite, all apps alike)",
         "song_artwork_background" to "on|off (artwork of what's playing as background)",
@@ -201,6 +217,7 @@ object Assistant {
         appendLine(
             "Current Halo settings: theme ${s.theme.lowercase()}, tile style ${s.tileLook}, motion ${onOff(s.motion)}, 24h clock ${onOff(s.clock24h)}, " +
                 "navigation sounds ${onOff(s.sounds)}, weather ${if (!s.showWeather) "hidden" else if (s.useDeviceLocation) "TV location" else s.city}, " +
+                "widgets ${s.widgets.joinToString().ifEmpty { "none" }} (size ${s.widgetScale}, world clock ${s.worldZone}), " +
                 "screensaver after ${s.ambientMinutes} min, language ${s.language}, voice ${s.voice}, background ${s.profile.wallpaper} " +
                 "(changes every ${s.profile.wallpaperMinutes} min), song artwork background ${onOff(s.profile.mediaBackdrop)}, " +
                 "assistant button ${s.assistantButton}, keep Halo as home ${onOff(s.homeOverride)}, " +
@@ -298,6 +315,35 @@ object Assistant {
             "favourite_background" -> {
                 if (vm.wallpapers.favouriteCurrent()) t(R.string.act_fav_background) to "ok"
                 else t(R.string.act_fav_background_none) to "no background picture is shown (animated scene or nothing loaded)"
+            }
+            "running_apps" -> {
+                actions.showHalo()
+                vm.tasksOpen.value = true
+                t(R.string.tasks_title) to "shown"
+            }
+            "close_app" -> {
+                val name = args["name"].orEmpty()
+                val running = vm.runningApps()
+                val pkgs = if (name.trim().lowercase() in listOf("all", "alle", "hepsi", "everything")) running.map { it.tile.app.packageName }
+                else listOfNotNull(findApp(home, name)?.app?.packageName)
+                if (pkgs.isEmpty()) return@withContext t(R.string.act_app_not_found) to "no such app / nothing running"
+                val back = android.content.Intent(ctx, app.halo.launcher.MainActivity::class.java)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                    .putExtra(app.halo.launcher.MainActivity.EXTRA_KEEP_SCREEN, true)
+                vm.tasksOpen.value = true
+                val auto = app.halo.launcher.remap.ForceStopper.stop(ctx, pkgs, back)
+                t(R.string.tasks_stopping) to (if (auto) "stopping ${pkgs.size} app(s)" else "opened the app's info page; the user must press Force stop (Halo's accessibility service is off)")
+            }
+            "check_for_updates" -> {
+                if (!vm.updates.enabled) return@withContext t(R.string.act_update_off) to "updates are off in this build"
+                vm.updates.check(manual = true)
+                actions.showHalo()
+                t(R.string.act_update_checking) to "checking; if there is a new version, Halo shows a prompt"
+            }
+            "easter_egg" -> {
+                val egg = app.halo.launcher.easter.Egg.of(args["name"]) ?: return@withContext t(R.string.act_unknown) to "unknown extra"
+                vm.playEgg(egg, actions)
+                "✨" to "playing; it already said its own line, reply with an empty text"
             }
             "set_background_interval" -> {
                 val m = args["minutes"]?.trim()?.toDoubleOrNull()?.toInt()
@@ -463,6 +509,24 @@ object Assistant {
             "clock_24h" -> flag { b -> vm.updateSettings { it.copy(clock24h = b) } }
             "navigation_sounds" -> flag { b -> vm.updateSettings { it.copy(sounds = b) } }
             "show_weather" -> flag { b -> vm.updateSettings { it.copy(showWeather = b) } }
+            "widget_size" -> {
+                val i = listOf("small", "normal", "large", "xlarge").indexOf(value.lowercase().trim())
+                if (i < 0) return bad
+                vm.updateSettings { it.copy(widgetScale = app.halo.launcher.ui.HomeWidgets.SCALES[i]) }
+                tt(R.string.act_setting, value) to "ok"
+            }
+            "widget_forecast", "widget_calendar", "widget_sunmoon", "widget_worldclock", "widget_countdown", "widget_device" -> {
+                val id = setting.removePrefix("widget_")
+                val zone = if (id == "worldclock") app.halo.launcher.ui.HomeWidgets.ZONES.firstOrNull {
+                    app.halo.launcher.ui.HomeWidgets.city(it).equals(value.trim(), true)
+                } else null
+                val b = if (zone != null) true else parseOnOff(value) ?: return bad
+                vm.updateSettings { s ->
+                    val list = if (b) (s.widgets - id) + id else s.widgets - id
+                    s.copy(widgets = list, worldZone = zone ?: s.worldZone)
+                }
+                tt(R.string.act_setting, tt(if (b) R.string.act_on else R.string.act_off)) to "ok"
+            }
             "song_artwork_background" -> flag { b -> vm.updateActiveProfile { it.copy(mediaBackdrop = b) } }
             "assistant_button" -> {
                 val v = value.lowercase().takeIf { it in listOf("off", "star") } ?: return bad

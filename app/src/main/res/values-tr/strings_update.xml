@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upd_title">Halo %1$s hazır</string>
+    <string name="upd_current">Sende %1$s sürümü var. Ayarların, profillerin ve resimlerin olduğu gibi kalır.</string>
+    <string name="upd_now">Şimdi güncelle</string>
+    <string name="upd_later">Sonra</string>
+    <string name="upd_skip">Bu sürümü atla</string>
+    <string name="upd_hide">Gizle</string>
+    <string name="upd_close">Kapat</string>
+    <string name="upd_retry">Tekrar dene</string>
+    <string name="upd_open_settings">Ayarları aç</string>
+    <string name="upd_downloading">İndiriliyor … %%%1$d</string>
+    <string name="upd_downloading_hint">Güncelleme indiriliyor. Bu arada izlemeye devam edebilirsin.</string>
+    <string name="upd_permission_title">Önce bir izin</string>
+    <string name="upd_permission">Halo\'nun kendini güncelleyebilmesi için uygulama yükleme izni gerekiyor. \"Ayarları aç\"ı seç, orada Halo\'ya izin ver, sonra geri gelip \"Tekrar dene\"yi seç.</string>
+    <string name="upd_installing">Neredeyse bitti</string>
+    <string name="upd_installing_hint">Açılan ekranda güncellemeyi onayla. Ardından Halo yeniden başlar.</string>
+    <string name="upd_failed_title">Güncelleme olmadı</string>
+    <string name="upd_err_offline">GitHub\'a ulaşılamadı. İnternet bağlantını kontrol et ve daha sonra tekrar dene.</string>
+    <string name="upd_err_download">İndirme başarısız oldu. Daha sonra tekrar dene.</string>
+    <string name="upd_err_signature">İndirilen dosya senin Halo\'n gibi imzalanmamış, bu yüzden yüklenmedi. (Hata ayıklama sürümleri kendini güncelleyemez.)</string>
+    <string name="upd_err_not_newer">İndirilen sürüm seninkinden yeni değil.</string>
+    <string name="upd_err_install">Android güncellemeyi yüklemedi. Tekrar dene ya da proje sayfasından elle yükle.</string>
+    <string name="settings_updates">Güncellemeleri denetle</string>
+    <string name="settings_updates_auto">Güncellemeleri otomatik denetle</string>
+    <string name="settings_updates_auto_hint">Günde bir kez; bir şey yüklenmeden önce her zaman sorulur</string>
+    <string name="upd_state_checking">Denetleniyor …</string>
+    <string name="upd_state_up_to_date">Güncel (%1$s)</string>
+    <string name="upd_state_available">%1$s hazır</string>
+    <string name="upd_state_error">Denetlenemedi</string>
+    <string name="act_update_checking">Güncellemeleri denetliyorum.</string>
+    <string name="act_update_off">Halo\'nun bu sürümünde güncelleme yok.</string>
+    <string name="a11y_off_banner">Halo\'nun kumanda tuşları (yıldız tuşu, Ana ekran) kapalı. Halo zorla durdurulduğunda Android bunları kapatır.</string>
+    <string name="a11y_turn_on">Aç</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upload_title_backup">Kurulumunu yedekle veya geri yükle</string>
+    <string name="upload_scan_backup">Kodu telefonunla tara. Orada profillerin, ana ekran sıraların ve ayarlarınla bir yedek dosyası kaydedebilir ya da bir yedeği bu TV\'ye geri gönderebilirsin.</string>
+    <string name="upload_web_backup">Yedek</string>
+    <string name="upload_web_backup_hint">Profillerini, ana ekran sıralarını (favori sırası, gizli uygulamalar, simge stilleri), widget\'ları ve ayarları bu telefonda tek bir dosyaya kaydeder. Dahil değil: Gemini anahtarın, kendi resimlerin ve simgelerin.</string>
+    <string name="upload_web_backup_save">Yedeği bu telefona kaydet</string>
+    <string name="upload_web_backup_restore">Bir yedek dosyasından geri yükle</string>
+    <string name="upload_web_backup_restored">Geri yüklendi. TV kurulumunu şimdi uyguluyor.</string>
+    <string name="upload_web_backup_invalid">Bu bir Halo yedek dosyası değil.</string>
+    <string name="settings_backup">Yedekle ve geri yükle</string>
+    <string name="settings_backup_value">Telefonun üzerinden</string>
+    <string name="setup_restore_backup">Yedeği geri yükle</string>
+    <string name="col_tmdb_title">Filmler ve Diziler</string>
+    <string name="col_tmdb_desc">Popüler ve yakında çıkacak film ve dizilerden hayran görselleri, TMDB\'den</string>
+    <string name="bg_tmdb_needs_key">Filmler ve Diziler için kendi ücretsiz TMDB anahtarın gerekiyor. “TMDB anahtarı ekle”yi seç ve telefonunda yapıştır.</string>
+    <string name="bg_tmdb_add_key">TMDB anahtarı ekle</string>
+    <string name="bg_tmdb_change_key">TMDB anahtarını değiştir</string>
+    <string name="bg_tmdb_notice">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.</string>
+    <string name="upload_title_tmdb">TMDB anahtarını ekle</string>
+    <string name="upload_scan_tmdb">Kodu telefonunla tara ve ücretsiz TMDB API anahtarını orada yapıştır. Anahtarı themoviedb.org → Ayarlar → API bölümünden alabilirsin.</string>
+    <string name="upload_web_tmdb">TMDB anahtarı</string>
+    <string name="upload_web_tmdb_hint">TMDB “API Key” veya “API Read Access Token” değerini yapıştır (themoviedb.org → Ayarlar → API). TMDB ile kontrol edilir ve yalnızca TV\'nde saklanır.</string>
+    <string name="upload_web_tmdb_label">API anahtarı veya okuma erişim belirteci</string>
+    <string name="upload_web_tmdb_save">Anahtarı kaydet</string>
+    <string name="upload_web_tmdb_checking">TMDB ile kontrol ediliyor …</string>
+    <string name="upload_web_tmdb_ok">Anahtar kaydedildi. Görseller TV\'de yükleniyor.</string>
+    <string name="upload_web_tmdb_bad">TMDB bu anahtarı kabul etmedi. Kontrol edip tekrar dene.</string>
+    <string name="upload_web_tmdb_offline">TMDB\'ye ulaşılamadı. Birazdan tekrar dene.</string>
+</resources>

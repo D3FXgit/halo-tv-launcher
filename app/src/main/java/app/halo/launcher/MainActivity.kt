@@ -28,6 +28,10 @@ class MainActivity : ComponentActivity(), HaloActions {
     companion object {
         /** Set by the assistant overlay (showHalo): don't treat the new intent as a Home press. */
         const val EXTRA_KEEP_SCREEN = "halo.keep_screen"
+        /** An Easter egg to play (e.g. "credits", from five presses of the star button). */
+        const val EXTRA_EGG = "halo.egg"
+        /** Open "Running apps" (holding the star button). */
+        const val EXTRA_TASKS = "halo.tasks"
     }
 
     /** Shared with the assistant overlay (see [HaloApp]). */
@@ -96,11 +100,15 @@ class MainActivity : ComponentActivity(), HaloActions {
         // Compose paints its own opaque background; skip the window fill (one full-screen draw less per frame).
         window.setBackgroundDrawable(null)
         // Developer hooks (debug builds) also when Halo wasn't running yet.
-        if (savedInstanceState == null) openFromIntent(intent)
+        if (savedInstanceState == null) {
+            playEggFromIntent(intent)
+            openFromIntent(intent)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        if (playEggFromIntent(intent)) return
         if (openFromIntent(intent)) return
         // Brought to the front by the assistant overlay for a Halo screen: keep that screen.
         if (intent.getBooleanExtra(EXTRA_KEEP_SCREEN, false)) return
@@ -117,6 +125,10 @@ class MainActivity : ComponentActivity(), HaloActions {
     private fun openFromIntent(intent: Intent?): Boolean {
         if (!BuildConfig.DEV_HOOKS) return false
         val what = intent?.getStringExtra("halo.open") ?: return false
+        if (what.startsWith("ask:")) {
+            vm.ask(what.removePrefix("ask:"), this)
+            return true
+        }
         if (what == "upload") {
             vm.upload.value = UploadTarget.Pictures
             return true
@@ -165,7 +177,40 @@ class MainActivity : ComponentActivity(), HaloActions {
         vm.ambient.value = false
     }
 
+    private fun playEggFromIntent(intent: Intent?): Boolean {
+        if (intent?.getBooleanExtra(EXTRA_TASKS, false) == true) {
+            intent.removeExtra(EXTRA_TASKS)
+            vm.tasksOpen.value = true
+            return true
+        }
+        val egg = app.halo.launcher.easter.Egg.of(intent?.getStringExtra(EXTRA_EGG)) ?: return false
+        intent?.removeExtra(EXTRA_EGG)
+        vm.playEgg(egg, null)
+        return true
+    }
+
+    /** The Konami code (up up down down left right left right) on the remote toggles the retro look. */
+    private val konami = intArrayOf(
+        KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
+    )
+    private val recentKeys = ArrayDeque<Pair<Int, Long>>()
+
+    private fun checkKonami(event: KeyEvent) {
+        if (event.action != KeyEvent.ACTION_DOWN || event.repeatCount != 0) return
+        recentKeys.addLast(event.keyCode to event.eventTime)
+        while (recentKeys.size > konami.size) recentKeys.removeFirst()
+        if (recentKeys.size == konami.size &&
+            recentKeys.map { it.first }.toIntArray().contentEquals(konami) &&
+            recentKeys.last().second - recentKeys.first().second < 6_000
+        ) {
+            recentKeys.clear()
+            vm.toggleRetro()
+        }
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        checkKonami(event)
         if (event.action == KeyEvent.ACTION_DOWN) FocusDirection.record(event.keyCode)
         // Any key wakes Halo from ambient mode without doing anything else.
         if (event.action == KeyEvent.ACTION_DOWN && vm.wakeFromAmbient()) {

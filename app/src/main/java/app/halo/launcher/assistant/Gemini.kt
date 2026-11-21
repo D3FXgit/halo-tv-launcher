@@ -139,7 +139,14 @@ class GeminiClient(private val key: () -> String) {
             }
             var result: Pair<Int, String>
             while (true) {
+                val t0 = android.os.SystemClock.elapsedRealtime()
                 result = post(models[modelIndex], body)
+                // Timing and token use (for "the assistant is slow" reports; see tvLogcat / tvAskTest).
+                val usage = runCatching {
+                    val u = json.parseToJsonElement(result.second).jsonObject["usageMetadata"]?.jsonObject
+                    "prompt=${u?.get("promptTokenCount")} thoughts=${u?.get("thoughtsTokenCount")} out=${u?.get("candidatesTokenCount")}"
+                }.getOrDefault("")
+                android.util.Log.i("HaloAssist", "${models[modelIndex]} round ${it + 1}: HTTP ${result.first} in ${android.os.SystemClock.elapsedRealtime() - t0} ms $usage")
                 // Unknown model alias → try the next one.
                 if (result.first == 404 && modelIndex < models.lastIndex) modelIndex++ else break
             }

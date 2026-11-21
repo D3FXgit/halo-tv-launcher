@@ -371,7 +371,7 @@
     <string name="overlay_close">Kapat</string>
     <string name="overlay_no_key">Asistanı kullanmak için Gemini API anahtarını Halo\'nun ayarlarına ekle.</string>
     <string name="settings_assistant_button">Halo asistanı düğmesi</string>
-    <string name="settings_assistant_button_hint">Herhangi bir uygulamanın üzerinden Halo\'ya sormak için kumandadaki yıldız düğmesine bas. TV\'nin erişilebilirlik ayarlarında Halo hizmeti gerekir.</string>
+    <string name="settings_assistant_button_hint">Herhangi bir uygulamanın üzerinden Halo\'ya sormak için kumandadaki yıldız düğmesine bas; çalışan uygulamalar için basılı tut. TV\'nin erişilebilirlik ayarlarında Halo hizmeti gerekir.</string>
     <string name="settings_assistant_button_star">Yıldız düğmesi</string>
     <string name="col_mine_title">Resimlerim</string>
     <string name="col_mine_desc">Telefonundan gönderdiğin kendi fotoğrafların</string>

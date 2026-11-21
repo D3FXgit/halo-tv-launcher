@@ -1,6 +1,9 @@
 package app.halo.launcher.ui
 
 import android.provider.Settings
+import app.halo.launcher.HaloApp
+import app.halo.launcher.BuildConfig
+import app.halo.launcher.update.Updater
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -190,10 +194,47 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                                 onClick = a.restoreHidden,
                             )
                         }
+                    }
+
+                    // Widgets next to the clock
+                    SectionTitle(stringResource(R.string.settings_widgets))
+                    Rows {
                         ToggleRow(stringResource(R.string.settings_show_weather), Icons.cloud, null, settings.showWeather) {
                             a.updateSettings { s -> s.copy(showWeather = !s.showWeather) }
                         }
+                        HomeWidgets.ALL.forEach { id ->
+                            val on = id in settings.widgets
+                            ToggleRow(stringResource(HomeWidgets.titleRes(id)), null, null, on) {
+                                a.updateSettings { s -> s.copy(widgets = if (id in s.widgets) s.widgets - id else s.widgets + id) }
+                            }
+                            if (id == HomeWidgets.WORLD_CLOCK && on) {
+                                NavRow(
+                                    stringResource(R.string.settings_world_clock_city),
+                                    Icons.language,
+                                    value = HomeWidgets.city(settings.worldZone),
+                                    onClick = {
+                                        a.updateSettings { s ->
+                                            val i = HomeWidgets.ZONES.indexOf(s.worldZone)
+                                            s.copy(worldZone = HomeWidgets.ZONES[(i + 1) % HomeWidgets.ZONES.size])
+                                        }
+                                    },
+                                )
+                            }
+                        }
                     }
+                    Spacer(Modifier.height(14.px))
+                    ChoiceCaption(stringResource(R.string.settings_widget_size), stringResource(R.string.settings_widget_size_hint))
+                    Segmented(
+                        options = listOf(
+                            stringResource(R.string.size_small),
+                            stringResource(R.string.size_normal),
+                            stringResource(R.string.size_large),
+                            stringResource(R.string.size_xlarge),
+                        ),
+                        selected = HomeWidgets.SCALES.indexOfFirst { kotlin.math.abs(it - settings.widgetScale) < 0.01f }.coerceAtLeast(0),
+                        onSelect = { i -> a.updateSettings { it.copy(widgetScale = HomeWidgets.SCALES[i]) } },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     Spacer(Modifier.height(14.px))
                     ChoiceCaption(stringResource(R.string.settings_tile_look), stringResource(R.string.settings_tile_look_hint))
                     val looks = listOf("halo", "banner", "icon", "mono")
@@ -254,14 +295,15 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                     }
 
                     Spacer(Modifier.height(14.px))
-                    ChoiceCaption(stringResource(R.string.settings_assistant_button), stringResource(R.string.settings_assistant_button_hint))
-                    val buttons = listOf("off", "star")
-                    Segmented(
-                        options = buttons.map { stringResource(app.halo.launcher.assistant.Assistant.assistantButtonRes(it)) },
-                        selected = buttons.indexOf(settings.assistantButton).coerceAtLeast(0),
-                        onSelect = { i -> a.updateSettings { it.copy(assistantButton = buttons[i]) } },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                    Rows {
+                        val b = app.halo.launcher.remap.Buttons.effective(settings)
+                        NavRow(
+                            stringResource(R.string.btn_title),
+                            Icons.sliders,
+                            value = if (b.isEmpty()) stringResource(R.string.off) else b.map { app.halo.launcher.remap.Buttons.keyName(it.key) }.distinct().joinToString(),
+                            onClick = { app.halo.launcher.ui.setup.SetupNav.open(app.halo.launcher.ui.setup.SetupStep.Remote, single = true) },
+                        )
+                    }
 
                     // Screensaver
                     SectionTitle(stringResource(R.string.shortcut_screensaver))
@@ -330,6 +372,11 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                             onClick = { app.halo.launcher.ui.setup.SetupNav.open(app.halo.launcher.ui.setup.SetupStep.Remote, single = true) },
                         )
                         NavRow(
+                            stringResource(R.string.settings_permissions),
+                            Icons.check,
+                            onClick = { app.halo.launcher.ui.setup.SetupNav.open(app.halo.launcher.ui.setup.SetupStep.Permissions, single = true) },
+                        )
+                        NavRow(
                             stringResource(R.string.settings_run_setup),
                             Icons.rocket,
                             onClick = { app.halo.launcher.ui.setup.SetupNav.open(app.halo.launcher.ui.setup.SetupStep.Language, single = false) },
@@ -348,6 +395,44 @@ private fun SettingsPage(settings: HaloSettings, hiddenCount: Int, mediaAccess: 
                             ok = mediaAccess,
                             note = if (mediaAccess) null else stringResource(R.string.settings_media_note),
                         )
+                        val haloVm = (androidx.compose.ui.platform.LocalContext.current.applicationContext as HaloApp).vm
+                        NavRow(stringResource(R.string.tasks_title), Icons.arrange, onClick = {
+                            a.close()
+                            haloVm.tasksOpen.value = true
+                        })
+                        NavRow(
+                            stringResource(R.string.settings_backup),
+                            Icons.storage,
+                            value = stringResource(R.string.settings_backup_value),
+                            onClick = {
+                                a.close()
+                                haloVm.upload.value = app.halo.launcher.UploadTarget.Backup
+                            },
+                        )
+                        val updater = haloVm.updates
+                        if (updater.enabled) {
+                            val ust by updater.state.collectAsStateWithLifecycle()
+                            val auto by updater.auto.collectAsStateWithLifecycle()
+                            NavRow(
+                                stringResource(R.string.settings_updates),
+                                Icons.chevronDown,
+                                value = when (val u = ust) {
+                                    is Updater.State.Checking -> stringResource(R.string.upd_state_checking)
+                                    is Updater.State.UpToDate -> stringResource(R.string.upd_state_up_to_date, BuildConfig.VERSION_NAME)
+                                    is Updater.State.Available -> stringResource(R.string.upd_state_available, u.release.version)
+                                    is Updater.State.Failed -> stringResource(R.string.upd_state_error)
+                                    else -> BuildConfig.VERSION_NAME
+                                },
+                                onClick = {
+                                    val u = ust
+                                    if (u is Updater.State.Available) updater.prompt.value = true
+                                    else updater.check(manual = true)
+                                },
+                            )
+                            ToggleRow(stringResource(R.string.settings_updates_auto), null, stringResource(R.string.settings_updates_auto_hint), auto) {
+                                updater.setAuto(!auto)
+                            }
+                        }
                         NavRow(
                             stringResource(R.string.settings_android_tv),
                             Icons.settings,

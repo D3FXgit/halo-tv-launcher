@@ -1,5 +1,10 @@
 package app.halo.launcher.ui.setup
 
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -85,12 +90,27 @@ fun SetupWizard(vm: HaloViewModel, actions: HaloActions, request: SetupRequest?)
     BackHandler(enabled = true) { previous() }
 
     // The primary button gets focus on every step (the user presses ▲ to reach the choices).
+    // Heavier steps (QR code, local server) can lose that first request while they lay out, so it
+    // is repeated a few times – but only until the user presses a key on this step.
+    var touched by remember { mutableStateOf(false) }
     LaunchedEffect(step) {
-        delay(160)
-        runCatching { primary.requestFocus() }
+        touched = false
+        for (wait in longArrayOf(160, 340, 500, 800)) {
+            delay(wait)
+            if (touched) break
+            runCatching { primary.requestFocus() }
+        }
     }
 
-    Box(Modifier.fillMaxSize().background(c.base)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(c.base)
+            .onPreviewKeyEvent { e ->
+                if (e.type == KeyEventType.KeyDown) touched = true
+                false
+            },
+    ) {
         // Live preview of the chosen background (the Halo scene or the current photo).
         if (settings.profile.wallpaper != "scene" && wallpaper != null) {
             PhotoBackdrop(wallpaper!!, Modifier.fillMaxSize())
@@ -136,11 +156,13 @@ fun SetupWizard(vm: HaloViewModel, actions: HaloActions, request: SetupRequest?)
                             SetupStep.Theme -> ThemeStep(vm, settings)
                             SetupStep.Profile -> ProfileStep(vm, settings)
                             SetupStep.Weather -> WeatherStep(vm, settings)
+                            SetupStep.Widgets -> WidgetsStep(vm, settings)
                             SetupStep.Background -> BackgroundStep(vm, settings)
                             SetupStep.Favourites -> FavouritesStep(vm)
                             SetupStep.Assistant -> AssistantStep(vm, settings)
                             SetupStep.Home -> HomeStep(vm, settings)
                             SetupStep.Remote -> RemoteStep(vm, settings)
+                            SetupStep.Permissions -> PermissionsStep(vm, settings)
                             SetupStep.Done -> DoneStep(vm, settings)
                         }
                     }
@@ -148,6 +170,7 @@ fun SetupWizard(vm: HaloViewModel, actions: HaloActions, request: SetupRequest?)
             }
 
             // ---- Bottom: Back · Skip · Continue ------------------------------------------
+            Spacer(Modifier.height(20.px))
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -167,6 +190,13 @@ fun SetupWizard(vm: HaloViewModel, actions: HaloActions, request: SetupRequest?)
                 } else {
                     // First run: a way out for people who want to set things up later.
                     PillButton(stringResource(R.string.setup_skip_all), { vm.finishSetup() }, height = 64)
+                    // …or bring back a saved setup (a backup file on the phone).
+                    PillButton(
+                        stringResource(R.string.setup_restore_backup),
+                        { vm.upload.value = app.halo.launcher.UploadTarget.Backup },
+                        icon = Icons.storage,
+                        height = 64,
+                    )
                 }
                 Spacer(Modifier.weight(1f))
                 if (step.optional && !single) {

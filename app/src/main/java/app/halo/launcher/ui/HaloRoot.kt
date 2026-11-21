@@ -1,6 +1,7 @@
 package app.halo.launcher.ui
 
 import android.provider.Settings
+import app.halo.launcher.easter.Egg
 import androidx.activity.compose.BackHandler
 import app.halo.launcher.data.MAX_PROFILES
 import androidx.compose.animation.AnimatedContent
@@ -29,6 +30,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import app.halo.launcher.data.HaloSettings
+import app.halo.launcher.setup.DefaultLauncher
+import app.halo.launcher.R
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.graphicsLayer
@@ -101,9 +108,63 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
         val setupRequest by vm.setupRequest.collectAsStateWithLifecycle()
         val settingsReady by vm.settingsReady.collectAsStateWithLifecycle()
         if (!settingsReady) Box(Modifier.fillMaxSize().background(c.base))
-        else if (!settings.setupDone || setupRequest != null) app.halo.launcher.ui.setup.SetupWizard(vm, actions, setupRequest)
+        else if (!settings.setupDone || setupRequest != null) Box(Modifier.fillMaxSize()) {
+            app.halo.launcher.ui.setup.SetupWizard(vm, actions, setupRequest)
+            // "Restore a backup" from the first wizard step (e.g. after "Clear data").
+            val upload by vm.upload.collectAsStateWithLifecycle()
+            if (upload == app.halo.launcher.UploadTarget.Backup) {
+                PhoneUploadPanel(
+                    target = app.halo.launcher.UploadTarget.Backup,
+                    apps = { emptyList() },
+                    onIcon = { _, _ -> },
+                    onClose = { vm.upload.value = null },
+                    backup = vm::backupJson,
+                    restore = vm::restoreBackup,
+                )
+            }
+        }
         else run {
-            Box(Modifier.fillMaxSize().background(c.base)) {
+            // Easter eggs: a barrel roll / transporter beam moves the whole screen; the retro look restyles it.
+            val egg by vm.egg.collectAsStateWithLifecycle()
+            val retro by vm.retro.collectAsStateWithLifecycle()
+            val roll = remember { androidx.compose.animation.core.Animatable(0f) }
+            val beam = remember { androidx.compose.animation.core.Animatable(1f) }
+            LaunchedEffect(egg?.id) {
+                when (egg?.egg) {
+                    Egg.BARREL_ROLL -> {
+                        roll.snapTo(0f)
+                        roll.animateTo(360f, tween(1700, easing = androidx.compose.animation.core.FastOutSlowInEasing))
+                        roll.snapTo(0f)
+                    }
+                    Egg.BEAM -> {
+                        beam.animateTo(0f, tween(1300))
+                        delay(500)
+                        beam.animateTo(1f, tween(1300))
+                    }
+                    else -> Unit
+                }
+            }
+            // December: it snows now and then.
+            LaunchedEffect(Unit) {
+                while (true) {
+                    delay((20L + (0L..40L).random()) * 60_000L)
+                    vm.maybeSnow()
+                }
+            }
+            Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black)) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        rotationZ = roll.value
+                        val s = 1f - 0.3f * kotlin.math.sin(roll.value / 360f * Math.PI).toFloat()
+                        scaleX = s
+                        scaleY = s
+                        alpha = beam.value
+                    }
+                    .retroLook(retro)
+                    .background(c.base),
+            ) {
                 // While something plays (or paused < 15 min), its artwork is the background.
                 val np = nowPlaying
                 var recentlyPlayed by remember { mutableStateOf(false) }
@@ -161,6 +222,9 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                                 themeMode = settings.themeMode,
                                 clock24h = settings.clock24h,
                                 showWeather = settings.showWeather,
+                                widgets = settings.widgets,
+                                widgetScale = settings.widgetScale,
+                                worldZone = settings.worldZone,
                                 nowPlaying = nowPlaying,
                                 mediaAccess = mediaAccess,
                                 weather = weather,
@@ -170,6 +234,7 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                                 onArrange = { key -> vm.open(Screen.Arrange(key)) },
                                 // The stock Google TV settings, not Halo's own.
                                 onQuickSettings = { actions.openSettings(Settings.ACTION_SETTINGS) },
+                                onTasks = { vm.tasksOpen.value = true },
                                 onAppearance = { vm.panel.value = Panel.Appearance },
                                 onProfiles = { vm.open(Screen.Profiles) },
                                 onSearch = { vm.resetAssistant(); vm.open(Screen.Search) },
@@ -219,6 +284,8 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                                 },
                                 onBack = { vm.open(Screen.Home) },
                                 onAddFromPhone = { vm.upload.value = app.halo.launcher.UploadTarget.Pictures },
+                                tmdbKeySet = settings.tmdbKey.isNotBlank(),
+                                onTmdbKey = { vm.upload.value = app.halo.launcher.UploadTarget.TmdbKey },
                             )
                             is Screen.Arrange -> ArrangeScreen(
                                 favourites = home.favourites,
@@ -347,6 +414,9 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                         target = t,
                         apps = { vm.home.value.all.map { it.app.key to it.label } },
                         onIcon = { k, saved -> vm.setOwnIcon(k, saved) },
+                        backup = vm::backupJson,
+                        restore = vm::restoreBackup,
+                        tmdb = if (t == app.halo.launcher.UploadTarget.TmdbKey) vm::submitTmdbKey else null,
                         onClose = { n ->
                             vm.upload.value = null
                             // New own pictures: show them right away.
@@ -366,6 +436,73 @@ fun HaloRoot(vm: HaloViewModel, actions: HaloActions) {
                     AmbientScreen(settings.clock24h, weather, nowPlaying)
                 }
             }
+            // Android switches accessibility services off when an app is force-stopped: remind once.
+            ServiceOffBanner(settings, screen == Screen.Home && !ambient)
+            EggLayer(egg) { id -> vm.eggDone(id) }
+            // A new version on GitHub: ask (checked once a day, and from Settings).
+            val updatePrompt by vm.updates.prompt.collectAsStateWithLifecycle()
+            if (updatePrompt) UpdatePanel(vm.updates)
+            // Running apps (Settings → More, or the assistant).
+            val tasksOpen by vm.tasksOpen.collectAsStateWithLifecycle()
+            if (tasksOpen) TaskManagerPanel(vm = vm, returnTo = null, onClose = { vm.tasksOpen.value = false })
+            LaunchedEffect(Unit) {
+                delay(15_000)
+                while (true) {
+                    vm.updates.checkAutomatically()
+                    delay(3 * 3_600_000L)
+                }
+            }
+            }
         }
     }
 }
+
+/**
+ * Halo's remote-button service is needed (star button, remote app button or Home override) but is
+ * off, e.g. after Halo was force-stopped in the TV's settings (Android then turns the service off).
+ */
+@Composable
+private fun ServiceOffBanner(settings: HaloSettings, onHome: Boolean) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val needed = settings.assistantButton == "star" || settings.youtubeButtonTarget != null || settings.homeOverride
+    var off by remember { mutableStateOf(false) }
+    var dismissed by remember { mutableStateOf(false) }
+    LaunchedEffect(needed) {
+        while (needed) {
+            off = !DefaultLauncher.isServiceEnabled(context)
+            delay(4_000)
+        }
+        off = false
+    }
+    if (!needed || !off || dismissed || !onHome) return
+    val c = LocalHalo.current.colors
+    val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+    LaunchedEffect(Unit) {
+        delay(300)
+        runCatching { focus.requestFocus() }
+    }
+    Box(Modifier.fillMaxSize().padding(bottom = 48.px), contentAlignment = Alignment.BottomCenter) {
+        androidx.compose.foundation.layout.Row(
+            Modifier
+                .glass(androidx.compose.foundation.shape.RoundedCornerShape(30.px), strong = true, fillAlpha = 0.92f)
+                .padding(horizontal = 30.px, vertical = 20.px),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(18.px),
+        ) {
+            androidx.compose.foundation.text.BasicText(
+                androidx.compose.ui.res.stringResource(R.string.a11y_off_banner),
+                Modifier.widthIn(max = 900.px),
+                maxLines = 2,
+                style = hstyle(21, androidx.compose.ui.text.font.FontWeight.Medium, c.text),
+            )
+            PillButton(
+                androidx.compose.ui.res.stringResource(R.string.a11y_turn_on),
+                { DefaultLauncher.openAccessibilitySettings(context) },
+                primary = true,
+                focusRequester = focus,
+            )
+            PillButton(androidx.compose.ui.res.stringResource(R.string.upd_later), { dismissed = true })
+        }
+    }
+}
+

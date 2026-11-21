@@ -33,6 +33,8 @@ object DefaultLauncher {
     const val KEY_YOUTUBE_TARGET = "youtube_target"
     /** Which remote button opens the Halo assistant: "off" or "star". */
     const val KEY_ASSISTANT_BUTTON = "assistant_button"
+    /** Learned remote buttons, encoded by remap.Buttons.encode. */
+    const val KEY_BUTTONS = "buttons"
 
     /** True when the system lets apps ask for the home role (usually false on Google TV). */
     fun isHomeRoleAvailable(context: Context): Boolean =

@@ -3,7 +3,7 @@
 <resources>
     <!-- Bedienungshilfe-Dienst (in den Bedienungshilfen des Fernsehers angezeigt) -->
     <string name="setup_a11y_service_label">Halo</string>
-    <string name="setup_a11y_service_description">Hält Halo als Startbildschirm (holt Halo zurück, wenn der Fernseher seinen eigenen Startbildschirm öffnet), öffnet den Halo-Assistenten mit der Taste, die du in Halo gewählt hast (die Sterntaste), und öffnet – falls du in Halo eine App gewählt hast – diese App, wenn du die YouTube-Taste drückst. Sonst tut der Dienst nichts und liest keine Bildschirminhalte.</string>
+    <string name="setup_a11y_service_description">Hält Halo als Startbildschirm (holt Halo zurück, wenn der Fernseher seinen eigenen Startbildschirm öffnet), öffnet den Halo-Assistenten mit der in Halo gewählten Taste (Sterntaste), öffnet mit der YouTube-Taste die in Halo gewählte App und drückt nur auf deinen Wunsch in Halos „Laufende Apps“ auf der Systemseite einer App „Beenden erzwingen“. Es liest sonst nichts auf dem Bildschirm und speichert nichts, was du tippst.</string>
 
     <!-- Rahmen -->
     <string name="setup_brand">HALO EINRICHTEN</string>
@@ -135,7 +135,7 @@
 
     <!-- 9 · Fernbedienung -->
     <string name="setup_remote_title">Tasten der Fernbedienung</string>
-    <string name="setup_remote_subtitle">Optional: Wähl die Taste, die Halo über jeder App fragt (die Sterntaste), und öffne mit der YouTube-Taste eine andere App (z. B. eine andere YouTube-App). Beides nutzt den Halo-Dienst.</string>
+    <string name="setup_remote_subtitle">Optional: Bring Halo die Tasten deiner Fernbedienung bei – für den Assistenten, die letzten Apps und Halos Startbildschirm (drücken, halten oder doppelt drücken) – und lass die YouTube-Taste eine andere App öffnen. Nutzt den Halo-Dienst.</string>
     <string name="setup_remote_keep">YouTube behalten</string>
 
     <!-- 10 · Fertig -->
@@ -184,4 +184,41 @@
     <string name="setup_web_used_text">Der Fernseher hat über diesen Code schon einen Schlüssel bekommen. Zum Ändern öffne am Fernseher Einstellungen → Assistent-Schlüssel.</string>
     <string name="setup_web_try_again">Erneut versuchen</string>
     <string name="setup_assistant_phone_off">Nicht aktiv. Zeig einen Code an, um vom Handy einen neuen Schlüssel zu senden.</string>
+    <string name="setup_widgets_title">Widgets</string>
+    <string name="setup_widgets_subtitle">Was neben der Uhr steht und wie groß Uhr und Widgets sind.</string>
+    <string name="setup_widgets_preview">Vorschau</string>
+    <string name="setup_widgets_preview_hint">Neben der Uhr stehen so viele Widgets, wie Platz haben; die übrigen warten, bis wieder Platz ist.</string>
+    <string name="setup_perm_title">Berechtigungen</string>
+    <string name="setup_perm_subtitle">Alle freiwillig. Jede schaltet eine Halo-Funktion frei; du kannst sie später in den TV-Einstellungen ändern.</string>
+    <string name="setup_perm_service">Fernbedienungstasten</string>
+    <string name="setup_perm_service_text">Der Halo-Dienst: Home holt Halo zurück, die Sterntaste öffnet den Assistenten (gedrückt halten für die letzten Apps), und Apps schließen in „Letzte Apps“.</string>
+    <string name="setup_perm_media">Läuft gerade</string>
+    <string name="setup_perm_media_text">Zeigt auf dem Startbildschirm, was gerade läuft, mit Cover.</string>
+    <string name="setup_perm_media_adb">Google TV hat dafür keine Einstellungsseite. Führe einmal am Computer aus (oder die Gradle-Aufgabe tvPermissions):</string>
+    <string name="setup_perm_usage">Letzte Apps</string>
+    <string name="setup_perm_usage_text">Zugriff auf Nutzungsdaten: zeigt alle seit dem Einschalten benutzten Apps, nicht nur die aus Halo geöffneten.</string>
+    <string name="setup_perm_updates">Updates</string>
+    <string name="setup_perm_updates_text">Apps installieren: Halo darf seine eigenen Updates von GitHub installieren. Du bestätigst jedes Update.</string>
+    <string name="setup_perm_open">Einstellungen öffnen</string>
+    <string name="setup_perm_change">Ändern</string>
+    <string name="setup_perm_on">An</string>
+    <string name="setup_perm_off">Aus</string>
+    <string name="settings_permissions">Berechtigungen</string>
+    <string name="btn_title">Halo-Tasten</string>
+    <string name="btn_assistant">Assistent</string>
+    <string name="btn_recents">Letzte Apps</string>
+    <string name="btn_home">Halo-Startbildschirm</string>
+    <string name="btn_learn">Taste anlernen</string>
+    <string name="btn_remove">Entfernen</string>
+    <string name="btn_none">Noch keine Taste</string>
+    <string name="btn_press">Drücken</string>
+    <string name="btn_hold">Halten</string>
+    <string name="btn_double">Doppelt drücken</string>
+    <string name="learn_title">Drück die gewünschte Taste</string>
+    <string name="learn_hint">Halo hört noch %1$d s … Pfeile, OK, Zurück, Home und Lautstärke bleiben immer beim Fernseher.</string>
+    <string name="learn_got">Erkannt: %1$s. Wie soll sie gedrückt werden?</string>
+    <string name="learn_none">Es kam keine Taste an. Manche Tasten behält der Fernseher für sich (Home, Mikrofon, Ein/Aus). Versuch eine andere.</string>
+    <string name="learn_blocked">%1$s braucht der Fernseher selbst. Versuch eine andere Taste.</string>
+    <string name="learn_retry">Nochmal</string>
+    <string name="setup_remote_youtube_label">YouTube-Taste öffnet</string>
 </resources>

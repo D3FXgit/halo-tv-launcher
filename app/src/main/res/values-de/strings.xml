@@ -369,7 +369,7 @@
     <string name="overlay_close">Schließen</string>
     <string name="overlay_no_key">Füg in Halos Einstellungen deinen Gemini-API-Schlüssel hinzu, um den Assistenten zu nutzen.</string>
     <string name="settings_assistant_button">Taste für den Halo-Assistenten</string>
-    <string name="settings_assistant_button_hint">Drück die Sterntaste der Fernbedienung, um Halo über jeder App zu fragen. Braucht den Halo-Dienst in den Bedienungshilfen des Fernsehers.</string>
+    <string name="settings_assistant_button_hint">Drück die Sterntaste der Fernbedienung, um Halo über jeder App zu fragen; halte sie gedrückt für die laufenden Apps. Braucht den Halo-Dienst in den Bedienungshilfen des Fernsehers.</string>
     <string name="settings_assistant_button_star">Sterntaste</string>
     <string name="col_mine_title">Meine Bilder</string>
     <string name="col_mine_desc">Deine eigenen Fotos, vom Handy gesendet</string>

@@ -148,7 +148,9 @@ class Speaker(
     private fun language(): String = Lang.effective(appContext)
 
     /** Gemini's free tier has a small TTS quota: after a 429 we use the TV voice for a while. */
-    @Volatile private var quotaUntil = 0L
+    private val quotaPrefs = appContext.getSharedPreferences("halo_voice", Context.MODE_PRIVATE)
+    /** Until when Google's TTS quota is used up (kept across restarts, so a used-up day isn't asked again). */
+    @Volatile private var quotaUntil = quotaPrefs.getLong("quotaUntil", 0L)
 
     /** Synthesised replies are cached (memory + disk), so repeats and voice samples cost nothing. */
     private val cacheDir = java.io.File(appContext.cacheDir, "tts").apply { mkdirs() }
@@ -186,7 +188,11 @@ class Speaker(
 
     fun say(text: String, voiceOverride: String? = null) {
         if (text.isBlank()) return
-        stop()
+        // Stop what is playing without blocking the main thread: the TV voice's stop() is a call into
+        // another process (slow while Google's TTS service starts); QUEUE_FLUSH or the job below does it.
+        job?.cancel()
+        job = null
+        stopTrack()
         val v = voiceOverride ?: voice()
         val lang = language()
         if (apiKey.isBlank() || v == SYSTEM_VOICE) {
@@ -201,9 +207,12 @@ class Speaker(
             return
         }
         job = scope.launch {
+            val t0 = android.os.SystemClock.elapsedRealtime()
+            runCatching { tts.stop() }
             val pcm = runCatching { cached(key) ?: synthesize(text, v, lang)?.also { store(key, it) } }
                 .onFailure { android.util.Log.w("HaloVoice", "Gemini TTS failed: ${it.message}") }
                 .getOrNull()
+            android.util.Log.i("HaloVoice", "natural voice ready in ${android.os.SystemClock.elapsedRealtime() - t0} ms (${text.length} chars)")
             if (!isActive) return@launch
             if (pcm == null || pcm.isEmpty()) {
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { systemSay(text) }
@@ -350,8 +359,10 @@ class Speaker(
         }
         if (quotaHits > 0) {
             // Per-minute limits clear quickly; only a used-up daily quota pauses the natural voice longer.
-            val pause = if (daily) 30 * 60_000L else maxOf(waitMs, 15_000L)
+            // A used-up daily quota: wait as long as Google says (until its daily reset, at most 12 h).
+            val pause = if (daily) waitMs.coerceIn(30 * 60_000L, 12 * 3_600_000L) else maxOf(waitMs, 15_000L)
             quotaUntil = System.currentTimeMillis() + pause
+            quotaPrefs.edit().putLong("quotaUntil", quotaUntil).apply()
             error("Gemini TTS rate-limited; TV voice for ${pause / 1000}s")
         }
         return null
@@ -388,15 +399,19 @@ class Speaker(
         }
     }
 
-    fun stop() {
-        job?.cancel()
-        job = null
+    private fun stopTrack() {
         track?.let { t ->
             track = null
             runCatching { t.stop() }
             runCatching { t.release() }
         }
-        runCatching { tts.stop() }
+    }
+
+    fun stop() {
+        job?.cancel()
+        job = null
+        stopTrack()
+        scope.launch { runCatching { tts.stop() } }
     }
 
     fun shutdown() {

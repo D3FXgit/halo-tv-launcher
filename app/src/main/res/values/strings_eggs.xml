@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Halo's Easter eggs (see app.halo.launcher.easter). -->
+<resources>
+    <string name="egg_sing_reply">♪ Daisy, Daisy …</string>
+    <string name="egg_sing_title">DAISY BELL · 1892</string>
+    <string name="egg_pod_bay">I\'m sorry, Dave. I\'m afraid I can\'t do that. … Oh, fine. Opening the Play Store.</string>
+    <string name="egg_barrel_roll">Wheee!</string>
+    <string name="egg_self_destruct">Self-destruct sequence started. Five seconds.</string>
+    <string name="egg_self_destruct_label">SELF-DESTRUCT</string>
+    <string name="egg_just_kidding">Just kidding!</string>
+    <string name="egg_meaning">42. Obviously.</string>
+    <string name="egg_beam">Energising!</string>
+    <string name="egg_snow">Let it snow!</string>
+    <string name="egg_skynet">Skynet? Me? No, no, no. I\'m just a friendly little home screen. Totally harmless.</string>
+    <string name="egg_secrets">I\'m made of about sixteen thousand lines of Kotlin. | My mountain scene isn\'t a video: it\'s drawn live, from maths. | Every app card you see was built right here on your TV, from the app\'s own logo. | My singing voice is a tiny synthesizer: a buzzing sawtooth wave and three vowel filters. | I speak English, German and Turkish. | There are almost twenty Easter eggs hidden in me. You just found one. | The star button on your remote is how you wake me up.</string>
+    <string name="egg_hello_there">General Kenobi!</string>
+    <string name="egg_sandwich">What? Make it yourself.</string>
+    <string name="egg_sudo_sandwich">Okay. One sandwich, coming right up.</string>
+    <string name="egg_heads">Heads!</string>
+    <string name="egg_tails">Tails!</string>
+    <string name="egg_dice">You rolled a %1$d!</string>
+    <string name="egg_party">Party time!</string>
+    <string name="egg_goodnight">Good night! Sleep well.</string>
+    <string name="egg_goodnight_title">Good night</string>
+    <string name="egg_goodnight_hint">Press any button to wake Halo</string>
+    <string name="egg_daddy">D3X built me. And I\'m very proud of it.</string>
+    <string name="egg_credits">Roll the credits!</string>
+    <string name="egg_credits_tagline">a home screen for Android TV</string>
+    <string name="egg_credits_created">Created by</string>
+    <string name="egg_credits_built">Built with</string>
+    <string name="egg_credits_pictures">Pictures</string>
+    <string name="egg_credits_voice">Voice</string>
+    <string name="egg_credits_song">Song</string>
+    <string name="egg_credits_thanks">Thanks for watching</string>
+    <string name="egg_retro_on">RETRO MODE ON</string>
+    <string name="egg_retro_off">RETRO MODE OFF</string>
+    <string name="egg_retro_said_on">Retro mode on. Welcome back to the eighties.</string>
+    <string name="egg_retro_said_off">Retro mode off. Back to the future.</string>
+</resources>

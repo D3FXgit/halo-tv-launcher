@@ -173,8 +173,10 @@ fun HaloThemeProvider(dark: Boolean, motion: Boolean, content: @Composable () ->
 
 /** Shared spring presets, tuned after tvOS (see research notes). */
 object Motion {
-    fun <T> focusIn() = spring<T>(dampingRatio = 0.78f, stiffness = 420f)
-    fun <T> focusOut() = spring<T>(dampingRatio = 0.68f, stiffness = 300f)
+    // Near-critically damped: one smooth settle, no visible overshoot/rebound on the TV
+    // (underdamped springs read as "robotic" jitter at 60 fps when focus moves quickly).
+    fun <T> focusIn() = spring<T>(dampingRatio = 0.9f, stiffness = 380f)
+    fun <T> focusOut() = spring<T>(dampingRatio = 1f, stiffness = 340f)
     fun <T> wobble() = spring<T>(dampingRatio = 0.42f, stiffness = 260f)
     fun <T> bounce() = spring<T>(dampingRatio = 0.35f, stiffness = Spring.StiffnessMedium)
     fun <T> gentle() = spring<T>(dampingRatio = 1f, stiffness = Spring.StiffnessLow)

@@ -3,7 +3,7 @@
 <resources>
     <!-- Accessibility service (shown in the TV's Accessibility settings) -->
     <string name="setup_a11y_service_label">Halo</string>
-    <string name="setup_a11y_service_description">Halo\'nun ana ekranın olarak kalmasını sağlar (TV kendi ana ekranını açtığında Halo\'yu geri getirir), Halo\'da seçtiğin düğmeyle (yıldız düğmesi) Halo asistanını açar ve Halo\'da bir uygulama seçersen YouTube düğmesine bastığında o uygulamayı açar. Başka hiçbir şey yapmaz ve ekran içeriğini okumaz.</string>
+    <string name="setup_a11y_service_description">Halo\'yu ana ekranın olarak tutar (TV kendi ana ekranını açtığında Halo\'yu geri getirir), Halo\'da seçtiğin tuşla (yıldız tuşu) Halo asistanını açar, YouTube tuşuyla Halo\'da seçtiğin uygulamayı açar ve yalnızca Halo\'nun Çalışan uygulamalar ekranında istediğinde bir uygulamanın sistem bilgisi sayfasında senin için \"Zorla durdur\"a basar. Ekranda başka hiçbir şeyi okumaz ve yazdığın hiçbir şeyi kaydetmez.</string>
 
     <!-- Wizard frame -->
     <string name="setup_brand">HALO KURULUMU</string>
@@ -135,7 +135,7 @@
 
     <!-- 9 · Remote button -->
     <string name="setup_remote_title">Kumanda düğmeleri</string>
-    <string name="setup_remote_subtitle">İsteğe bağlı: herhangi bir uygulamanın üzerinden Halo\'ya soran düğmeyi (yıldız düğmesi) seç ve YouTube düğmesiyle başka bir uygulama (ör. farklı bir YouTube uygulaması) aç. İkisi de Halo hizmetini kullanır.</string>
+    <string name="setup_remote_subtitle">İsteğe bağlı: Halo\'ya kumandanın tuşlarını öğret – asistan, son uygulamalar ve Halo ana ekranı için (bas, basılı tut ya da çift bas) – ve YouTube tuşunun başka bir uygulama açmasını sağla. Halo hizmetini kullanır.</string>
     <string name="setup_remote_keep">YouTube kalsın</string>
 
     <!-- 10 · Done -->
@@ -184,4 +184,41 @@
     <string name="setup_web_used_text">TV bu koddan zaten bir anahtar aldı. Değiştirmek için TV\'de Ayarlar → Asistan anahtarı bölümünü aç.</string>
     <string name="setup_web_try_again">Tekrar dene</string>
     <string name="setup_assistant_phone_off">Etkin değil. Telefonundan yeni bir anahtar göndermek için bir kod göster.</string>
+    <string name="setup_widgets_title">Widget\'lar</string>
+    <string name="setup_widgets_subtitle">Saatin yanında ne görüneceği ve saatle widget\'ların ne kadar büyük olacağı.</string>
+    <string name="setup_widgets_preview">Önizleme</string>
+    <string name="setup_widgets_preview_hint">Saatin yanına sığdığı kadar widget gösterilir; diğerleri yer açılana kadar bekler.</string>
+    <string name="setup_perm_title">İzinler</string>
+    <string name="setup_perm_subtitle">Hepsi isteğe bağlı. Her biri bir Halo özelliğini açar; daha sonra TV ayarlarından değiştirebilirsin.</string>
+    <string name="setup_perm_service">Kumanda tuşları</string>
+    <string name="setup_perm_service_text">Halo hizmeti: Ana ekran tuşu Halo\'yu geri getirir, yıldız tuşu asistanı açar (son uygulamalar için basılı tut) ve Son uygulamalar\'da uygulama kapatma.</string>
+    <string name="setup_perm_media">Şimdi oynatılıyor</string>
+    <string name="setup_perm_media_text">Ana ekranda neyin oynatıldığını kapak resmiyle gösterir.</string>
+    <string name="setup_perm_media_adb">Google TV\'de bunun için bir ayar sayfası yok. Bir bilgisayardan bir kez çalıştır (ya da Gradle görevi tvPermissions):</string>
+    <string name="setup_perm_usage">Son uygulamalar</string>
+    <string name="setup_perm_usage_text">Kullanım erişimi: yalnızca Halo\'dan açılanları değil, TV açıldığından beri kullanılan tüm uygulamaları listeler.</string>
+    <string name="setup_perm_updates">Güncellemeler</string>
+    <string name="setup_perm_updates_text">Uygulama yükleme: Halo kendi güncellemelerini GitHub\'dan yükleyebilir. Her güncellemeyi sen onaylarsın.</string>
+    <string name="setup_perm_open">Ayarları aç</string>
+    <string name="setup_perm_change">Değiştir</string>
+    <string name="setup_perm_on">Açık</string>
+    <string name="setup_perm_off">Kapalı</string>
+    <string name="settings_permissions">İzinler</string>
+    <string name="btn_title">Halo tuşları</string>
+    <string name="btn_assistant">Asistan</string>
+    <string name="btn_recents">Son uygulamalar</string>
+    <string name="btn_home">Halo ana ekranı</string>
+    <string name="btn_learn">Tuşu öğret</string>
+    <string name="btn_remove">Kaldır</string>
+    <string name="btn_none">Henüz tuş yok</string>
+    <string name="btn_press">Bas</string>
+    <string name="btn_hold">Basılı tut</string>
+    <string name="btn_double">Çift bas</string>
+    <string name="learn_title">İstediğin tuşa bas</string>
+    <string name="learn_hint">%1$d sn dinleniyor … Yön tuşları, OK, Geri, Ana ekran ve ses her zaman TV\'de kalır.</string>
+    <string name="learn_got">Algılandı: %1$s. Nasıl basılsın?</string>
+    <string name="learn_none">Hiç tuş gelmedi. TV bazı tuşları kendine ayırır (Ana ekran, mikrofon, güç). Başka bir tuş dene.</string>
+    <string name="learn_blocked">%1$s TV için gerekli. Başka bir tuş dene.</string>
+    <string name="learn_retry">Tekrar dene</string>
+    <string name="setup_remote_youtube_label">YouTube tuşu açar</string>
 </resources>

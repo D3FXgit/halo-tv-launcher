@@ -3,7 +3,7 @@
 <resources>
     <!-- Accessibility service (shown in the TV's Accessibility settings) -->
     <string name="setup_a11y_service_label">Halo</string>
-    <string name="setup_a11y_service_description">Lets Halo stay your home screen (it brings Halo back when the TV opens its own home screen), opens the Halo assistant with the button you chose in Halo (the star button) and, if you choose an app in Halo, opens that app when you press the YouTube button. It does nothing else and reads no screen content.</string>
+    <string name="setup_a11y_service_description">Lets Halo stay your home screen (it brings Halo back when the TV opens its own home screen), opens the Halo assistant with the button you chose in Halo (the star button), opens the app you chose in Halo with the YouTube button and, only when you ask in Halo\'s Running apps, presses \"Force stop\" on that app\'s system info page for you. It reads nothing else on the screen and logs nothing you type.</string>
 
     <!-- Wizard frame -->
     <string name="setup_brand">HALO SETUP</string>
@@ -138,7 +138,7 @@
 
     <!-- 9 · Remote button -->
     <string name="setup_remote_title">Remote buttons</string>
-    <string name="setup_remote_subtitle">Optional: choose the button that asks Halo over any app (the star button), and open another app (such as a different YouTube app) with the YouTube button. Both use the Halo service.</string>
+    <string name="setup_remote_subtitle">Optional: teach Halo the buttons of your remote — one for the assistant, one for recent apps, one for Halo\'s home screen (press, hold or double press) — and let the YouTube button open another app. Uses the Halo service.</string>
     <string name="setup_remote_keep">Keep YouTube</string>
 
     <!-- 10 · Done -->
@@ -187,4 +187,41 @@
     <string name="setup_web_used_text">The TV already got a key from this code. To change it, open Settings → Assistant key on the TV.</string>
     <string name="setup_web_try_again">Try again</string>
     <string name="setup_assistant_phone_off">Not active. Show a code to send a new key from your phone.</string>
+    <string name="setup_widgets_title">Widgets</string>
+    <string name="setup_widgets_subtitle">What shows next to the clock, and how big the clock and widgets are.</string>
+    <string name="setup_widgets_preview">Preview</string>
+    <string name="setup_widgets_preview_hint">As many widgets as fit are shown next to the clock; the rest wait until there is room.</string>
+    <string name="setup_perm_title">Permissions</string>
+    <string name="setup_perm_subtitle">All optional. Each one switches on one Halo feature; you can change them later in the TV\'s settings.</string>
+    <string name="setup_perm_service">Remote buttons</string>
+    <string name="setup_perm_service_text">The Halo service: Home brings Halo back, the star button opens the assistant (hold it for recent apps), and closing apps in Recent apps.</string>
+    <string name="setup_perm_media">Now playing</string>
+    <string name="setup_perm_media_text">Shows what is playing and its artwork on the home screen.</string>
+    <string name="setup_perm_media_adb">Google TV has no settings page for this. Run this once from a computer (or the Gradle task tvPermissions):</string>
+    <string name="setup_perm_usage">Recent apps</string>
+    <string name="setup_perm_usage_text">Usage access: lists every app used since the TV started, not only the ones opened from Halo.</string>
+    <string name="setup_perm_updates">Updates</string>
+    <string name="setup_perm_updates_text">Install apps: lets Halo install its own updates from GitHub. You confirm every update.</string>
+    <string name="setup_perm_open">Open settings</string>
+    <string name="setup_perm_change">Change</string>
+    <string name="setup_perm_on">On</string>
+    <string name="setup_perm_off">Off</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="btn_title">Halo buttons</string>
+    <string name="btn_assistant">Assistant</string>
+    <string name="btn_recents">Recent apps</string>
+    <string name="btn_home">Halo home screen</string>
+    <string name="btn_learn">Learn button</string>
+    <string name="btn_remove">Remove</string>
+    <string name="btn_none">No button yet</string>
+    <string name="btn_press">Press</string>
+    <string name="btn_hold">Hold</string>
+    <string name="btn_double">Double press</string>
+    <string name="learn_title">Press the button you want</string>
+    <string name="learn_hint">Listening for %1$d s … Arrows, OK, Back, Home and volume always stay with the TV.</string>
+    <string name="learn_got">Got it: %1$s. How should it be pressed?</string>
+    <string name="learn_none">No button arrived. The TV keeps some buttons for itself (Home, the microphone, power). Try another one.</string>
+    <string name="learn_blocked">%1$s is needed to use the TV. Try another button.</string>
+    <string name="learn_retry">Try again</string>
+    <string name="setup_remote_youtube_label">YouTube button opens</string>
 </resources>

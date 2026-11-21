@@ -51,16 +51,24 @@ fun PhoneUploadPanel(
     apps: () -> List<Pair<String, String>>,
     onIcon: (key: String, saved: Boolean) -> Unit,
     onClose: (received: Int) -> Unit,
+    backup: (() -> String)? = null,
+    restore: ((String) -> Boolean)? = null,
+    tmdb: ((String) -> Boolean?)? = null,
 ) {
     val context = LocalContext.current
     val c = LocalHalo.current.colors
     val preselect = (target as? UploadTarget.Icon)?.key
-    val server = remember { UploadServer(context, apps, onIcon) }
+    val server = remember { UploadServer(context, apps, onIcon, backup, restore, tmdb) }
+    val view = when (target) {
+        UploadTarget.Backup -> "backup"
+        UploadTarget.TmdbKey -> "tmdb"
+        else -> null
+    }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(server, lifecycle) {
         val observer = LifecycleEventObserver { _, e ->
             when (e) {
-                Lifecycle.Event.ON_START -> server.start(preselect)
+                Lifecycle.Event.ON_START -> server.start(preselect, view)
                 Lifecycle.Event.ON_STOP -> server.stop()
                 else -> Unit
             }
@@ -108,12 +116,23 @@ fun PhoneUploadPanel(
                 BasicText(
                     when (target) {
                         UploadTarget.Pictures -> stringResource(R.string.upload_title_pictures)
+                        UploadTarget.Backup -> stringResource(R.string.upload_title_backup)
+                        UploadTarget.TmdbKey -> stringResource(R.string.upload_title_tmdb)
                         is UploadTarget.Icon -> stringResource(R.string.upload_title_icon, target.label)
                     },
                     style = hstyle(40, FontWeight.Bold, c.text, tracking = -0.01f),
                 )
                 Spacer(Modifier.height(16.px))
-                BasicText(stringResource(R.string.upload_scan), style = hstyle(23, FontWeight.Medium, c.sub))
+                BasicText(
+                    stringResource(
+                        when (target) {
+                            UploadTarget.Backup -> R.string.upload_scan_backup
+                            UploadTarget.TmdbKey -> R.string.upload_scan_tmdb
+                            else -> R.string.upload_scan
+                        }
+                    ),
+                    style = hstyle(23, FontWeight.Medium, c.sub),
+                )
                 Spacer(Modifier.height(20.px))
                 st.url?.takeIf { st.phase == UploadServer.Phase.Waiting }?.let { url ->
                     BasicText(

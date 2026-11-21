@@ -93,6 +93,28 @@ tasks.register("tvConnect") {
     }
 }
 
+tasks.register("tvPair") {
+    group = "halo tv"
+    description = "Pairs with the TV using tv-pair.txt (\"<ip>:<pairing port> <code>\" from Wireless debugging > Pair device with pairing code), then connects"
+    doLast {
+        val f = rootProject.file("tv-pair.txt")
+        if (!f.exists()) throw GradleException("Create tv-pair.txt with \"<ip>:<port> <code>\" from the TV's pairing dialog first.")
+        val parts = f.readText().trim().split(Regex("\\s+"))
+        if (parts.size < 2) throw GradleException("tv-pair.txt must contain \"<ip>:<port> <code>\".")
+        val (target, code) = parts
+        val out = StringBuilder()
+        out.appendLine("pair $target: " + adb("pair", target, code).trim())
+        // The pairing code is single-use: don't keep it around.
+        f.delete()
+        Thread.sleep(2000)
+        // The connect port differs from the pairing port: find it via mDNS (or an explicit 3rd value).
+        parts.getOrNull(2)?.let { out.appendLine("connect $it: " + adb("connect", it).trim()) }
+        out.appendLine("connected: " + runCatching { tv() }.getOrElse { it.message })
+        out.appendLine(adb("devices", "-l").trim())
+        report("tv-connect.txt", out.toString())
+    }
+}
+
 tasks.register("tvReport") {
     group = "halo tv"
     description = "Lists the TV's model, home app and enabled/disabled/third-party packages into tv-report.txt"
@@ -236,9 +258,11 @@ tasks.register("tvLogcat") {
         // "\$" keeps the dollar sign for the TV's shell instead of starting a Kotlin string template.
         val out = "accessibility_enabled=" + sh(s, "settings get secure accessibility_enabled") +
             "\nenabled_services=" + sh(s, "settings get secure enabled_accessibility_services") + "\n\n" +
-            adb("-s", s, "logcat", "-d", "-t", "3000", "-s", "HaloVoice:*", "HaloKeys:*", "HaloWall:*", "AndroidRuntime:E", "Halo:*") +
+            adb("-s", s, "logcat", "-d", "-t", "3000", "-s", "HaloVoice:*", "HaloKeys:*", "HaloWall:*", "HaloAssist:*", "AndroidRuntime:E", "Halo:*") +
             "\n\n--- app process (warnings+) ---\n" +
-            sh(s, "pid=\$(pidof $APP_ID); [ -n \"\$pid\" ] && logcat -d -t 4000 --pid=\$pid *:W | tail -n 150")
+            sh(s, "pid=\$(pidof $APP_ID); [ -n \"\$pid\" ] && logcat -d -t 4000 --pid=\$pid *:W | tail -n 150") +
+            "\n\n--- accessibility (system log) ---\n" +
+            sh(s, "logcat -d -b main,system,events | grep -i -E 'accessib|ButtonRemap|force.?stop|am_kill|am_proc_died.*halo' | tail -n 120")
         rootProject.file("tv-log.txt").writeText(out)
         println(out.takeLast(4000))
     }
@@ -356,5 +380,39 @@ tasks.register("tvUploadTest") {
         out.appendLine("TV log:\n" + mask(adb("-s", s, "logcat", "-d", "-s", "HaloUpload:*")))
         sh(s, "input keyevent 4")
         report("tv-uploadtest.txt", out.toString())
+    }
+}
+
+/** Asks the assistant a question on the TV (debug build) and logs how long each step takes → tv-asktest.txt. */
+tasks.register("tvAskTest") {
+    group = "halo tv"
+    description = "Asks Halo's assistant a test question and times the answer and the voice → tv-asktest.txt"
+    doLast {
+        val s = tv()
+        adb("-s", s, "logcat", "-c")
+        sh(s, "am start -n $HOME_COMPONENT --es halo.open 'ask:Wie wird das Wetter morgen?'")
+        var log = ""
+        for (i in 0 until 30) {
+            Thread.sleep(2000)
+            log = adb("-s", s, "logcat", "-d", "-s", "HaloAssist:*", "HaloVoice:*")
+            if ("voice ready" in log || "TV voice" in log || "failed" in log) break
+        }
+        rootProject.file("tv-asktest.txt").writeText(log)
+        println(log)
+    }
+}
+
+/** Grants Halo's optional permissions that Google TV has no settings page for (run it yourself) → tv-permissions.txt. */
+tasks.register("tvPermissions") {
+    group = "halo tv"
+    description = "Allows Halo's media access (now playing), usage access (Recent apps) and installing its own updates"
+    doLast {
+        val s = tv()
+        requireHalo(s)
+        val out = StringBuilder()
+        out.appendLine("media access: " + sh(s, "cmd notification allow_listener $LISTENER_COMPONENT").ifBlank { "ok" })
+        out.appendLine("usage access: " + sh(s, "appops set $APP_ID GET_USAGE_STATS allow").ifBlank { "ok" })
+        out.appendLine("install updates: " + sh(s, "appops set $APP_ID REQUEST_INSTALL_PACKAGES allow").ifBlank { "ok" })
+        report("tv-permissions.txt", out.toString())
     }
 }

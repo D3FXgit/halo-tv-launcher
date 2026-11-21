@@ -9,11 +9,13 @@ enum class SetupStep(val optional: Boolean) {
     Theme(false),
     Profile(false),
     Weather(true),
+    Widgets(true),
     Background(true),
     Favourites(true),
     Assistant(true),
     Home(true),
     Remote(true),
+    Permissions(true),
     Done(false),
 }
 

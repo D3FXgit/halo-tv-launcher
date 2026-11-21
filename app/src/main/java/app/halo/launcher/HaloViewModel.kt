@@ -1,6 +1,13 @@
 package app.halo.launcher
 
 import kotlinx.coroutines.flow.flowOn
+import app.halo.launcher.easter.Egg
+import app.halo.launcher.remap.ForceStopper
+import app.halo.launcher.remap.Buttons
+import app.halo.launcher.update.Updater
+import app.halo.launcher.easter.EggLines
+import app.halo.launcher.easter.EggEvent
+import app.halo.launcher.easter.EggMatcher
 import kotlinx.coroutines.Dispatchers
 import android.app.Application
 import android.os.SystemClock
@@ -68,6 +75,10 @@ enum class Panel { None, Quick, Appearance }
 /** What the "send from your phone" panel is for: own wallpapers, or an own icon for one app. */
 sealed interface UploadTarget {
     data object Pictures : UploadTarget
+    /** Back up / restore settings and layouts through the phone page. */
+    data object Backup : UploadTarget
+    /** Paste the TMDB key on the phone ("Movies & Series" pictures). */
+    data object TmdbKey : UploadTarget
     data class Icon(val key: String, val label: String) : UploadTarget
 }
 
@@ -101,6 +112,8 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     val appsRepo = AppRepository(app, viewModelScope)
     val nowPlaying = NowPlayingRepository(app)
     val weather = WeatherRepository(app, viewModelScope)
+    /** Updates from the project's GitHub releases. */
+    val updates = Updater(app, viewModelScope)
 
     val settings: StateFlow<HaloSettings> =
         prefs.settings.stateIn(viewModelScope, SharingStarted.Eagerly, HaloSettings())
@@ -131,7 +144,7 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
         buildHome(apps, l, loaded, mode)
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, HomeModel())
 
-    val wallpapers = WallpaperRepository(app, viewModelScope)
+    val wallpapers = WallpaperRepository(app, viewModelScope).also { r -> r.tmdbKey = { settings.value.tmdbKey } }
     val speaker by lazy { Speaker(app, { settings.value.geminiKey.trim() }) { settings.value.voice } }
 
     /** A string in Halo's interface language (the application context isn't wrapped on Android 9–12). */
@@ -183,13 +196,15 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
             val sp = getApplication<Application>().getSharedPreferences(
                 DefaultLauncher.SERVICE_PREFS, android.content.Context.MODE_PRIVATE,
             )
-            prefs.settings.map { Triple(it.homeOverride, it.youtubeButtonTarget, it.assistantButton) }.distinctUntilChanged().collect { (home, yt, button) ->
-                sp.edit()
-                    .putBoolean(DefaultLauncher.KEY_HOME_OVERRIDE, home)
-                    .putString(DefaultLauncher.KEY_YOUTUBE_TARGET, yt)
-                    .putString(DefaultLauncher.KEY_ASSISTANT_BUTTON, button)
-                    .apply()
-            }
+            prefs.settings.map { Triple(it.homeOverride, it.youtubeButtonTarget, it.assistantButton to Buttons.encode(Buttons.effective(it))) }
+                .distinctUntilChanged().collect { (home, yt, b) ->
+                    sp.edit()
+                        .putBoolean(DefaultLauncher.KEY_HOME_OVERRIDE, home)
+                        .putString(DefaultLauncher.KEY_YOUTUBE_TARGET, yt)
+                        .putString(DefaultLauncher.KEY_ASSISTANT_BUTTON, b.first)
+                        .putString(DefaultLauncher.KEY_BUTTONS, b.second)
+                        .apply()
+                }
         }
         viewModelScope.launch {
             // Collection, interval and pinned picture take effect immediately.
@@ -351,6 +366,12 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
         ambient.value = false
         panel.value = Panel.None
         screen.value = Screen.Home
+        // Home also closes Halo's overlays: Running apps, an Easter egg, the update prompt, the phone page.
+        tasksOpen.value = false
+        egg.value?.let { if (it.egg != Egg.RETRO) egg.value = null }
+        upload.value = null
+        updates.later()
+        speaker.stop()
         _homeEvents.tryEmit(Unit)
     }
 
@@ -374,6 +395,11 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     fun open(s: Screen) {
         panel.value = Panel.None
         screen.value = s
+        // Arranging edits the favourites order; in "Recently used"/"Most used" mode the first row
+        // shows a different, automatic order, so the arrangement looked like it was not saved.
+        if (s is Screen.Arrange && TopRow.of(settings.value.profile.topRow) != TopRow.Favourites) {
+            updateActiveProfile { it.copy(topRow = TopRow.Favourites.name) }
+        }
     }
 
     // ---- layout edits -------------------------------------------------------
@@ -446,6 +472,43 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     /** What the "send from your phone" panel is open for (null = closed). */
     val upload = MutableStateFlow<UploadTarget?>(null)
 
+    // ---- Local backup (through the phone page; no cloud) ------------------------------------
+
+    /** Called on the upload server's thread. */
+    fun backupJson(): String = kotlinx.coroutines.runBlocking { prefs.exportBackup(BuildConfig.VERSION_NAME) }
+
+    /**
+     * Validates a backup sent from the phone and applies it a moment later, so the page still gets
+     * its answer before the panel (and its server) closes. Called on the upload server's thread.
+     */
+    /**
+     * A TMDB key pasted on the phone: checked with TMDB, then saved. true = saved, false = rejected,
+     * null = TMDB unreachable. Called on the upload server's thread.
+     */
+    fun submitTmdbKey(key: String): Boolean? {
+        val k = key.trim()
+        val ok = WallpaperRepository.checkTmdbKey(k)
+        if (ok == true) {
+            viewModelScope.launch {
+                updateSettings { it.copy(tmdbKey = k) }
+                wallpapers.tmdbKeyChanged()
+                delay(1500)
+                if (upload.value == UploadTarget.TmdbKey) upload.value = null
+            }
+        }
+        return ok
+    }
+
+    fun restoreBackup(text: String): Boolean {
+        val data = prefs.parseBackup(text) ?: return false
+        viewModelScope.launch {
+            delay(900)
+            prefs.restoreBackup(data)
+            upload.value = null
+        }
+        return true
+    }
+
     /** An own icon was saved (or removed) for [key]: the tile shows it (or its usual look again). */
     fun setOwnIcon(key: String, saved: Boolean) {
         val st = styleOf(key) ?: TileStyle()
@@ -457,7 +520,61 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Remembers launches for the "Recently used" / "Most used" first row. */
-    fun recordLaunch(key: String) = edit { l ->
+    // ---- running apps (task manager) ----------------------------------------------
+
+    /** The "Running apps" screen is open. */
+    val tasksOpen = MutableStateFlow(false)
+    /** Apps opened from Halo since Halo started: package → time (fallback without usage access). */
+    private val sessionLaunches = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
+    data class RunningApp(val tile: Tile, val lastUsed: Long)
+
+    /** Not offered in Running apps: the TV's settings (Halo works through them) and Halo itself. */
+    private fun neverStop(pkg: String): Boolean =
+        pkg in setOf("com.android.tv.settings", "com.android.settings", "com.google.android.tv.settings") ||
+            pkg.startsWith("app.halo.")
+
+    fun hasUsageAccess(): Boolean = runCatching {
+        val ctx = getApplication<Application>()
+        val ops = ctx.getSystemService(android.app.AppOpsManager::class.java)
+        @Suppress("DEPRECATION")
+        ops.checkOpNoThrow(android.app.AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), ctx.packageName) ==
+            android.app.AppOpsManager.MODE_ALLOWED
+    }.getOrDefault(false)
+
+    /**
+     * Apps used since the TV started, most recent first (with usage access: every app; without:
+     * the apps opened from Halo). Halo itself and apps force-stopped since then are left out.
+     */
+    fun runningApps(): List<RunningApp> {
+        val ctx = getApplication<Application>()
+        val boot = System.currentTimeMillis() - SystemClock.elapsedRealtime()
+        val used = HashMap<String, Long>()
+        if (hasUsageAccess()) {
+            runCatching {
+                val usm = ctx.getSystemService(android.app.usage.UsageStatsManager::class.java)
+                usm.queryUsageStats(android.app.usage.UsageStatsManager.INTERVAL_BEST, boot, System.currentTimeMillis())
+                    .filter { it.lastTimeUsed > boot && it.totalTimeInForeground > 0 }
+                    .forEach { u -> used[u.packageName] = maxOf(used[u.packageName] ?: 0L, u.lastTimeUsed) }
+            }
+        }
+        sessionLaunches.forEach { (p, t) -> used[p] = maxOf(used[p] ?: 0L, t) }
+        val stopped = ForceStopper.status.value
+        val tiles = home.value.all.associateBy { it.app.packageName }
+        return used.entries
+            .filter { (p, _) -> p != ctx.packageName && p in tiles && !neverStop(p) }
+            .filter { (p, _) -> stopped[p] != ForceStopper.Status.Stopped }
+            .sortedByDescending { it.value }
+            .map { (p, t) -> RunningApp(tiles.getValue(p), t) }
+    }
+
+    fun recordLaunch(key: String) = run {
+        home.value.all.firstOrNull { it.app.key == key }?.let { sessionLaunches[it.app.packageName] = System.currentTimeMillis() }
+        ForceStopper.status.value.keys.firstOrNull { p -> key.startsWith("$p/") }?.let { ForceStopper.clear(it) }
+        recordLaunchLayout(key)
+    }
+
+    private fun recordLaunchLayout(key: String) = edit { l ->
         l.copy(
             recent = (listOf(key) + l.recent.filterNot { it == key }).take(20),
             launches = l.launches + (key to ((l.launches[key] ?: 0) + 1)),
@@ -496,11 +613,85 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Sends a request (typed or spoken) to Gemini, which may act on the launcher through tools. */
+    // ---- Easter eggs ---------------------------------------------------------------
+
+    private val eggPrefs = app.getSharedPreferences("halo_eggs", android.content.Context.MODE_PRIVATE)
+    /** The Easter egg playing on Halo's screen (see EggLayer). */
+    val egg = MutableStateFlow<EggEvent?>(null)
+    /** Retro look (Konami code on the remote), kept across restarts. */
+    val retro = MutableStateFlow(eggPrefs.getBoolean("retro", false))
+    @Volatile private var eggPlayed = false
+
+    fun eggDone(id: Long) {
+        if (egg.value?.id == id) egg.value = null
+    }
+
+    fun toggleRetro() {
+        val on = !retro.value
+        retro.value = on
+        eggPrefs.edit().putBoolean("retro", on).apply()
+        egg.value = EggEvent(Egg.RETRO, value = if (on) 1 else 0)
+    }
+
+    /** December: now and then it snows on its own (only on Home, nothing else playing). */
+    fun maybeSnow() {
+        if (java.time.LocalDate.now().monthValue != 12 || egg.value != null || ambient.value || screen.value != Screen.Home) return
+        if (kotlin.random.Random.nextFloat() < 0.35f) {
+            egg.value = EggEvent(Egg.SNOW, value = 60)
+        }
+    }
+
+    /** Plays an Easter egg: its line (shown and spoken) and, for the visual ones, the effect on Halo's screen. */
+    fun playEgg(e: Egg, actions: HaloActions?) {
+        eggPlayed = true
+        val r = kotlin.random.Random
+        val value = when (e) {
+            Egg.COIN -> r.nextInt(2)
+            Egg.DICE -> r.nextInt(1, 7)
+            Egg.SNOW -> 45
+            else -> 0
+        }
+        if (e == Egg.RETRO) {
+            actions?.showHalo()
+            toggleRetro()
+            val line = str(if (retro.value) R.string.egg_retro_said_on else R.string.egg_retro_said_off)
+            setAssistant { it.copy(thinking = false, reply = line) }
+            speaker.say(line)
+            return
+        }
+        val line = EggLines.line(getApplication(), e, value)
+        setAssistant { it.copy(thinking = false, reply = line, error = null) }
+        if (e.visual) {
+            actions?.showHalo()
+            egg.value = EggEvent(e, value = value)
+        }
+        when (e) {
+            Egg.SING, Egg.CREDITS -> speaker.stop()
+            Egg.SELF_DESTRUCT -> {
+                speaker.say(line)
+                viewModelScope.launch { delay(5_200); speaker.say(str(R.string.egg_just_kidding)) }
+            }
+            Egg.COIN, Egg.DICE ->
+                viewModelScope.launch { delay(1_900); speaker.say(line) }
+            Egg.POD_BAY -> {
+                speaker.say(line)
+                viewModelScope.launch { delay(4_200); actions?.openPackage("com.android.vending") }
+            }
+            else -> speaker.say(line)
+        }
+    }
+
     fun ask(text: String, actions: HaloActions) {
         val q = text.trim()
         if (q.isEmpty()) return
         speaker.stop() // creates the text-to-speech engine early so the reply can be spoken
         setAssistant { it.copy(heard = q, thinking = true, reply = null, error = null, done = emptyList()) }
+        // Easter eggs: recognised right here (instant, and they work without an API key).
+        EggMatcher.match(q)?.let { e ->
+            playEgg(e, actions)
+            return
+        }
+        eggPlayed = false
         // Instant path: the request is just an app name.
         val direct = home.value.all.firstOrNull { it.label.equals(q, true) || it.app.label.equals(q, true) }
         if (direct != null) {
@@ -515,6 +706,7 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
             return
         }
         viewModelScope.launch {
+            val started = SystemClock.elapsedRealtime()
             val tools = Assistant.tools(home.value, settings.value)
             runCatching {
                 gemini.ask(Assistant.systemPrompt(getApplication<Application>(), home.value, settings.value, weather.state.value, nowPlaying.state.value),
@@ -525,6 +717,12 @@ class HaloViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }.onSuccess { (raw, history) ->
                 chat = history
+                // An Easter egg (easter_egg tool) already showed and spoke its own line.
+                if (eggPlayed) {
+                    setAssistant { it.copy(thinking = false) }
+                    return@onSuccess
+                }
+                android.util.Log.i("HaloAssist", "answer after ${SystemClock.elapsedRealtime() - started} ms")
                 val reply = localizedReply(raw)
                 setAssistant { it.copy(thinking = false, reply = reply) }
                 speaker.say(reply)

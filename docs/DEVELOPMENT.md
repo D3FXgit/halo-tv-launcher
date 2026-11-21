@@ -72,6 +72,8 @@ describes your own device).
 | `tvWizardTour` | Walks through the setup wizard (OK on every step) and saves a screenshot of each step to `tv-wizard/`. Finishes the wizard. | – |
 | `tvWallTest` | Has the TV load every picture collection (list, 8 thumbnails, 3 full pictures) and logs the result and every failing request → `tv-walltest.txt` (debug build) | – |
 | `tvUploadTest` | Opens "Add from phone" on the TV, loads the upload page from your PC and logs what happened → `tv-uploadtest.txt` (debug build; closes the panel again) | – |
+| `tvPermissions` | Allows Halo's media access (now playing), usage access (Recent apps) and installing its own updates (`cmd notification allow_listener`, `appops set … allow`) → `tv-permissions.txt` | Settings → Apps → Halo → Permissions / Special app access |
+| `tvAskTest` | Asks the assistant a test question and logs how long Gemini and the voice take → `tv-asktest.txt` (debug build; uses one request of your API key) | – |
 | `tvLogcat` | Halo's recent log (tags `HaloWall`, `HaloVoice`, `HaloKeys`, `Halo`, crashes) and accessibility state → `tv-log.txt` | – |
 
 ### Debloat list

@@ -117,6 +117,17 @@ data class HaloSettings(
     val useDeviceLocation: Boolean = true,
     val clock24h: Boolean = true,
     val showWeather: Boolean = true,
+    /** Extra home-screen widgets next to the clock, in this order (see ui/Widgets.kt: HomeWidgets). */
+    val widgets: List<String> = emptyList(),
+    /** Size of the home-screen widgets' text and cards (0.85 small … 1.4 extra large). */
+    val widgetScale: Float = 1f,
+    /** Time zone of the world-clock widget. */
+    val worldZone: String = "America/New_York",
+    /**
+     * Remote buttons learned in Halo: which key, how it is pressed, what it does. Empty = the
+     * older single choice [assistantButton] (star button) applies.
+     */
+    val buttons: List<ButtonBinding> = emptyList(),
     /** Halo's speaking voice: a Gemini voice name, or "system" for the TV's own text-to-speech. */
     val voice: String = "Sulafat",
     /**
@@ -137,6 +148,8 @@ data class HaloSettings(
     val language: String = "system",
     /** The user's own Gemini API key (entered in setup – on the TV or from a phone via QR code). */
     val geminiKey: String = "",
+    /** The user's own TMDB API key (v3 key or v4 read token) for the "Movies & Series" pictures. */
+    val tmdbKey: String = "",
     /** Bring Halo back whenever the stock launcher opens (needs the Halo accessibility service). */
     val homeOverride: Boolean = false,
     /** Package opened by the remote's YouTube button (null = leave the button alone). */
@@ -149,6 +162,10 @@ data class HaloSettings(
     val profile: Profile
         get() = profiles.firstOrNull { it.id == activeProfile } ?: profiles.firstOrNull() ?: Profile(MAIN_PROFILE, "Me", 0)
 }
+
+/** One remote button: [key] (Android key code), [press] short | hold | double, [action] assistant | recents | home | app:<package>. */
+@Serializable
+data class ButtonBinding(val key: Int, val press: String = "short", val action: String)
 
 /** A Halo profile. Each profile has its own favourites, order, hidden apps and icons. */
 @Serializable

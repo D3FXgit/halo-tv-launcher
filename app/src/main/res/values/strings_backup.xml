@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upload_title_backup">Back up or restore your setup</string>
+    <string name="upload_scan_backup">Scan the code with your phone. You can save a backup file of your profiles, home rows and settings there, or send one back to this TV.</string>
+    <string name="upload_web_backup">Backup</string>
+    <string name="upload_web_backup_hint">Saves your profiles, home rows (favourites order, hidden apps, icon styles), widgets and settings in one file on this phone. Not included: your Gemini key, your own pictures and icons.</string>
+    <string name="upload_web_backup_save">Save backup to this phone</string>
+    <string name="upload_web_backup_restore">Restore from a backup file</string>
+    <string name="upload_web_backup_restored">Restored. The TV is applying your setup now.</string>
+    <string name="upload_web_backup_invalid">This isn\'t a Halo backup file.</string>
+    <string name="settings_backup">Back up &amp; restore</string>
+    <string name="settings_backup_value">Via your phone</string>
+    <string name="setup_restore_backup">Restore a backup</string>
+    <string name="col_tmdb_title">Movies &amp; Series</string>
+    <string name="col_tmdb_desc">Fan art of popular and upcoming films and shows, from TMDB</string>
+    <string name="bg_tmdb_needs_key">Movies &amp; Series needs your own free TMDB key. Choose “Add TMDB key” and paste it on your phone.</string>
+    <string name="bg_tmdb_add_key">Add TMDB key</string>
+    <string name="bg_tmdb_change_key">Change TMDB key</string>
+    <string name="bg_tmdb_notice">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <string name="upload_title_tmdb">Add your TMDB key</string>
+    <string name="upload_scan_tmdb">Scan the code with your phone and paste your free TMDB API key there. You get one at themoviedb.org → Settings → API.</string>
+    <string name="upload_web_tmdb">TMDB key</string>
+    <string name="upload_web_tmdb_hint">Paste your TMDB “API Key” or “API Read Access Token” (themoviedb.org → Settings → API). It is checked with TMDB and kept only on your TV.</string>
+    <string name="upload_web_tmdb_label">API key or read access token</string>
+    <string name="upload_web_tmdb_save">Save key</string>
+    <string name="upload_web_tmdb_checking">Checking with TMDB …</string>
+    <string name="upload_web_tmdb_ok">Key saved. The pictures are loading on the TV.</string>
+    <string name="upload_web_tmdb_bad">TMDB didn\'t accept this key. Check it and try again.</string>
+    <string name="upload_web_tmdb_offline">TMDB couldn\'t be reached. Try again in a moment.</string>
+</resources>

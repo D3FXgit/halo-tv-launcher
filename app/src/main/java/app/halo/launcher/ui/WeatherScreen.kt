@@ -159,13 +159,13 @@ fun WeatherScreen(
             ) {
                 w.hourly.take(12).forEach { h ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        BasicText(h.time.format(DateTimeFormatter.ofPattern("HH")), style = hstyle(19, FontWeight.SemiBold, c.sub))
+                        BasicText(h.time.format(DateTimeFormatter.ofPattern("HH")), style = hstyle(22, FontWeight.SemiBold, c.sub))
                         Spacer(Modifier.height(8.px))
-                        HaloIcon(Weather.iconFor(h.code, h.isDay), 40.px, c.text, strokeWidth = 1.6f)
+                        HaloIcon(Weather.iconFor(h.code, h.isDay), 50.px, c.text, strokeWidth = 1.6f)
                         Spacer(Modifier.height(8.px))
-                        BasicText("${h.temp}°", style = hstyle(24, FontWeight.SemiBold, c.text))
+                        BasicText("${h.temp}°", style = hstyle(30, FontWeight.SemiBold, c.text))
                         if (anyRain) {
-                            BasicText(if (h.rainChance >= 10) stringResource(R.string.percent, h.rainChance) else " ", style = hstyle(15, FontWeight.Medium, c.sub))
+                            BasicText(if (h.rainChance >= 10) stringResource(R.string.percent, h.rainChance) else " ", style = hstyle(18, FontWeight.Medium, c.sub))
                         }
                     }
                 }
@@ -190,15 +190,15 @@ fun WeatherScreen(
                             if (i == 0) stringResource(R.string.weather_today) else d.date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            style = hstyle(20, FontWeight.SemiBold, c.text),
+                            style = hstyle(24, FontWeight.SemiBold, c.text),
                         )
                         Spacer(Modifier.height(8.px))
-                        HaloIcon(Weather.iconFor(d.code, true), 40.px, c.text, strokeWidth = 1.6f)
+                        HaloIcon(Weather.iconFor(d.code, true), 52.px, c.text, strokeWidth = 1.6f)
                         Spacer(Modifier.height(8.px))
                         // High and low on one line.
                         Row(verticalAlignment = Alignment.Bottom) {
-                            BasicText("${d.max}°", style = hstyle(26, FontWeight.SemiBold, c.text))
-                            BasicText("  ${d.min}°", style = hstyle(20, FontWeight.Medium, c.sub))
+                            BasicText("${d.max}°", style = hstyle(32, FontWeight.SemiBold, c.text))
+                            BasicText("  ${d.min}°", style = hstyle(24, FontWeight.Medium, c.sub))
                         }
                         Spacer(Modifier.height(10.px))
                         // Temperature range bar relative to the week.
@@ -224,7 +224,7 @@ fun WeatherScreen(
                             Modifier.padding(top = 6.px),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            style = hstyle(15, FontWeight.Medium, c.sub),
+                            style = hstyle(18, FontWeight.Medium, c.sub),
                         )
                     }
                 }
@@ -245,10 +245,10 @@ fun WeatherScreen(
 private fun Stat(icon: app.halo.launcher.data.IconSpec, label: String, value: String) {
     val c = LocalHalo.current.colors
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.px)) {
-        HaloIcon(icon, 26.px, c.sub)
+        HaloIcon(icon, 30.px, c.sub)
         Column {
-            BasicText(label, style = hstyle(16, FontWeight.Medium, c.sub))
-            BasicText(value, style = hstyle(22, FontWeight.SemiBold, c.text))
+            BasicText(label, style = hstyle(19, FontWeight.Medium, c.sub))
+            BasicText(value, style = hstyle(27, FontWeight.SemiBold, c.text))
         }
     }
 }

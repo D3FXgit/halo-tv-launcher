@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upload_title_backup">Einrichtung sichern oder wiederherstellen</string>
+    <string name="upload_scan_backup">Scanne den Code mit dem Handy. Dort kannst du eine Sicherungsdatei mit Profilen, Startseiten-Reihen und Einstellungen speichern – oder eine an diesen Fernseher zurückschicken.</string>
+    <string name="upload_web_backup">Sicherung</string>
+    <string name="upload_web_backup_hint">Speichert Profile, Startseiten-Reihen (Reihenfolge der Favoriten, ausgeblendete Apps, Symbol-Stile), Widgets und Einstellungen in einer Datei auf diesem Handy. Nicht enthalten: dein Gemini-Schlüssel, eigene Bilder und Symbole.</string>
+    <string name="upload_web_backup_save">Sicherung auf diesem Handy speichern</string>
+    <string name="upload_web_backup_restore">Aus einer Sicherungsdatei wiederherstellen</string>
+    <string name="upload_web_backup_restored">Wiederhergestellt. Der Fernseher übernimmt deine Einrichtung jetzt.</string>
+    <string name="upload_web_backup_invalid">Das ist keine Halo-Sicherungsdatei.</string>
+    <string name="settings_backup">Sichern &amp; wiederherstellen</string>
+    <string name="settings_backup_value">Über dein Handy</string>
+    <string name="setup_restore_backup">Sicherung wiederherstellen</string>
+    <string name="col_tmdb_title">Filme &amp; Serien</string>
+    <string name="col_tmdb_desc">Fan-Art beliebter und kommender Filme und Serien, von TMDB</string>
+    <string name="bg_tmdb_needs_key">Filme &amp; Serien braucht deinen eigenen, kostenlosen TMDB-Schlüssel. Wähle „TMDB-Schlüssel hinzufügen“ und füge ihn am Handy ein.</string>
+    <string name="bg_tmdb_add_key">TMDB-Schlüssel hinzufügen</string>
+    <string name="bg_tmdb_change_key">TMDB-Schlüssel ändern</string>
+    <string name="bg_tmdb_notice">Dieses Produkt nutzt die TMDB-API, ist aber nicht von TMDB unterstützt oder zertifiziert.</string>
+    <string name="upload_title_tmdb">TMDB-Schlüssel hinzufügen</string>
+    <string name="upload_scan_tmdb">Scanne den Code mit dem Handy und füge dort deinen kostenlosen TMDB-API-Schlüssel ein. Du bekommst ihn auf themoviedb.org → Einstellungen → API.</string>
+    <string name="upload_web_tmdb">TMDB-Schlüssel</string>
+    <string name="upload_web_tmdb_hint">Füge deinen TMDB „API Key“ oder „API Read Access Token“ ein (themoviedb.org → Einstellungen → API). Er wird bei TMDB geprüft und nur auf deinem Fernseher gespeichert.</string>
+    <string name="upload_web_tmdb_label">API-Schlüssel oder Read Access Token</string>
+    <string name="upload_web_tmdb_save">Schlüssel speichern</string>
+    <string name="upload_web_tmdb_checking">Wird bei TMDB geprüft …</string>
+    <string name="upload_web_tmdb_ok">Schlüssel gespeichert. Die Bilder werden auf dem Fernseher geladen.</string>
+    <string name="upload_web_tmdb_bad">TMDB hat diesen Schlüssel nicht angenommen. Prüfe ihn und versuche es noch einmal.</string>
+    <string name="upload_web_tmdb_offline">TMDB ist gerade nicht erreichbar. Versuche es gleich noch einmal.</string>
+</resources>

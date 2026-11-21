@@ -271,9 +271,13 @@ fun BackgroundsScreen(
     onBack: () -> Unit,
     /** Opens the "send from your phone" panel for own pictures. */
     onAddFromPhone: () -> Unit = {},
+    /** "Movies & Series" needs the user's TMDB key. */
+    tmdbKeySet: Boolean = false,
+    onTmdbKey: () -> Unit = {},
 ) {
     val c = LocalHalo.current.colors
     val cols = WallpaperRepository.collections
+    val isTmdb = WallpaperRepository.of(selected).id == WallpaperRepository.TMDB
     val col = WallpaperRepository.of(selected)
     val isScene = col.id == WallpaperRepository.SCENE
     val selIndex = cols.indexOfFirst { it.id == col.id }.coerceAtLeast(0)
@@ -289,7 +293,7 @@ fun BackgroundsScreen(
     val mine by app.halo.launcher.wallpaper.MyMedia.version.collectAsStateWithLifecycle()
     val packs by repo.packs.collectAsStateWithLifecycle()
     val packVersion by repo.packVersion.collectAsStateWithLifecycle()
-    val pictures by produceState<List<Picture>?>(null, col.id, if (col.id == WallpaperRepository.MINE) mine else 0L, packVersion) {
+    val pictures by produceState<List<Picture>?>(null, col.id, if (col.id == WallpaperRepository.MINE) mine else 0L, packVersion, isTmdb && tmdbKeySet) {
         value = null
         value = if (col.id == WallpaperRepository.SCENE) {
             emptyList()
@@ -348,7 +352,16 @@ fun BackgroundsScreen(
                     onToggle = onMediaBackdrop,
                     icon = Glyph.music.spec,
                 )
-                PillButton(stringResource(R.string.upload_add_pictures), onAddFromPhone, icon = Icons.camera)
+                if (isTmdb) {
+                    PillButton(
+                        stringResource(if (tmdbKeySet) R.string.bg_tmdb_change_key else R.string.bg_tmdb_add_key),
+                        onTmdbKey,
+                        icon = Icons.settings,
+                        primary = !tmdbKeySet,
+                    )
+                } else {
+                    PillButton(stringResource(R.string.upload_add_pictures), onAddFromPhone, icon = Icons.camera)
+                }
                 if (!isScene) PillButton(stringResource(R.string.bg_next), onNext, icon = Icons.chevronRight)
                 // Streamed by default; "Download to TV" keeps the collection on the TV (works offline).
                 if (!isScene && col.id != WallpaperRepository.MINE && col.id != WallpaperRepository.FAVS) {
@@ -420,6 +433,7 @@ fun BackgroundsScreen(
             packState?.running == true -> stringResource(R.string.bg_pack_downloading, title, packState.done, packState.total)
             packState?.failed == true -> stringResource(R.string.bg_pack_failed, title)
             col.id == WallpaperRepository.FAVS && list?.isEmpty() == true -> stringResource(R.string.bg_favs_empty)
+            isTmdb && !tmdbKeySet -> stringResource(R.string.bg_tmdb_needs_key)
             list == null -> stringResource(R.string.bg_loading, title)
             list.isEmpty() -> stringResource(R.string.bg_empty, title)
             else -> hint ?: pluralResource(R.plurals.bg_info, list.size, title, list.size, collectionDescription(col))
@@ -431,6 +445,16 @@ fun BackgroundsScreen(
             overflow = TextOverflow.Ellipsis,
             style = hstyle(20, FontWeight.Medium, c.sub),
         )
+        if (isTmdb) {
+            // TMDB's terms ask for this notice wherever its data is used.
+            BasicText(
+                stringResource(R.string.bg_tmdb_notice),
+                Modifier.padding(start = 120.px, end = 120.px, top = 6.px),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = hstyle(16, FontWeight.Medium, c.sub.copy(alpha = 0.8f)),
+            )
+        }
         if (!isScene && list != null && list.isNotEmpty()) {
             key(col.id) {
                 LazyHorizontalGrid(

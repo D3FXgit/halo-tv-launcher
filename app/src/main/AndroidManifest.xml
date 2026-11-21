@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Lets "Arrange Home" open the system uninstall dialog. -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <!-- Updates from the project's GitHub releases (the user confirms every install). -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Optional "Usage access" (granted by the user in the TV's settings): which apps were used, for Running apps. -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <!-- "Ask Halo": speak to the assistant through the remote's microphone. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
@@ -88,6 +92,18 @@
             android:windowSoftInputMode="adjustNothing"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
+        <!-- Recent apps over any app (hold the remote's star button, via the Halo service). -->
+        <activity
+            android:name=".remap.RecentsOverlayActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|density|fontScale|locale|layoutDirection"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:taskAffinity="app.halo.launcher.recents"
+            android:theme="@style/Theme.Halo.Overlay"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+
         <!-- Lets Halo read what's playing (album art, title, play/pause).
              Enable with: adb shell cmd notification allow_listener app.halo.tv/app.halo.launcher.media.MediaListenerService -->
         <service
@@ -125,5 +141,9 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/remap_service" />
         </service>
+        <!-- Result of an update install (see update/Updater.kt). -->
+        <receiver
+            android:name="app.halo.launcher.update.InstallReceiver"
+            android:exported="false" />
     </application>
 </manifest>

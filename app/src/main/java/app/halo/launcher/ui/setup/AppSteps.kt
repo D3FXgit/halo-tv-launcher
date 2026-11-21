@@ -183,21 +183,12 @@ internal fun RemoteStep(vm: HaloViewModel, settings: HaloSettings) {
     Column {
         StepHeader(stringResource(R.string.setup_remote_title), stringResource(R.string.setup_remote_subtitle))
         Spacer(Modifier.height(18.px))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(28.px)) {
-            ServiceStatus(serviceOn, needed = target != null || settings.assistantButton != "off")
-            val context = androidx.compose.ui.platform.LocalContext.current
-            GroupLabel(stringResource(R.string.settings_assistant_button), Modifier.padding(top = 14.px))
-            val buttons = listOf("off", "star")
-            app.halo.launcher.ui.Segmented(
-                options = buttons.map { stringResource(app.halo.launcher.assistant.Assistant.assistantButtonRes(it)) },
-                selected = buttons.indexOf(settings.assistantButton).coerceAtLeast(0),
-                onSelect = { i ->
-                    vm.updateSettings { it.copy(assistantButton = buttons[i]) }
-                    if (buttons[i] != "off" && !serviceOn) app.halo.launcher.setup.DefaultLauncher.openAccessibilitySettings(context)
-                },
-                modifier = Modifier.width(720.px),
-            )
-        }
+        ServiceStatus(serviceOn, needed = target != null || app.halo.launcher.remap.Buttons.effective(settings).isNotEmpty())
+        Spacer(Modifier.height(18.px))
+        // Halo's own buttons: learned on this remote (works with any TV remote, not only the star button).
+        ButtonActions(vm, settings, serviceOn)
+        Spacer(Modifier.height(22.px))
+        GroupLabel(stringResource(R.string.setup_remote_youtube_label))
         Spacer(Modifier.height(4.px))
         ScrollPadding(60.px) {
             LazyVerticalGrid(

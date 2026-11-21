@@ -48,6 +48,12 @@ class UploadServer(
     private val apps: () -> List<Pair<String, String>>,
     /** An own icon was saved (or removed: [saved] = false) for an app key. */
     private val onIcon: (key: String, saved: Boolean) -> Unit,
+    /** Settings backup as JSON (null = no backup section on the page). */
+    private val backup: (() -> String)? = null,
+    /** Restores a backup file; false = not a Halo backup. */
+    private val restore: ((String) -> Boolean)? = null,
+    /** Checks and saves a TMDB key: true = saved, false = rejected, null = TMDB unreachable. */
+    private val tmdb: ((String) -> Boolean?)? = null,
 ) {
     enum class Phase { Idle, Waiting, NoNetwork, Expired }
 
@@ -63,6 +69,7 @@ class UploadServer(
         private const val SOCKET_TIMEOUT_MS = 20_000
         private const val REQUEST_BUDGET_MS = 180_000L
         private const val MAX_BAD_TOKENS = 20
+        private const val MAX_BACKUP = 4 * 1024 * 1024
     }
 
     private val app = context.applicationContext
@@ -81,7 +88,7 @@ class UploadServer(
     private val busy = Semaphore(1)
 
     /** Starts (or restarts with a fresh token). [app] = app key to preselect on the icon page. */
-    fun start(preselect: String? = null) {
+    fun start(preselect: String? = null, view: String? = null) {
         stop()
         badTokens.set(0)
         token = newToken()
@@ -98,7 +105,8 @@ class UploadServer(
             }
             server = socket
             hostHeader = "${ip.hostAddress}:${socket.localPort}"
-            val extra = preselect?.let { "&app=" + java.net.URLEncoder.encode(it, "UTF-8") }.orEmpty()
+            val extra = preselect?.let { "&app=" + java.net.URLEncoder.encode(it, "UTF-8") }.orEmpty() +
+                view?.let { "&v=$it" }.orEmpty()
             _state.value = State(Phase.Waiting, "http://$hostHeader/?t=$token$extra")
             if (BuildConfig.DEV_HOOKS) Log.i(TAG, "listening on http://$hostHeader/?t=$token")
             launch {
@@ -200,6 +208,35 @@ class UploadServer(
                 respond(s, 200, "image/png", f.readBytes())
             }
             req.method == "POST" && (req.path == "/api/wall" || req.path == "/api/icon") -> upload(s, input, req, deadline, res)
+            req.method == "GET" && req.path == "/api/backup" -> {
+                val make = backup ?: return respond(s, 404, "text/plain", null)
+                val day = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(java.util.Date())
+                respond(
+                    s, 200, "application/json; charset=utf-8", make().toByteArray(Charsets.UTF_8),
+                    extra = "Content-Disposition: attachment; filename=\"halo-backup-$day.json\"\r\n",
+                )
+            }
+            req.method == "POST" && req.path == "/api/tmdb" -> {
+                val save = tmdb ?: return respond(s, 404, "text/plain", null)
+                val length = req.headers["content-length"]?.trim()?.toIntOrNull()
+                if (length == null || length <= 0 || length > 4096) return error(s, 400, res.getString(R.string.upload_web_tmdb_bad))
+                val body = readBody(s, input, length, deadline) ?: return error(s, 400, res.getString(R.string.upload_web_err_empty))
+                when (runCatching { save(String(body, Charsets.UTF_8).trim()) }.getOrNull()) {
+                    true -> respond(s, 200, "application/json", """{"ok":true}""".toByteArray())
+                    false -> error(s, 400, res.getString(R.string.upload_web_tmdb_bad))
+                    null -> error(s, 502, res.getString(R.string.upload_web_tmdb_offline))
+                }
+            }
+            req.method == "POST" && req.path == "/api/restore" -> {
+                val apply = restore ?: return respond(s, 404, "text/plain", null)
+                val length = req.headers["content-length"]?.trim()?.toIntOrNull()
+                if (length == null || length <= 0) return error(s, 400, res.getString(R.string.upload_web_err_empty))
+                if (length > MAX_BACKUP) return error(s, 413, res.getString(R.string.upload_web_backup_invalid))
+                val body = readBody(s, input, length, deadline) ?: return error(s, 400, res.getString(R.string.upload_web_err_empty))
+                val ok = runCatching { apply(String(body, Charsets.UTF_8)) }.getOrDefault(false)
+                if (ok) respond(s, 200, "application/json", """{"ok":true}""".toByteArray())
+                else error(s, 400, res.getString(R.string.upload_web_backup_invalid))
+            }
             req.method == "POST" && req.path == "/api/delete" -> {
                 val ok = when (req.query["kind"]) {
                     "wall" -> MyMedia.deleteWallpaper(app, req.query["name"].orEmpty())
@@ -314,7 +351,7 @@ class UploadServer(
         runCatching { URLDecoder.decode(pair.substringBefore('='), "UTF-8") to URLDecoder.decode(pair.substringAfter('=', ""), "UTF-8") }.getOrNull()
     }.toMap()
 
-    private fun respond(s: Socket, code: Int, type: String, body: ByteArray?) {
+    private fun respond(s: Socket, code: Int, type: String, body: ByteArray?, extra: String = "") {
         val b = body ?: ByteArray(0)
         val reason = when (code) {
             200 -> "OK"; 400 -> "Bad Request"; 403 -> "Forbidden"; 404 -> "Not Found"
@@ -328,6 +365,7 @@ class UploadServer(
             append("Referrer-Policy: no-referrer\r\n")
             append("X-Content-Type-Options: nosniff\r\n")
             append("X-Frame-Options: DENY\r\n")
+            append(extra)
             append("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'\r\n")
             append("Connection: close\r\n\r\n")
         }
@@ -380,7 +418,8 @@ p{margin:0 0 12px;color:#3e4350}
 .btn{display:block;width:100%;margin-top:10px;font:inherit;font-weight:700;font-size:17px;padding:14px;border:0;border-radius:999px;
 color:#fff;background:linear-gradient(180deg,#5cc4f5,#2fa8e8);text-align:center;cursor:pointer}
 select{width:100%;font:inherit;padding:12px 14px;border-radius:14px;border:2px solid #b9c6da;background:#fff;color:#12141a}
-input[type=file]{display:none}
+input[type=file]{display:none}a.btn{text-decoration:none;box-sizing:border-box}
+input[type=text]{width:100%;font:inherit;padding:12px 14px;border-radius:14px;border:2px solid #b9c6da;background:#fff;color:#12141a}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .tile{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0001}
 .tile img{width:100%;height:100%;object-fit:cover;display:block}
@@ -391,7 +430,7 @@ input[type=file]{display:none}
 .link{background:none;border:0;color:#1b78b8;font:inherit;padding:8px 0;cursor:pointer;text-decoration:underline}
 @media (prefers-color-scheme:dark){body{color:#f5f6f8;background:linear-gradient(160deg,#0b1430,#070a18 60%,#0f2a2a)}
 .card{background:rgba(20,26,44,.88);border-color:rgba(255,255,255,.12)}p,.brand{color:#b8bcc6}
-select{background:#0e1426;color:#f5f6f8;border-color:#334}.link{color:#6fd3ff}}
+select,input[type=text]{background:#0e1426;color:#f5f6f8;border-color:#334}.link{color:#6fd3ff}}
 """.trimIndent()
 
     private fun message(res: Resources, id: Int): String {
@@ -410,13 +449,28 @@ select{background:#0e1426;color:#f5f6f8;border-color:#334}.link{color:#6fd3ff}}
             "failed" to res.getString(R.string.upload_web_failed),
             "remove" to res.getString(R.string.upload_web_remove),
             "none" to res.getString(R.string.upload_web_no_icon),
+            "restored" to res.getString(R.string.upload_web_backup_restored),
+            "tmdbOk" to res.getString(R.string.upload_web_tmdb_ok),
+            "checking" to res.getString(R.string.upload_web_tmdb_checking),
         ).entries.joinToString(",") { (k, v) -> "\"$k\":\"${jsonEsc(v)}\"" }
         val pre = jsonEsc(preselect.orEmpty())
         return """<!doctype html>
 <html lang="$lang"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer"><title>${t(R.string.upload_web_title)}</title><style>${style()}</style></head>
 <body>
-<main class="card"><div class="brand">HALO</div><h1>${t(R.string.upload_web_title)}</h1><p>${t(R.string.upload_web_intro)}</p></main>
+<main class="card" id="introCard"><div class="brand">HALO</div><h1>${t(R.string.upload_web_title)}</h1><p>${t(R.string.upload_web_intro)}</p></main>
+${if (backup != null) """<section class="card" id="backupCard">
+<div class="brand">HALO</div><h2>${t(R.string.upload_web_backup)}</h2><p>${t(R.string.upload_web_backup_hint)}</p>
+<a class="btn" id="bkDown" download>${t(R.string.upload_web_backup_save)}</a>
+<label class="btn" for="bkFile">${t(R.string.upload_web_backup_restore)}</label><input id="bkFile" type="file" accept=".json,application/json,text/plain">
+<div class="status" id="bkStatus"></div>
+</section>""" else ""}
+${if (tmdb != null) """<section class="card" id="tmdbCard">
+<div class="brand">HALO</div><h2>${t(R.string.upload_web_tmdb)}</h2><p>${t(R.string.upload_web_tmdb_hint)}</p>
+<input id="tmdbKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${t(R.string.upload_web_tmdb_label)}">
+<button class="btn" id="tmdbSave" type="button">${t(R.string.upload_web_tmdb_save)}</button>
+<div class="status" id="tmdbStatus"></div>
+</section>""" else ""}
 <section class="card" id="iconCard">
 <h2>${t(R.string.upload_web_icons)}</h2><p>${t(R.string.upload_web_icons_hint)}</p>
 <select id="app"></select>
@@ -425,7 +479,7 @@ select{background:#0e1426;color:#f5f6f8;border-color:#334}.link{color:#6fd3ff}}
 <button class="link" id="iconDel" type="button">${t(R.string.upload_web_reset_icon)}</button>
 <div class="status" id="iconStatus"></div>
 </section>
-<section class="card">
+<section class="card" id="wallCard">
 <h2>${t(R.string.upload_web_walls)}</h2><p>${t(R.string.upload_web_walls_hint)}</p>
 <label class="btn" for="wallFile">${t(R.string.upload_web_choose_walls)}</label><input id="wallFile" type="file" accept="image/*" multiple>
 <div class="status" id="wallStatus"></div>
@@ -460,6 +514,14 @@ ${'$'}('wallFile').onchange=async e=>{const fs=[...e.target.files];const st=${'$
 ${'$'}('iconFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const st=${'$'}('iconStatus');st.textContent=fmt(T.uploading,[1,1]);
  try{await send('/api/icon?app='+encodeURIComponent(${'$'}('app').value),f);st.textContent=T.done;}catch(err){st.textContent=fmt(T.failed,[err.message]);}
  e.target.value='';load();};
+const VIEW=new URLSearchParams(location.search).get('v');
+if(VIEW==='tmdb'||VIEW==='backup'){for(const id of ['introCard','iconCard','wallCard',VIEW==='tmdb'?'backupCard':'tmdbCard']){const el=${'$'}(id);if(el)el.style.display='none';}}
+if(${'$'}('tmdbCard')){${'$'}('tmdbSave').onclick=async()=>{const k=${'$'}('tmdbKey').value.trim();if(!k)return;const st=${'$'}('tmdbStatus');st.textContent=T.checking;
+ try{const r=await fetch(q('/api/tmdb'),{method:'POST',headers:{'Content-Type':'text/plain'},body:k});let j={};try{j=await r.json();}catch(e){}
+ if(!r.ok||!j.ok)throw new Error(j.error||('HTTP '+r.status));st.textContent=T.tmdbOk;${'$'}('tmdbKey').value='';}catch(err){st.textContent=err.message;}};}
+if(${'$'}('backupCard')){${'$'}('bkDown').href=q('/api/backup');
+ ${'$'}('bkFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const st=${'$'}('bkStatus');st.textContent=fmt(T.uploading,[1,1]);
+  try{await send('/api/restore',f);st.textContent=T.restored;}catch(err){st.textContent=fmt(T.failed,[err.message]);}e.target.value='';};}
 ${'$'}('iconDel').onclick=async()=>{await fetch(q('/api/delete?kind=icon&app='+encodeURIComponent(${'$'}('app').value)),{method:'POST'});${'$'}('iconStatus').textContent=T.none;load();};
 load();
 </script>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home-screen widgets (ui/Widgets.kt) and the running-apps screen. -->
+<resources>
+    <string name="settings_widgets">Widgets</string>
+    <string name="settings_widget_size">Widget size</string>
+    <string name="settings_widget_size_hint">Text and cards of the clock and the widgets</string>
+    <string name="size_small">Small</string>
+    <string name="size_normal">Normal</string>
+    <string name="size_large">Large</string>
+    <string name="size_xlarge">Extra large</string>
+    <string name="settings_world_clock_city">World clock city</string>
+    <string name="widget_forecast">Next days</string>
+    <string name="widget_calendar">Calendar</string>
+    <string name="widget_sun_moon">Sun &amp; moon</string>
+    <string name="widget_world_clock">World clock</string>
+    <string name="widget_countdown">Countdown</string>
+    <string name="widget_device">TV status</string>
+    <string name="widget_week">Week %1$d</string>
+    <string name="widget_daylight">%1$d h %2$d min of daylight</string>
+    <string name="widget_today">Today · %1$s</string>
+    <string name="widget_tomorrow">Tomorrow · %1$s</string>
+    <string name="widget_yesterday">Yesterday · %1$s</string>
+    <string name="widget_countdown_today">It\'s today!</string>
+    <plurals name="widget_days_left">
+        <item quantity="one">day to go</item>
+        <item quantity="other">days to go</item>
+    </plurals>
+    <string name="widget_offline">Offline</string>
+    <string name="widget_storage">%1$s GB free of %2$s GB</string>
+    <string name="event_christmas">Christmas Eve</string>
+    <string name="event_new_year">New Year</string>
+    <string name="event_easter">Easter</string>
+    <string name="event_halloween">Halloween</string>
+    <string name="moon_new">New moon</string>
+    <string name="moon_waxing_crescent">Waxing crescent</string>
+    <string name="moon_first_quarter">First quarter</string>
+    <string name="moon_waxing_gibbous">Waxing gibbous</string>
+    <string name="moon_full">Full moon</string>
+    <string name="moon_waning_gibbous">Waning gibbous</string>
+    <string name="moon_last_quarter">Last quarter</string>
+    <string name="moon_waning_crescent">Waning crescent</string>
+    <string name="tasks_title">Recent apps</string>
+    <string name="tasks_subtitle">Apps used since the TV started. Halo closes an app by pressing \"Force stop\" on its system page for you.</string>
+    <string name="tasks_subtitle_manual">Apps used since the TV started. Halo\'s accessibility service is off, so App info opens and you press \"Force stop\" yourself.</string>
+    <string name="tasks_close_all">Close all</string>
+    <string name="tasks_force_stop">Force stop</string>
+    <string name="tasks_app_info">App info</string>
+    <string name="tasks_usage_hint">Only apps opened from Halo are listed. Allow \"Usage access\" for Halo to see every app you used.</string>
+    <string name="tasks_usage_allow">Allow</string>
+    <string name="tasks_empty">No apps used since the TV started.</string>
+    <string name="tasks_queued">Waiting …</string>
+    <string name="tasks_stopping">Stopping …</string>
+    <string name="tasks_failed">Couldn\'t stop it. Use App info.</string>
+    <string name="tasks_used_now">Used just now</string>
+    <string name="tasks_used_min">Used %1$d min ago</string>
+    <string name="tasks_used_h">Used %1$d h ago</string>
+    <string name="tasks_hint">OK opens an app · Down closes it</string>
+    <string name="tasks_down_to_close">Down to close</string>
+    <string name="tasks_closing">Closing apps …</string>
+</resources>

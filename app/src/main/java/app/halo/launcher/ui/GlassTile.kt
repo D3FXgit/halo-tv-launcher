@@ -4,6 +4,7 @@ import android.view.KeyEvent as NativeKeyEvent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -142,8 +143,16 @@ fun GlassTile(
             val d = FocusDirection.last
             val dx = when (d) { -1 -> -1f; 1 -> 1f; else -> 0f }
             val dy = when (d) { -2 -> -1f; 2 -> 1f; else -> 0f }
-            launch { tiltY.snapTo(4f * dx); tiltY.animateTo(0f, Motion.wobble()) }
-            launch { tiltX.snapTo(-3f * dy); tiltX.animateTo(0f, Motion.wobble()) }
+            // Glide in the travel direction and settle back – never a jump (a snapTo here moved the
+            // tile several pixels in one frame, which looked like a stutter on every key press).
+            launch {
+                tiltY.animateTo(2f * dx, tween(110, easing = FastOutSlowInEasing))
+                tiltY.animateTo(0f, spring(dampingRatio = 0.85f, stiffness = 260f))
+            }
+            launch {
+                tiltX.animateTo(-1.5f * dy, tween(110, easing = FastOutSlowInEasing))
+                tiltX.animateTo(0f, spring(dampingRatio = 0.85f, stiffness = 260f))
+            }
             sweep()
         }
     }

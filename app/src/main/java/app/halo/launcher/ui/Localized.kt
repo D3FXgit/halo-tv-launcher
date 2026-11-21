@@ -51,6 +51,7 @@ fun collectionTitleRes(id: String): Int = when (id) {
     "ocean" -> R.string.col_ocean_title
     "night" -> R.string.col_night_title
     "photos" -> R.string.col_photos_title
+    "tmdb" -> R.string.col_tmdb_title
     else -> 0
 }
 
@@ -67,6 +68,7 @@ fun collectionDescriptionRes(id: String): Int = when (id) {
     "ocean" -> R.string.col_ocean_desc
     "night" -> R.string.col_night_desc
     "photos" -> R.string.col_photos_desc
+    "tmdb" -> R.string.col_tmdb_desc
     else -> 0
 }
 

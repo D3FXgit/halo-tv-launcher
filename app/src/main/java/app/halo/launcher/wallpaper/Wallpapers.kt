@@ -44,6 +44,7 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Locale
 import java.security.MessageDigest
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -88,6 +89,13 @@ sealed interface Feed {
 
     /** The user's own pictures (MyMedia), sent from a phone. */
     data object Mine : Feed
+
+    /**
+     * A list from The Movie Database (e.g. "movie/popular"): the backdrops (fan art) of popular and
+     * upcoming films and series. Needs the user's own free TMDB API key; every picture is credited
+     * "Title (year) · TMDB". Images © their respective owners, served by TMDB.
+     */
+    data class Tmdb(val list: String) : Feed
 }
 
 /** A collection of the picture library. */
@@ -126,6 +134,8 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         const val MINE = "mine"
         /** Favourite pictures collected from every collection. */
         const val FAVS = "favs"
+        /** Film and series fan art from TMDB (needs the user's TMDB key). */
+        const val TMDB = "tmdb"
         private const val TAG = "HaloWall"
 
         /** Minutes between pictures the user can choose (0 = keep one picture). */
@@ -224,6 +234,17 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                 ),
             ),
             WallpaperCollection(
+                TMDB, "Movies & Series", "Fan art of popular and upcoming films and shows, from TMDB", Icons.monitor,
+                feeds = listOf(
+                    Feed.Tmdb("trending/all/week"),
+                    Feed.Tmdb("movie/popular"),
+                    Feed.Tmdb("movie/upcoming"),
+                    Feed.Tmdb("tv/popular"),
+                    Feed.Tmdb("movie/now_playing"),
+                ),
+                ttlHours = 24,
+            ),
+            WallpaperCollection(
                 "photos", "Photography", "Hundreds of Unsplash photos", Icons.camera,
                 feeds = listOf(Feed.Picsum),
                 fallback = genericFallback,
@@ -241,6 +262,38 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         private const val THUMB_W = 400
         private const val THUMB_H = 225
         private const val MAX_PICTURES = 400
+        private const val TMDB_API = "api.themoviedb.org"
+
+        /**
+         * Checks a TMDB key: true = accepted, false = rejected, null = TMDB unreachable.
+         * Blocking (call from a background thread).
+         */
+        fun checkTmdbKey(key: String): Boolean? {
+            val k = key.trim()
+            if (k.length < 20 || k.length > 1000 || k.any { it.isWhitespace() }) return false
+            val bearer = k.length > 40
+            val url = "https://api.themoviedb.org/3/configuration" +
+                if (bearer) "" else "?api_key=" + java.net.URLEncoder.encode(k, "UTF-8")
+            return try {
+                val c = (URL(url).openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 10_000
+                    readTimeout = 10_000
+                    setRequestProperty("Accept", "application/json")
+                    if (bearer) setRequestProperty("Authorization", "Bearer $k")
+                }
+                try {
+                    when (c.responseCode) {
+                        in 200..299 -> true
+                        401, 403, 404 -> false
+                        else -> null
+                    }
+                } finally {
+                    c.disconnect()
+                }
+            } catch (e: IOException) {
+                null
+            }
+        }
         /** Pictures per downloaded pack (≈ 40–60 MB). */
         private const val PACK_SIZE = 72
         /** A pack download gives up for now after this long (it resumes the next time). */
@@ -992,6 +1045,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
         // Own pictures: always the current files (nothing to download or cache).
         if (col.id == MINE) return MyMedia.wallpapers(appContext).map { f -> f.toURI().toString().let { Picture(it, it, "") } }
         if (col.id == FAVS) return favouritePictures()
+        if (col.id == TMDB && tmdbKey().isBlank()) return emptyList()
         val lock = manifestLocks.getOrPut(col.id) { Mutex() }
         return lock.withLock {
             val ttl = col.ttlHours * 3_600_000L
@@ -1015,6 +1069,11 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                 runCatching { file.writeText(json.encodeToString(ManifestFile.serializer(), ManifestFile(at, fresh))) }
                 manifests[col.id] = Manifest(at, fresh)
                 result = fresh
+            } else if (col.id == TMDB) {
+                // No made-up substitutes for film art: what TMDB gave (or the last list), retry soon.
+                val list = if (disk != null && disk.pictures.size >= fresh.size) disk.pictures else fresh
+                manifests[col.id] = Manifest(now - ttl + 15 * 60_000L, list)
+                result = list
             } else {
                 // Sources unreachable: use what we have, then the curated lists; retry in ~30 minutes.
                 var list = if (disk != null && disk.pictures.size >= fresh.size) disk.pictures
@@ -1043,6 +1102,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                         is Feed.PictureOfTheDay -> pictureOfTheDay(feed.days)
                         Feed.Picsum -> picsumList()
                         Feed.Mine -> MyMedia.wallpapers(appContext).map { f -> f.toURI().toString().let { Picture(it, it, "") } }
+                        is Feed.Tmdb -> tmdb(feed.list)
                     }
                 } catch (e: CancellationException) {
                     throw e
@@ -1052,6 +1112,7 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
                         is Feed.Nasa -> "images-api.nasa.gov"
                         is Feed.Commons -> "commons.wikimedia.org"
                         is Feed.PictureOfTheDay -> "api.wikimedia.org"
+                        is Feed.Tmdb -> TMDB_API
                         else -> ""
                     }
                     val until = hostCooldown[host] ?: 0L
@@ -1079,6 +1140,74 @@ class WallpaperRepository(context: Context, private val scope: CoroutineScope) {
     }
 
     // ---- sources ------------------------------------------------------------------
+
+    /** The user's TMDB API key (v3 key or v4 read access token); set by the ViewModel. */
+    @Volatile var tmdbKey: () -> String = { "" }
+
+    /** Forgets the cached TMDB list (after the key changed). */
+    fun tmdbKeyChanged() {
+        manifests.remove(TMDB)
+        runCatching { File(manifestDir, "$TMDB.v$MANIFEST_VERSION.json").delete() }
+    }
+
+    /**
+     * Backdrops of a TMDB list, three pages (≈ 60 titles). Backdrops are landscape fan art, usually
+     * without lettering – unlike posters, which are portrait and would be cropped.
+     */
+    private suspend fun tmdb(list: String): List<Picture> {
+        val key = tmdbKey().trim()
+        if (key.isEmpty()) return emptyList()
+        val lang = Locale.getDefault().language.ifBlank { "en" }
+        val out = ArrayList<Picture>()
+        for (page in 1..3) {
+            val root = tmdbJson("https://api.themoviedb.org/3/$list?page=$page&language=$lang", key).obj() ?: break
+            val results = root["results"] as? JsonArray ?: break
+            for (re in results) {
+                val r = re.obj() ?: continue
+                if (r.str("adult") == "true") continue
+                val path = r.str("backdrop_path")?.takeIf { it.startsWith("/") } ?: continue
+                val title = (r.str("title") ?: r.str("name"))?.trim().orEmpty()
+                val year = (r.str("release_date") ?: r.str("first_air_date"))?.take(4)?.takeIf { it.length == 4 }
+                val name = title.takeIf { it.isNotEmpty() }?.let { if (year != null) "$it ($year)" else it }
+                out += Picture(
+                    "https://image.tmdb.org/t/p/original$path",
+                    "https://image.tmdb.org/t/p/w500$path",
+                    listOfNotNull(name, "TMDB").joinToString(" · "),
+                )
+            }
+            if (page >= root.int("total_pages")) break
+        }
+        return out
+    }
+
+    /**
+     * TMDB API call. Not through [request]: that logs URLs, and a v3 key travels in the URL. A long
+     * key is a v4 read access token and goes in the Authorization header instead.
+     */
+    private suspend fun tmdbJson(url: String, key: String): JsonElement = gateFor(TMDB_API).withPermit {
+        withContext(Dispatchers.IO) {
+            hostCooldown[TMDB_API]?.let { until ->
+                if (until > System.currentTimeMillis()) throw IOException("TMDB cooling down")
+            }
+            val bearer = key.length > 40
+            val full = if (bearer) url else url + "&api_key=" + java.net.URLEncoder.encode(key, "UTF-8")
+            val c = (URL(full).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15_000
+                readTimeout = 30_000
+                setRequestProperty("User-Agent", ua)
+                setRequestProperty("Accept", "application/json")
+                if (bearer) setRequestProperty("Authorization", "Bearer $key")
+            }
+            try {
+                val code = c.responseCode
+                if (code == 429) hostCooldown[TMDB_API] = System.currentTimeMillis() + 60_000L
+                if (code !in 200..299) throw HttpException(code, null, url.substringBefore('?'))
+                json.parseToJsonElement(c.inputStream.bufferedReader().use { it.readText() })
+            } finally {
+                c.disconnect()
+            }
+        }
+    }
 
     /**
      * Files in a Commons category:

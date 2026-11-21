@@ -4,6 +4,39 @@ All notable changes to Halo are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and Halo uses
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] – 2026-11
+
+### Added
+- Back up & restore (Settings → More, or "Restore a backup" on the first setup screen): save your
+  profiles, home rows, widgets and settings as a file on your phone and bring them back after
+  "Clear data" or on another TV. Local only – no cloud; API keys are never part of a backup.
+- "Movies & Series" picture collection: fan art of trending, popular and upcoming films and series
+  from TMDB, with title and year. Needs your own free TMDB API key, pasted from your phone.
+- Updates over the air: Halo checks the project's GitHub releases once a day (or from Settings →
+  "Check for updates") and asks before installing a new version. Only updates signed like your
+  Halo are installed, and Android asks you to confirm.
+- More home-screen widgets to pick in Settings → Widgets: next days' weather, calendar, sun & moon,
+  world clock, holiday countdown and TV status (connection, VPN, free storage), plus a widget size
+  setting (small to extra large) for the clock and all widgets.
+- Running apps (Settings → More, or ask the assistant): the apps used since the TV started, with
+  Force stop per app and Close all.
+- Easter eggs. Ask Halo to sing, or try "open the pod bay doors", "do a barrel roll", "self-destruct",
+  "beam me up", "let it snow", "party mode", "flip a coin", "roll a die", "good night" … and a few
+  more. The remote has two secrets of its own.
+
+### Changed
+- Larger weather text: the weather card's next hours (bigger icons and temperatures), the
+  next-days widget and the weather page are easier to read from the sofa.
+- Smoother focus animations: tiles glide instead of jumping when focus arrives, and settle without
+  bouncing.
+
+### Fixed
+- Home navigation with the D-pad: ▲/▼ always move to the next row (to the tile last used there)
+  instead of a card far to the left or right, and ▲ from the favourites row reaches the row-mode
+  switch and the top bar (Settings) again.
+- Arranging favourites while the first row showed "Recently used" or "Most used" looked as if the
+  new order was not saved: opening Arrange now switches the first row back to Favourites.
+
 ## [1.1.0] – 2026-11
 
 ### Added
